@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT CENTER | Rejalar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="roadmap">
+  <div class="page-glow glow-top"></div>
+  <div class="page-glow glow-bottom"></div>
+
+  <header class="site-header">
+    <a class="brand" href="index.html">IT CENTER</a>
+    <div class="header-actions">
+      <nav class="site-nav">
+        <a href="about.html" data-i18n="nav.about">Loyiha</a>
+        <a href="focus.html" data-i18n="nav.focus">Yo'nalishlar</a>
+        <a href="roadmap.html" data-i18n="nav.roadmap">Rejalar</a>
+        <a href="note.html" data-i18n="nav.note">Eslatma</a>
+      </nav>
+      <label class="language-switch">
+        <span class="language-switch__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="language-switch__label" data-i18n="language.label">Til</span>
+        <select id="language-select" class="language-switch__select">
+          <option value="uz">O'zbekcha</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+        <span class="language-switch__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </label>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Rang rejimini almashtirish">
+        <span class="theme-toggle__icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero panel subpage-hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Yo'l xaritasi</p>
+        <h1>Rejalaringizni qadam-baqadam yuritish bosqichlari</h1>
+        <p class="intro">
+          Bu sahifa rejalarning paydo bo'lishidan boshlab, ularni tartiblash va
+          nazorat qilishgacha bo'lgan ketma-ket jarayonni ko'rsatadi.
+        </p>
+      </div>
+    </section>
+
+    <section class="roadmap">
+      <div class="section-heading">
+        <p class="section-tag">Rejalar</p>
+        <h2>Rejalashtirish ketma-ketligi</h2>
+      </div>
+
+      <div class="timeline">
+        <article class="panel timeline-item">
+          <span class="timeline-step">1</span>
+          <div>
+            <h3>Rejalarni yozib borish</h3>
+            <p>Barcha yangi fikrlar va vazifalar tizimli ravishda kiritiladi.</p>
+            <a class="button secondary section-button" href="roadmap.html" data-plan-trigger data-plan-context="Rejalarni yozib borish">Reja kiritishni boshlash</a>
+          </div>
+        </article>
+
+        <article class="panel timeline-item">
+          <span class="timeline-step">2</span>
+          <div>
+            <h3>Vazifalarni tartiblash</h3>
+            <p>Yozilgan ishlar ustuvorlik va ketma-ketlik bo'yicha ajratiladi.</p>
+            <a class="button secondary section-button" href="roadmap.html" data-plan-trigger data-plan-context="Vazifalarni tartiblash">Reja kiritishni boshlash</a>
+          </div>
+        </article>
+
+        <article class="panel timeline-item">
+          <span class="timeline-step">3</span>
+          <div>
+            <h3>Muhim ishlarni ajratish</h3>
+            <p>Eng kerakli vazifalar alohida ko'rinishda belgilab olinadi.</p>
+            <a class="button secondary section-button" href="roadmap.html" data-plan-trigger data-plan-context="Muhim ishlarni ajratish">Reja kiritishni boshlash</a>
+          </div>
+        </article>
+
+        <article class="panel timeline-item">
+          <span class="timeline-step">4</span>
+          <div>
+            <h3>Bajarilgan ishlarni belgilash</h3>
+            <p>Jarayonni nazorat qilish uchun bajarilgan qadamlar qayd etiladi.</p>
+            <a class="button secondary section-button" href="roadmap.html" data-plan-trigger data-plan-context="Bajarilgan ishlarni belgilash">Reja kiritishni boshlash</a>
+          </div>
+        </article>
+
+        <article class="panel timeline-item">
+          <span class="timeline-step">5</span>
+          <div>
+            <h3>Yangi rejalarni qo'shib borish</h3>
+            <p>Tizim doimiy ravishda kengayadi va yangi maqsadlar bilan boyitiladi.</p>
+            <a class="button secondary section-button" href="roadmap.html" data-plan-trigger data-plan-context="Yangi rejalarni qo'shib borish">Reja kiritishni boshlash</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>IT CENTER | <span id="year"></span> | Rejalar sahifasi</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

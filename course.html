@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Course</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --bg-glow: rgba(31, 94, 183, 0.08);
+      --surface: #ffffff;
+      --surface-soft: #f6f8f8;
+      --surface-tint: #f8fbfa;
+      --input-bg: #ffffff;
+      --text: #10211d;
+      --muted: #65736e;
+      --line: rgba(16, 33, 29, 0.12);
+      --table-head: #18312b;
+      --table-head-text: #b9c6c1;
+      --accent: #1f5eb7;
+      --card-shadow: 0 18px 48px rgba(16, 33, 29, 0.06);
+      --toggle-bg: rgba(31, 94, 183, 0.08);
+      --toggle-text: #0f1f1b;
+      --success: #2b8d61;
+      --success-bg: rgba(45, 138, 97, 0.12);
+      --warning: #b67b14;
+      --warning-bg: rgba(182, 123, 20, 0.12);
+      --danger: #d12f45;
+      --danger-bg: rgba(209, 47, 69, 0.12);
+      --new-bg: rgba(31, 94, 183, 0.12);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #071310;
+      --bg-glow: rgba(92, 142, 255, 0.16);
+      --surface: #10201c;
+      --surface-soft: #142924;
+      --surface-tint: #0d1a17;
+      --input-bg: #0d1a17;
+      --text: #edf6f3;
+      --muted: #97aba5;
+      --line: rgba(229, 242, 237, 0.12);
+      --table-head: #08120f;
+      --table-head-text: #d6e5df;
+      --accent: #7aa9ff;
+      --card-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+      --toggle-bg: rgba(122, 169, 255, 0.16);
+      --toggle-text: #edf6f3;
+      --success: #6fe0aa;
+      --success-bg: rgba(74, 200, 141, 0.16);
+      --warning: #f2c36b;
+      --warning-bg: rgba(242, 195, 107, 0.16);
+      --danger: #ff8a9a;
+      --danger-bg: rgba(255, 138, 154, 0.16);
+      --new-bg: rgba(122, 169, 255, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, var(--bg-glow), transparent 32%),
+        var(--bg);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .page {
+      width: min(1320px, calc(100% - 32px));
+      margin: 32px auto;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, var(--surface), var(--surface-tint));
+      border: 1px solid var(--line);
+      box-shadow: var(--card-shadow);
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 68ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .learning-card {
+      margin-bottom: 24px;
+      padding: 28px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface), var(--surface-tint));
+      box-shadow: var(--card-shadow);
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .learning-card__head {
+      margin-bottom: 22px;
+    }
+
+    .learning-card__head h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
+      line-height: 1.1;
+    }
+
+    .learning-card__head p {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .learning-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .learning-summary {
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .learning-summary__label {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--toggle-bg);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .learning-summary p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .topic-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .topic-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      min-height: 100%;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .topic-item__index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 42px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--toggle-bg);
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .topic-item__content strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .topic-item__content p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      min-height: 48px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--toggle-bg);
+      color: var(--toggle-text);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle__icon {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-toggle__icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle__icon--sun {
+      display: none;
+    }
+
+    html[data-theme="dark"] .theme-toggle__icon--sun {
+      display: inline-flex;
+    }
+
+    html[data-theme="dark"] .theme-toggle__icon--moon {
+      display: none;
+    }
+
+    .table-card {
+      overflow: hidden;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--card-shadow);
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1120px;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 22px 18px;
+      background: var(--table-head);
+      color: var(--table-head-text);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+      background: var(--surface);
+    }
+
+    tbody tr:nth-child(even) td {
+      background: var(--surface-soft);
+    }
+
+    .student-cell strong,
+    .course-cell strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .student-cell {
+      cursor: context-menu;
+    }
+
+    .student-cell small,
+    .course-cell small,
+    .time-cell small,
+    .amount-cell {
+      color: var(--muted);
+    }
+
+    .time-cell {
+      min-width: 140px;
+    }
+
+    .time-cell strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .time-cell small {
+      display: block;
+    }
+
+    .deadline-cell {
+      min-width: 180px;
+    }
+
+    .deadline-cell strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .deadline-cell small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .deadline-cell .payment-reminder {
+      margin-top: 0;
+    }
+
+    .payment-reminder {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(31, 94, 183, 0.1);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .payment-reminder--warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .payment-reminder--danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .empty-state {
+      padding: 28px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .student-context-menu {
+      position: fixed;
+      z-index: 50;
+      min-width: 168px;
+      padding: 8px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 18px 48px rgba(16, 33, 29, 0.18);
+    }
+
+    .student-context-menu[hidden] {
+      display: none;
+    }
+
+    .student-context-menu__button {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(209, 47, 69, 0.1);
+      color: var(--danger);
+      font: inherit;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .student-context-menu__button:hover {
+      background: rgba(209, 47, 69, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .actions-cell {
+      width: 120px;
+    }
+
+    .delete-button {
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid rgba(209, 47, 69, 0.22);
+      border-radius: 12px;
+      background: rgba(209, 47, 69, 0.1);
+      color: var(--danger);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .delete-button:hover {
+      background: rgba(209, 47, 69, 0.16);
+      border-color: rgba(209, 47, 69, 0.34);
+      transform: translateY(-1px);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+    }
+
+    .status-badge svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .status-badge--paid {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: rgba(45, 138, 97, 0.18);
+    }
+
+    .status-badge--unpaid {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: rgba(209, 47, 69, 0.18);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 22px;
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 20px, calc(100% - 20px));
+        margin: 20px auto;
+      }
+
+      .hero {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .learning-card {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .hero-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .learning-grid,
+      .topic-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <span class="eyebrow">Ta'lim yo'nalishi</span>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Dark rejimga o'tish">
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+            </svg>
+          </span>
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"></path>
+            </svg>
+          </span>
+          <span class="theme-toggle__label" id="theme-toggle-label">Dark</span>
+        </button>
+      </div>
+      <h1 id="course-title">IT Course</h1>
+      <p id="course-description">Tanlangan fan yoki kurs bo'yicha o'quvchilar ro'yxati, to'lov holati, sana-vaqt ma'lumotlari va tugash muddati shu yerda ko'rsatiladi.</p>
+      <a class="back-link" href="index.html#courses">&larr; Fanlarga qaytish</a>
+    </section>
+
+    <section class="learning-card">
+      <div class="learning-card__head">
+        <span class="eyebrow">Nimalarni o'rganasiz</span>
+        <h2 id="learning-title">Kurs davomida o'tiladigan mavzular</h2>
+        <p id="learning-description">Tanlangan kurs bo'yicha asosiy dars bloklari va amaliy mavzular shu yerda ko'rsatiladi.</p>
+      </div>
+      <div class="learning-grid">
+        <aside class="learning-summary">
+          <span class="learning-summary__label">Natija</span>
+          <p id="learning-outcome">Kurs yakunida egallaydigan ko'nikmalar shu yerda chiqadi.</p>
+        </aside>
+        <div class="topic-list" id="course-topic-list"></div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>O'QUVCHI</th>
+              <th>KURS</th>
+              <th>SUMMA</th>
+              <th>STATUS</th>
+              <th>SANA / VAQT</th>
+              <th>TUGASH MUDDATI</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="course-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="student-context-menu" id="student-context-menu" hidden>
+    <button class="student-context-menu__button" id="student-context-delete" type="button">Delete</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const courseName = params.get("course") || "IT Course";
+    const courseTitle = document.getElementById("course-title");
+    const courseDescription = document.getElementById("course-description");
+    const learningTitle = document.getElementById("learning-title");
+    const learningDescription = document.getElementById("learning-description");
+    const learningOutcome = document.getElementById("learning-outcome");
+    const courseTopicList = document.getElementById("course-topic-list");
+    const courseTableBody = document.getElementById("course-table-body");
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeToggleLabel = document.getElementById("theme-toggle-label");
+    const studentContextMenu = document.getElementById("student-context-menu");
+    const studentContextDeleteButton = document.getElementById("student-context-delete");
+
+    const demoStudents = [
+      { id: "1", student: "Azizbek Karimov", amount: "350 000 so'm", status: "unpaid", date: "2026-04-18", time: "09:00", group: "Asosiy guruh" },
+      { id: "2", student: "Madina Ergasheva", amount: "350 000 so'm", status: "paid", date: "2026-04-19", time: "10:30", group: "Asosiy guruh" },
+      { id: "3", student: "Jahongir To'raev", amount: "350 000 so'm", status: "unpaid", date: "2026-04-20", time: "11:45", group: "Asosiy guruh" },
+      { id: "4", student: "Sevinch Qodirova", amount: "350 000 so'm", status: "paid", date: "2026-04-21", time: "13:10", group: "Asosiy guruh" }
+    ];
+
+    const courseLearningCatalog = {
+      "Matematika va Geometriya": {
+        intro: "Matematika va Geometriya yo'nalishida algebraik fikrlash, formulalar bilan ishlash va geometriya masalalarini bosqichma-bosqich yechish o'rgatiladi.",
+        outcome: "Kurs yakunida siz nazariy qoidalarni misol va testlarda mustaqil qo'llay olasiz, chizmali masalalarni tahlil qilish ko'nikmasiga ega bo'lasiz.",
+        topics: [
+          { title: "Algebra asoslari", description: "Ifoda, tenglama, funksiyalar va sonlar ustida amaliy ishlashni o'rganasiz." },
+          { title: "Geometriya va chizmalar", description: "Tekislik, fazoviy shakllar, burchak va yuzalar bilan bog'liq masalalarni yechasiz." },
+          { title: "Masala yechish strategiyasi", description: "Murakkab savollarni bo'lib tahlil qilish va tezkor usullarni qo'llashni ko'rasiz." },
+          { title: "Test va nazorat ishlari", description: "Imtihon formatidagi savollar bilan ishlab, xatolarni tahlil qilasiz." }
+        ]
+      },
+      "Fizika": {
+        intro: "Fizika fanida nazariy qonunlar, formulalar va real hayotdagi jarayonlarni masala hamda tajriba misollari bilan tushunish o'rgatiladi.",
+        outcome: "Kurs oxirida siz mexanika, elektr va issiqlik bo'limlari bo'yicha formulalarni to'g'ri tanlab, amaliy masalalarda ishlata olasiz.",
+        topics: [
+          { title: "Mexanika", description: "Harakat, tezlik, kuch va impuls bilan bog'liq masalalarni yechasiz." },
+          { title: "Elektr va magnit", description: "Tok, kuchlanish, qarshilik va oddiy zanjirlarni hisoblashni o'rganasiz." },
+          { title: "Issiqlik va optika", description: "Temperatura, issiqlik almashinuvi, yorug'lik va linzalar mavzusini ko'rasiz." },
+          { title: "Amaliy formulalar", description: "Har bir bo'lim bo'yicha formulalarni test va masala formatida mustahkamlaysiz." }
+        ]
+      },
+      "Ona Tili va Adabiyot": {
+        intro: "Ona Tili va Adabiyot darslarida grammatika, matn bilan ishlash, tahlil va insho yozish ko'nikmalari birgalikda rivojlantiriladi.",
+        outcome: "Kurs yakunida siz matnni chuqur tahlil qila olasiz, grammatik xatolarni kamaytirasiz va insho yozishda aniq uslubga ega bo'lasiz.",
+        topics: [
+          { title: "Grammatika va uslub", description: "So'z turkumlari, gap bo'laklari va yozuv me'yorlarini mustahkamlaysiz." },
+          { title: "Matn tahlili", description: "Berilgan matndan asosiy g'oya, uslub va badiiy vositalarni ajratasiz." },
+          { title: "Adabiy asarlar", description: "Muallif, qahramon va voqealarni tahlil qilish orqali adabiy fikrlashni rivojlantirasiz." },
+          { title: "Insho va bayon", description: "Mavzu asosida reja tuzish va mantiqiy yozma ish tayyorlashni o'rganasiz." }
+        ]
+      },
+      "Tarix": {
+        intro: "Tarix yo'nalishida muhim davrlar, sanalar, tarixiy jarayonlar va xarita bilan ishlash usullari tizimli ravishda o'rgatiladi.",
+        outcome: "Kurs yakunida siz tarixiy voqealarni ketma-ket bog'lab tushuntira olasiz, xarita va manbalar asosida tahlil qila olasiz.",
+        topics: [
+          { title: "Asosiy davrlar", description: "Qadimgi, o'rta asr va zamonaviy tarixdagi muhim bosqichlarni ko'rib chiqasiz." },
+          { title: "Sanalar va shaxslar", description: "Asosiy tarixiy sanalar, hukmdorlar va ularning ta'sirini mustahkamlaysiz." },
+          { title: "Xarita bilan ishlash", description: "Hududiy o'zgarishlar va tarixiy yurishlarni xarita orqali tahlil qilasiz." },
+          { title: "Manba va test", description: "Tarixiy matn, jadval va test savollarini tez tahlil qilishni o'rganasiz." }
+        ]
+      },
+      "Ingliz Tili": {
+        intro: "Ingliz Tili kursida grammar, vocabulary, reading, listening va speaking ko'nikmalari bir butun tizim sifatida o'rgatiladi.",
+        outcome: "Kurs oxirida siz kundalik va imtihon formatidagi mavzularda erkinroq gapira olasiz, matnlarni tushunish va yozishda ancha ishonchli bo'lasiz.",
+        topics: [
+          { title: "Grammar bazasi", description: "Zamonlar, modal fe'llar va gap qurilishi bo'yicha mustahkam asos olasiz." },
+          { title: "Vocabulary", description: "Mavzulashtirilgan so'z boyligini mashqlar va dialoglar bilan kengaytirasiz." },
+          { title: "Reading va listening", description: "Matn va audio materialdan asosiy mazmunni tez ajratib olishni o'rganasiz." },
+          { title: "Speaking amaliyoti", description: "Savol-javob, taqdimot va kundalik suhbatlarda faol ishlashni mashq qilasiz." }
+        ]
+      },
+      "Biologiya": {
+        intro: "Biologiya fanida tirik organizmlar tuzilishi, jarayonlar va diagrammalar bilan ishlash nazariya hamda testlar asosida o'rgatiladi.",
+        outcome: "Kurs yakunida siz hujayra, organizm tizimlari va biologik jarayonlarni tushuntirib bera olasiz, diagramma savollarini to'g'ri yechasiz.",
+        topics: [
+          { title: "Hujayra va genetika", description: "Hujayra tuzilishi, bo'linish va irsiyat asoslarini o'rganasiz." },
+          { title: "Inson anatomiyasi", description: "Organlar tizimi, ularning vazifasi va o'zaro bog'liqligini ko'rasiz." },
+          { title: "O'simlik va hayvonot", description: "Tirik organizmlar tasnifi va asosiy biologik farqlarni mustahkamlaysiz." },
+          { title: "Diagramma va test", description: "Rasm, jadval va biologik chizmalar bilan ishlashni mashq qilasiz." }
+        ]
+      },
+      "Kimyo": {
+        intro: "Kimyo yo'nalishida modda tuzilishi, formulalar, reaksiya tenglamalari va hisoblash masalalari ketma-ket o'rgatiladi.",
+        outcome: "Kurs yakunida siz kimyoviy formulalarni o'qiy olasiz, reaksiya yozish va oddiy hisoblashlarni mustaqil bajara olasiz.",
+        topics: [
+          { title: "Atom va modda", description: "Elementlar, atom tuzilishi va davriy jadval bilan ishlashni o'rganasiz." },
+          { title: "Formulalar va valentlik", description: "Birika formulalarini yozish va valentlik asosida tahlil qilishni mustahkamlaysiz." },
+          { title: "Reaksiya tenglamalari", description: "Kimyoviy reaksiyalarni tenglashtirish va mahsulotlarni aniqlashni ko'rasiz." },
+          { title: "Hisoblash masalalari", description: "Massa, hajm va modda miqdori bo'yicha standart masalalarni yechasiz." }
+        ]
+      },
+      "Geografiya": {
+        intro: "Geografiya fanida tabiiy jarayonlar, davlatlar, xarita va statistik ma'lumotlarni tahlil qilishga qaratilgan mavzular beriladi.",
+        outcome: "Kurs oxirida siz xarita bilan tez ishlay olasiz, geografik ko'rsatkichlarni solishtirib, savollarga mantiqiy yondasha olasiz.",
+        topics: [
+          { title: "Tabiiy geografiya", description: "Iqlim, relyef, suv resurslari va tabiat zonalari bilan ishlaysiz." },
+          { title: "Siyosiy xarita", description: "Davlatlar, poytaxtlar va mintaqaviy farqlarni xarita asosida mustahkamlaysiz." },
+          { title: "Aholi va iqtisod", description: "Demografiya, resurs va iqtisodiy ko'rsatkichlarni tahlil qilasiz." },
+          { title: "Atlas va statistika", description: "Jadval, diagramma va atlasdan tez ma'lumot topish ko'nikmasini rivojlantirasiz." }
+        ]
+      },
+      "Informatika": {
+        intro: "Informatika kursida kompyuter savodxonligi, office dasturlari, internet bilan ishlash va mantiqiy algoritmlash asoslari beriladi.",
+        outcome: "Kurs yakunida siz kompyuterda ishonchli ishlay olasiz, hujjat va jadval tayyorlaysiz hamda oddiy algoritmik topshiriqlarni bajara olasiz.",
+        topics: [
+          { title: "Kompyuter asoslari", description: "Qurilma turlari, operatsion tizim va fayl bilan ishlashni o'rganasiz." },
+          { title: "Office amaliyoti", description: "Matn, jadval va taqdimot bilan ishlash bo'yicha amaliy ko'nikma olasiz." },
+          { title: "Internet va xavfsizlik", description: "Brauzer, qidiruv, email va internet xavfsizligi qoidalarini ko'rasiz." },
+          { title: "Algoritmik fikrlash", description: "Oddiy blok-sxema va ketma-ketlik asosida mantiqiy masalalarni yechasiz." }
+        ]
+      },
+      "Rus Tili": {
+        intro: "Rus Tili yo'nalishida grammatika, lug'at boyligi, matn o'qish va yozma mashqlar orqali til ko'nikmasi shakllantiriladi.",
+        outcome: "Kurs yakunida siz asosiy grammatik qoidalarni qo'llay olasiz, matnlarni yaxshiroq tushunib, sodda yozma va og'zaki mashqlarda faol ishlaysiz.",
+        topics: [
+          { title: "Grammatika", description: "So'z turkumlari, zamon va gap tuzilishini amaliy mashqlar bilan mustahkamlaysiz." },
+          { title: "Lug'at boyligi", description: "Kundalik mavzular bo'yicha yangi so'zlar va iboralarni o'rganasiz." },
+          { title: "Reading", description: "Qisqa matnlar bilan ishlash, mazmunni tushunish va savollarga javob berishni mashq qilasiz." },
+          { title: "Yozma va og'zaki mashq", description: "Oddiy gaplar tuzish, dialog va yozma topshiriqlar orqali tilni faol ishlatasiz." }
+        ]
+      },
+      "Frontend Development": {
+        intro: "Frontend Development kursida zamonaviy sayt va web interfeyslarni noldan yig'ish, sahifani responsive qilish va foydalanuvchi bilan ishlaydigan komponentlar yaratish o'rgatiladi.",
+        outcome: "Kurs yakunida siz landing page, admin panel yoki portfolio kabi front-end loyihalarni mustaqil yig'a olasiz.",
+        topics: [
+          { title: "HTML va semantik layout", description: "Sahifa skeleti, toza markup va SEO uchun to'g'ri strukturani qurishni o'rganasiz." },
+          { title: "CSS va responsive dizayn", description: "Flexbox, Grid, adaptiv bloklar va mobil ko'rinishlarni yaratish bilan ishlaysiz." },
+          { title: "JavaScript va DOM", description: "Interaktiv tugmalar, formalar, modal oynalar va dinamik elementlarni boshqarasiz." },
+          { title: "API bilan ishlash", description: "Frontendni backend bilan ulash, fetch so'rovlari va ma'lumot chiqarishni amalda qilasiz." },
+          { title: "Git va deploy", description: "GitHub bilan ishlash, versiya nazorati va tayyor loyihani internetga joylashni ko'rasiz." }
+        ]
+      },
+      "Backend Node.js": {
+        intro: "Backend Node.js kursida server logikasi, API yozish, ma'lumotlar bazasi va autentifikatsiya jarayonlarini amalda qurishni o'rganasiz.",
+        outcome: "Kurs oxirida siz CRUD, login, role va database bilan ishlaydigan backend servis tayyorlay olasiz.",
+        topics: [
+          { title: "Node.js asoslari", description: "Runtime muhiti, package manager va modul tizimi bilan ishlashni tushunasiz." },
+          { title: "Express va REST API", description: "Router, controller va endpointlar orqali API yozishni amalda bajarasiz." },
+          { title: "Database ulash", description: "MongoDB yoki SQL bazaga ulanib, ma'lumot saqlash va o'qishni qilasiz." },
+          { title: "Auth va xavfsizlik", description: "JWT, parol hash qilish va middleware orqali himoyalangan marshrutlar yaratasiz." },
+          { title: "Serverni deploy qilish", description: "Loglar, environment sozlamalari va serverni ishga tushirish jarayonini ko'rasiz." }
+        ]
+      },
+      "Python Dasturlash": {
+        intro: "Python Dasturlash kursida til sintaksisi, algoritmik fikrlash va foydali avtomatlashtirish skriptlarini yozish bosqichma-bosqich o'rgatiladi.",
+        outcome: "Kurs yakunida siz Python'da konsol dasturlar, oddiy botlar va amaliy mini-loyihalarni yozib bera olasiz.",
+        topics: [
+          { title: "Sintaksis va data type", description: "O'zgaruvchilar, string, list, dict va boshqa asosiy tuzilmalarni ishlatasiz." },
+          { title: "Shartlar va sikllar", description: "If, for, while va algoritmik masalalarni yechish asoslarini o'rganasiz." },
+          { title: "Funksiya va modul", description: "Kodlarni qayta ishlatish, fayllarga bo'lish va strukturalashni amalda ko'rasiz." },
+          { title: "OOP va class", description: "Class, object, method va meros olish kabi asosiy tushunchalarni o'rganasiz." },
+          { title: "Amaliy avtomatlashtirish", description: "Fayl bilan ishlash, oddiy parser yoki yordamchi skript yozishni bajarib ko'rasiz." }
+        ]
+      },
+      "Java Programming": {
+        intro: "Java Programming kursida mustahkam OOP asoslari, typed dasturlash va korporativ loyihalarga kirish uchun zarur poydevor beriladi.",
+        outcome: "Kurs oxirida siz Java'da tuzilgan mini loyihalar, konsol ilovalar va bazaga ulanadigan dasturlar yozasiz.",
+        topics: [
+          { title: "Java sintaksisi", description: "Class, main method, data type va operatorlar bilan ishlashni o'rganasiz." },
+          { title: "OOP tushunchalari", description: "Encapsulation, inheritance, polymorphism va abstraction amalda ko'rsatiladi." },
+          { title: "Collection va exception", description: "List, Set, Map hamda xatolarni ushlash va boshqarish ko'nikmasini olasiz." },
+          { title: "Fayl va database", description: "Fayl o'qish-yozish va JDBC orqali bazaga ulanishni ko'rasiz." },
+          { title: "Spring'ga kirish", description: "Spring Boot'ga tayyorlov sifatida backend arxitekturasi va service qatlamini tushunasiz." }
+        ]
+      },
+      "Mobile App Development": {
+        intro: "Mobile App Development kursida mobil interfeys yaratish, sahifalar orasida yurish va API bilan ishlaydigan ilova yig'ish ko'rsatiladi.",
+        outcome: "Kurs yakunida siz oddiy mobil ilovani UI, navigation va backend ulanishi bilan ishlab chiqasiz.",
+        topics: [
+          { title: "Mobil UI asoslari", description: "Mobil ekranlar, komponentlar va toza layout qurishni o'rganasiz." },
+          { title: "Navigation va state", description: "Sahifalar orasida o'tish va ilova ichidagi holatni boshqarishni ko'rasiz." },
+          { title: "Forma va validatsiya", description: "Login, ro'yxatdan o'tish va foydalanuvchi ma'lumotlarini tekshirishni qilasiz." },
+          { title: "API bilan integratsiya", description: "Mobil ilovani serverga ulab, ma'lumot yuborish va olishni amalda bajarasiz." },
+          { title: "Build va release", description: "Ilovani test qilish, optimallashtirish va publish jarayoniga tayyorlashni ko'rasiz." }
+        ]
+      },
+      "UI/UX Design": {
+        intro: "UI/UX Design kursida foydalanuvchi muammosini tushunish, interfeys chizish va prototip tayyorlash bosqichlari o'rgatiladi.",
+        outcome: "Kurs oxirida siz Figma'da wireframe, design system va kliklanadigan prototip tayyorlay olasiz.",
+        topics: [
+          { title: "UX research", description: "Maqsadli foydalanuvchi, muammo va user flow'ni tahlil qilishni o'rganasiz." },
+          { title: "Wireframe va structure", description: "Sahifa skeleti, bloklash va foydalanuvchi yo'lini rejalashtirasiz." },
+          { title: "UI elementlar", description: "Button, card, form, grid va vizual ierarxiyani to'g'ri qurishni ko'rasiz." },
+          { title: "Figma va design system", description: "Komponent, style va reusable elementlar bilan ishlashni bajarib ko'rasiz." },
+          { title: "Prototype va test", description: "Kliklanadigan prototip yaratish va uni foydalanuvchi bilan sinab ko'rishni o'rganasiz." }
+        ]
+      },
+      "Cybersecurity": {
+        intro: "Cybersecurity kursida tizim, tarmoq va web ilovalarni himoyalashga oid nazariya bilan birga amaliy xavfsizlik vositalari va real ssenariylar o'rgatiladi.",
+        outcome: "Kurs yakunida siz bazaviy audit o'tkazish, oddiy zaifliklarni topish, loglarni tahlil qilish va xavfsizlik bo'yicha tavsiya yozishni bilasiz.",
+        topics: [
+          { title: "Kiberxavfsizlik asoslari", description: "CIA triad, tahdid turlari, attack surface va himoya qatlamlari bilan tanishasiz." },
+          { title: "Linux va terminal", description: "Buyruqlar satri, fayl tizimi, permission va xavfsizlik bilan ishlashni o'rganasiz." },
+          { title: "Tarmoq xavfsizligi", description: "TCP/IP, portlar, DNS, paketlar va asosiy monitoring tushunchalarini ko'rasiz." },
+          { title: "Web zaifliklari", description: "SQL Injection, XSS, CSRF, auth xatolari va input validation muammolarini tushunasiz." },
+          { title: "Xavfsizlik vositalari", description: "Nmap, Wireshark, Burp Suite va Kali Linux asosida tekshiruv amaliyotlari qilasiz." },
+          { title: "Incident response", description: "Log ko'rish, hodisani aniqlash, report yozish va ethical hacking qoidalarini o'rganasiz." }
+        ]
+      },
+      "Data Analytics": {
+        intro: "Data Analytics kursida ma'lumot yig'ish, tozalash, tahlil qilish va dashboard orqali tushunarli ko'rsatishni o'rganasiz.",
+        outcome: "Kurs oxirida siz dataset bilan ishlash, KPI chiqarish va qaror qabul qilishga yordam beradigan hisobot tuza olasiz.",
+        topics: [
+          { title: "Data cleaning", description: "Xom ma'lumotni tozalash, formatlash va analizga tayyorlashni o'rganasiz." },
+          { title: "Excel va Google Sheets", description: "Formula, filter, pivot table va tezkor hisobotlar bilan ishlaysiz." },
+          { title: "SQL asoslari", description: "Select, join, group by va analytics uchun kerakli so'rovlarni yozasiz." },
+          { title: "Dashboard va vizualizatsiya", description: "Power BI yoki shunga o'xshash vositada grafik va dashboard tayyorlaysiz." },
+          { title: "Insight chiqarish", description: "Ma'lumotdan foydali xulosa topish va uni biznes tilida tushuntirishni o'rganasiz." }
+        ]
+      },
+      "AI va Machine Learning": {
+        intro: "AI va Machine Learning kursida ma'lumot tayyorlash, model o'qitish va natijani baholashga oid amaliy bosqichlar ko'rsatiladi.",
+        outcome: "Kurs yakunida siz oddiy ML modeli qurish, test qilish va natijani talqin qilish darajasiga kelasiz.",
+        topics: [
+          { title: "Python for AI", description: "NumPy, pandas va model bilan ishlash uchun kerakli Python asoslarini mustahkamlaysiz." },
+          { title: "Data preparation", description: "Feature tanlash, ma'lumotni tozalash va train-test bo'lib tayyorlashni o'rganasiz." },
+          { title: "Supervised learning", description: "Regression va classification masalalariga model qo'llashni ko'rasiz." },
+          { title: "Model evaluation", description: "Accuracy, precision, recall va boshqa metrikalar bilan natijani baholaysiz." },
+          { title: "AI tools va amaliyot", description: "Amaliy use case, model deploy haqida kirish va AI bilan ishlash madaniyatini tushunasiz." }
+        ]
+      },
+      "QA va Software Testing": {
+        intro: "QA va Software Testing kursida dastur sifatini tekshirish, xatoni to'g'ri yozish va test jarayonini tizimli olib borish o'rgatiladi.",
+        outcome: "Kurs oxirida siz manual test case yozish, bug report tayyorlash va API testlarini bajarish darajasiga chiqasiz.",
+        topics: [
+          { title: "Testing asoslari", description: "QA roli, test turlari va dastur sifatini tekshirish jarayonini tushunasiz." },
+          { title: "Test case va checklist", description: "Scenario yozish, kutilgan natija berish va test hujjatlarini yuritishni o'rganasiz." },
+          { title: "Bug reporting", description: "Aniq, tushunarli va qayta tekshirishga qulay bug report yozishni bajarib ko'rasiz." },
+          { title: "API testing", description: "Postman orqali endpoint tekshirish, status kod va response bilan ishlaysiz." },
+          { title: "Automation'ga kirish", description: "Test avtomatlashtirish mantig'i va boshlang'ich vositalar bilan tanishasiz." }
+        ]
+      },
+      "Full-Stack Web Development": {
+        intro: "Full-Stack Web Development kursida front-end va back-end qismlarni birlashtirib, to'liq ishlaydigan web mahsulot yaratish o'rgatiladi.",
+        outcome: "Kurs yakunida siz UI, API, database va deploy bilan ishlaydigan to'liq web loyiha yig'a olasiz.",
+        topics: [
+          { title: "Frontend asoslari", description: "HTML, CSS, JavaScript va komponentli interfeyslar bilan ishlashni o'rganasiz." },
+          { title: "Backend va API", description: "Server logikasi, endpoint, request-response va biznes qoidalarni yozasiz." },
+          { title: "Database bilan ishlash", description: "Ma'lumot saqlash, relation, query va CRUD jarayonlarini amalda bajarasiz." },
+          { title: "Auth va xavfsizlik", description: "Login, role, token va foydalanuvchi ma'lumotlarini himoyalashni ko'rasiz." },
+          { title: "Deploy va production", description: "Tayyor loyihani serverga chiqarish va production muhitga tayyorlashni o'rganasiz." }
+        ]
+      },
+      "Cloud Computing": {
+        intro: "Cloud Computing kursida bulutli infratuzilma, serverlar, storage va servislarni zamonaviy platformalarda boshqarish o'rgatiladi.",
+        outcome: "Kurs oxirida siz oddiy cloud arxitektura chizish, servis joylash va resurslarni boshqarish ko'nikmasiga ega bo'lasiz.",
+        topics: [
+          { title: "Cloud asoslari", description: "IaaS, PaaS, SaaS va public-private-hybrid cloud farqlarini tushunasiz." },
+          { title: "Compute va storage", description: "Virtual server, object storage va fayl saqlash xizmatlari bilan ishlaysiz." },
+          { title: "Cloud network", description: "VPC, subnet, load balancer va xavfsizlik qoidalarini ko'rasiz." },
+          { title: "Container va serverless", description: "Docker asoslari, container deploy va serverless servislar bilan tanishasiz." },
+          { title: "Monitoring va cost control", description: "Log, alert, usage va xarajatni nazorat qilishni o'rganasiz." }
+        ]
+      },
+      "DevOps & Platform Engineering": {
+        intro: "DevOps & Platform Engineering kursida dasturchi va infratuzilma orasidagi jarayonlarni avtomatlashtirish, CI/CD va platforma boshqaruvi o'rgatiladi.",
+        outcome: "Kurs yakunida siz build, test, deploy va monitoring zanjirini avtomatlashtira oladigan junior darajaga kelasiz.",
+        topics: [
+          { title: "Linux va Git workflow", description: "Terminal, script, branch va jamoaviy repo jarayonlari bilan ishlaysiz." },
+          { title: "CI/CD pipeline", description: "Build, test va deploy bosqichlarini avtomatlashtirishni amalda ko'rasiz." },
+          { title: "Docker va container", description: "Ilovani container ichiga joylash va environment'ni standart qilishni o'rganasiz." },
+          { title: "Kubernetes va orchestration", description: "Service, pod, scaling va basic orchestration tushunchalarini ko'rasiz." },
+          { title: "Observability", description: "Monitoring, logging, metric va incident vaqtida tizimni kuzatishni o'rganasiz." }
+        ]
+      },
+      "Backend & API Engineering": {
+        intro: "Backend & API Engineering kursida servis arxitekturasi, API dizayn va barqaror server logikasini yozish o'rgatiladi.",
+        outcome: "Kurs oxirida siz frontend yoki mobil ilova ulanadigan xavfsiz va tartibli backend servis tayyorlay olasiz.",
+        topics: [
+          { title: "API dizayn", description: "REST tamoyillari, endpoint nomlash va response strukturasini to'g'ri qurishni o'rganasiz." },
+          { title: "Business logic", description: "Controller, service va validation qatlamlarini ajratib yozishni bajarasiz." },
+          { title: "Database va cache", description: "SQL yoki NoSQL baza, indexing va cache bilan ishlashni ko'rasiz." },
+          { title: "Auth va permission", description: "JWT, session, role va access control mexanizmlarini qurishni o'rganasiz." },
+          { title: "Testing va dokumentatsiya", description: "Postman, unit test va API documentation bilan servisni tayyorlaysiz." }
+        ]
+      },
+      "UI/UX Product Design": {
+        intro: "UI/UX Product Design kursida foydalanuvchi muammosini mahsulot fikrlashi bilan yechish, interfeys loyihalash va design handoff o'rgatiladi.",
+        outcome: "Kurs yakunida siz research'dan tortib prototip va developer handoff'gacha bo'lgan dizayn jarayonini boshqara olasiz.",
+        topics: [
+          { title: "Product thinking", description: "Muammo, foydalanuvchi ehtiyoji va mahsulot maqsadini birga ko'rishni o'rganasiz." },
+          { title: "UX research va flow", description: "User persona, user journey va ekranlar orasidagi oqimni tahlil qilasiz." },
+          { title: "Wireframe va UI system", description: "Sahifa skeleti, komponent va design system yaratishni ko'rasiz." },
+          { title: "Prototype va testing", description: "Kliklanadigan prototip tayyorlab, foydalanuvchi testlari bilan tekshirasiz." },
+          { title: "Design handoff", description: "Developer uchun layout, spacing, states va asset'larni to'g'ri topshirishni o'rganasiz." }
+        ]
+      },
+      "Data Science & Big Data": {
+        intro: "Data Science & Big Data kursida katta hajmdagi ma'lumotni tozalash, tahlil qilish va undan qiymat chiqarishning amaliy yo'llari o'rgatiladi.",
+        outcome: "Kurs oxirida siz dataset bilan ishlash, insight topish va oddiy predictive model qurish darajasiga kelasiz.",
+        topics: [
+          { title: "Python va data tools", description: "Pandas, NumPy va ma'lumot bilan ishlash uchun kerakli kutubxonalarni ishlatasiz." },
+          { title: "SQL va data query", description: "Jadvallarni ulash, filter, aggregation va analytics query yozishni o'rganasiz." },
+          { title: "Data cleaning", description: "Noisy data, missing value va format xatolarini tozalashni bajarasiz." },
+          { title: "Vizualizatsiya va insight", description: "Grafik, dashboard va biznes uchun foydali xulosalar tayyorlaysiz." },
+          { title: "Big data kirish", description: "Katta hajmli pipeline, batch-stream tushunchalari va skalalashni ko'rasiz." }
+        ]
+      },
+      "AI Engineering / Machine Learning": {
+        intro: "AI Engineering / Machine Learning kursida model qurishdan tashqari, uni mahsulotga ulash, API bilan ishlatish va real use case'larda qo'llash o'rgatiladi.",
+        outcome: "Kurs yakunida siz ML model, AI servis yoki LLM asosidagi yordamchi funksiyani amaliy loyihaga qo'sha olasiz.",
+        topics: [
+          { title: "ML foundations", description: "Supervised learning, dataset tayyorlash va model tanlash asoslarini o'rganasiz." },
+          { title: "Feature engineering", description: "Ma'lumotni model uchun foydali ko'rinishga keltirishni amalda bajarasiz." },
+          { title: "Model train va evaluate", description: "Train-test, metric va natijani taqqoslash orqali modelni baholaysiz." },
+          { title: "LLM va AI API", description: "Tayyor AI servislar, prompt workflow va API integratsiya bilan ishlaysiz." },
+          { title: "Deploy va monitoring", description: "Modelni servis sifatida ishga tushirish va natijani kuzatishni o'rganasiz." }
+        ]
+      },
+      "QA Automation & Testing": {
+        intro: "QA Automation & Testing kursida dastur sifatini tekshirishni manual va avtomatlashtirilgan yondashuv bilan birga olib borish o'rgatiladi.",
+        outcome: "Kurs oxirida siz test case, API test va basic UI automation yozib, release sifati ustida ishlay olasiz.",
+        topics: [
+          { title: "Manual testing bazasi", description: "Scenario, checklist va acceptance criteria asosida test yuritishni o'rganasiz." },
+          { title: "API testing", description: "Postman yoki shunga o'xshash vosita bilan endpointlarni tekshirasiz." },
+          { title: "UI automation", description: "Avtomatlashtirilgan brauzer testlari va basic framework bilan ishlaysiz." },
+          { title: "Bug report va regression", description: "Xatoni hujjatlashtirish va qayta test jarayonini to'g'ri olib borasiz." },
+          { title: "CI bilan integratsiya", description: "Testlarni pipeline'ga ulash va release oldidan sifat nazoratini ko'rasiz." }
+        ]
+      }
+    };
+
+    const statusLabel = {
+      paid: "To'langan",
+      unpaid: "To'lanmagan",
+      dueToday: "Bugun qayta to'lov kerak",
+      overdue: "Oylik to'lov muddati o'tgan"
+    };
+    const paymentTermMonths = 1;
+
+    const storageKey = `it-course-students:${encodeURIComponent(courseName)}`;
+    const deletedDemoStorageKey = `${storageKey}:deleted-demo`;
+    const themeStorageKey = "it-course-theme";
+    let activeContextStudent = null;
+
+    function addMonthsPreservingDay(date, months = 1) {
+      const targetMonth = date.getMonth() + months;
+      const result = new Date(
+        date.getFullYear(),
+        targetMonth,
+        1,
+        date.getHours(),
+        date.getMinutes(),
+        0,
+        0
+      );
+      const lastDayOfTargetMonth = new Date(result.getFullYear(), result.getMonth() + 1, 0).getDate();
+      result.setDate(Math.min(date.getDate(), lastDayOfTargetMonth));
+      return result;
+    }
+
+    function getCourseLearningContent(name) {
+      return courseLearningCatalog[name] || {
+        intro: `${name} bo'yicha nazariya, amaliy mashg'ulot va mini loyiha asosida asosiy ko'nikmalar o'rgatiladi.`,
+        outcome: "Kurs yakunida siz bazaviy amaliy ko'nikmaga ega bo'lib, mustaqil mini loyiha tayyorlay olasiz.",
+        topics: [
+          { title: "Asosiy tushunchalar", description: "Kursning bazaviy nazariyasi va kerakli terminlarni o'rganasiz." },
+          { title: "Amaliy mashg'ulot", description: "Har bir mavzuni kichik topshiriq yoki mashq orqali mustahkamlaysiz." },
+          { title: "Mini loyiha", description: "Olingan bilimlarni bitta yakuniy amaliy ishda qo'llab ko'rasiz." }
+        ]
+      };
+    }
+
+    function renderCourseLearningContent(courseInfo) {
+      if (learningTitle) {
+        learningTitle.textContent = `${courseName} bo'yicha nimalar o'tiladi?`;
+      }
+
+      if (learningDescription) {
+        learningDescription.textContent = courseInfo.intro;
+      }
+
+      if (learningOutcome) {
+        learningOutcome.textContent = courseInfo.outcome;
+      }
+
+      if (!courseTopicList) {
+        return;
+      }
+
+      courseTopicList.innerHTML = "";
+
+      courseInfo.topics.forEach((topic, index) => {
+        const item = document.createElement("article");
+        item.className = "topic-item";
+
+        const badge = document.createElement("span");
+        badge.className = "topic-item__index";
+        badge.textContent = String(index + 1).padStart(2, "0");
+        item.appendChild(badge);
+
+        const content = document.createElement("div");
+        content.className = "topic-item__content";
+
+        const title = document.createElement("strong");
+        title.textContent = topic.title;
+        content.appendChild(title);
+
+        const description = document.createElement("p");
+        description.textContent = topic.description;
+        content.appendChild(description);
+
+        item.appendChild(content);
+        courseTopicList.appendChild(item);
+      });
+    }
+
+    function loadThemePreference() {
+      try {
+        const savedTheme = window.localStorage.getItem(themeStorageKey);
+        if (savedTheme === "dark" || savedTheme === "light") {
+          return savedTheme;
+        }
+      } catch (error) {
+        // Fallback to system preference below when localStorage is unavailable.
+      }
+
+      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+
+      return "light";
+    }
+
+    function setTheme(theme) {
+      const nextTheme = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", nextTheme);
+
+      if (nextTheme === "dark") {
+        themeToggleLabel.textContent = "Light";
+        themeToggle.setAttribute("aria-label", "Light rejimga o'tish");
+      } else {
+        themeToggleLabel.textContent = "Dark";
+        themeToggle.setAttribute("aria-label", "Dark rejimga o'tish");
+      }
+
+      try {
+        window.localStorage.setItem(themeStorageKey, nextTheme);
+      } catch (error) {
+        return;
+      }
+    }
+
+    function formatDateLabel(value) {
+      if (!value) {
+        return "Sana kiritilmagan";
+      }
+
+      const [year, month, day] = String(value).split("-");
+      if (!year || !month || !day) {
+        return String(value);
+      }
+
+      return `${day}.${month}.${year}`;
+    }
+
+    function parseDateValue(value) {
+      if (!value) {
+        return null;
+      }
+
+      const [year, month, day] = String(value).split("-").map((part) => Number.parseInt(part, 10));
+      if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+        return null;
+      }
+
+      const parsed = new Date(year, month - 1, day);
+      parsed.setHours(0, 0, 0, 0);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function formatStorageDate(date) {
+      const year = String(date.getFullYear());
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatStorageTime(date) {
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+
+    function parseDateTimeValue(dateValue, timeValue) {
+      const parsedDate = parseDateValue(dateValue);
+      if (!parsedDate) {
+        return null;
+      }
+
+      const [hours, minutes] = String(timeValue || "00:00")
+        .split(":")
+        .map((part) => Number.parseInt(part, 10));
+
+      parsedDate.setHours(
+        Number.isInteger(hours) ? hours : 0,
+        Number.isInteger(minutes) ? minutes : 0,
+        0,
+        0
+      );
+
+      return parsedDate;
+    }
+
+    function getNextPaymentDueInfo(dateValue, timeValue) {
+      const parsed = parseDateTimeValue(dateValue, timeValue);
+      if (!parsed) {
+        return null;
+      }
+
+      const nextCycleDate = addMonthsPreservingDay(parsed, paymentTermMonths);
+
+      const dueDate = formatStorageDate(nextCycleDate);
+      const dueTime = formatStorageTime(nextCycleDate);
+      const now = new Date();
+      const today = formatStorageDate(now);
+
+      let phase = "upcoming";
+      if (today > dueDate) {
+        phase = "overdue";
+      } else if (today === dueDate && now.getTime() >= nextCycleDate.getTime()) {
+        phase = "due";
+      }
+
+      return {
+        date: dueDate,
+        time: dueTime,
+        dateTime: nextCycleDate,
+        phase
+      };
+    }
+
+    function getDaysUntilDate(value) {
+      const targetDate = parseDateValue(value);
+      if (!targetDate) {
+        return null;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return Math.round((targetDate.getTime() - today.getTime()) / 86400000);
+    }
+
+    function sanitizeStudentRecord(item) {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const sanitized = { ...item };
+      delete sanitized.note;
+      return sanitized;
+    }
+
+    function loadSavedStudents() {
+      try {
+        const raw = window.localStorage.getItem(storageKey);
+        if (!raw) {
+          return [];
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+
+        const sanitized = parsed
+          .map((item) => sanitizeStudentRecord(item))
+          .filter(Boolean);
+
+        if (JSON.stringify(parsed) !== JSON.stringify(sanitized)) {
+          saveStudents(sanitized);
+        }
+
+        return sanitized;
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveStudents(items) {
+      const sanitizedItems = Array.isArray(items)
+        ? items.map((item) => sanitizeStudentRecord(item)).filter(Boolean)
+        : [];
+      window.localStorage.setItem(storageKey, JSON.stringify(sanitizedItems));
+    }
+
+    function loadDeletedDemoIds() {
+      try {
+        const raw = window.localStorage.getItem(deletedDemoStorageKey);
+        if (!raw) {
+          return [];
+        }
+
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.map((item) => String(item)) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveDeletedDemoIds(items) {
+      window.localStorage.setItem(deletedDemoStorageKey, JSON.stringify(items));
+    }
+
+    function getVisibleStudents() {
+      const deletedDemoIds = new Set(loadDeletedDemoIds());
+      const storedStudents = loadSavedStudents().map((item) => ({
+        ...item,
+        source: "stored"
+      }));
+      const visibleDemoStudents = demoStudents
+        .filter((item) => !deletedDemoIds.has(String(item.id)))
+        .map((item) => ({
+          ...item,
+          source: "demo"
+        }));
+
+      return [...storedStudents, ...visibleDemoStudents];
+    }
+
+    function createCell(primary, secondary, className) {
+      const td = document.createElement("td");
+      if (className) {
+        td.className = className;
+      }
+
+      const strong = document.createElement("strong");
+      strong.textContent = primary;
+      td.appendChild(strong);
+
+      if (secondary) {
+        const small = document.createElement("small");
+        small.textContent = secondary;
+        td.appendChild(small);
+      }
+
+      return td;
+    }
+
+    function normalizeStatus(status) {
+      return status === "paid" ? "paid" : "unpaid";
+    }
+
+    function getNextPaymentReminder(item) {
+      if (normalizeStatus(item.status) !== "paid") {
+        return null;
+      }
+
+      const dueInfo = getNextPaymentDueInfo(item.date, item.time);
+      if (!dueInfo) {
+        return {
+          dateLabel: "Sana aniqlanmadi",
+          text: "Keyingi to'lov topilmadi",
+          tone: "warning"
+        };
+      }
+
+      if (dueInfo.phase === "upcoming") {
+        return {
+          dateLabel: formatDateLabel(dueInfo.date),
+          text: "Keyingi to'lov sanasi",
+          tone: "neutral",
+          exactDate: dueInfo.date,
+          exactTime: dueInfo.time
+        };
+      }
+
+      if (dueInfo.phase === "due") {
+        return {
+          dateLabel: formatDateLabel(dueInfo.date),
+          text: "Bugun to'lov kerak",
+          tone: "warning",
+          exactDate: dueInfo.date,
+          exactTime: dueInfo.time
+        };
+      }
+
+      const overdueDays = Math.abs(getDaysUntilDate(dueInfo.date) || 0);
+      return {
+        dateLabel: formatDateLabel(dueInfo.date),
+        text: `To'lov muddati ${overdueDays} kun o'tdi`,
+        tone: "danger",
+        exactDate: dueInfo.date,
+        exactTime: dueInfo.time
+      };
+    }
+
+    function getDisplayStatus(item) {
+      const normalizedStatus = normalizeStatus(item.status);
+      if (normalizedStatus !== "paid") {
+        return normalizedStatus;
+      }
+
+      const dueInfo = getNextPaymentDueInfo(item.date, item.time);
+      if (dueInfo && dueInfo.phase !== "upcoming") {
+        return "unpaid";
+      }
+
+      return normalizedStatus;
+    }
+
+    function createStatusBadge(item) {
+      const normalizedStatus = normalizeStatus(item.status);
+      const displayStatus = getDisplayStatus(item);
+      const badge = document.createElement("span");
+      badge.className = `status-badge status-badge--${displayStatus}`;
+
+      let badgeLabel = statusLabel[displayStatus];
+      if (normalizedStatus === "paid" && displayStatus === "unpaid") {
+        const dueInfo = getNextPaymentDueInfo(item.date, item.time);
+        badgeLabel = dueInfo?.phase === "due" ? statusLabel.dueToday : statusLabel.overdue;
+      }
+
+      badge.title = badgeLabel;
+      badge.setAttribute("aria-label", badgeLabel);
+
+      if (displayStatus === "paid") {
+        badge.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12.5 10 17.5 19 6.5"></path>
+          </svg>
+        `;
+      } else {
+        badge.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6 18 18"></path>
+            <path d="M18 6 6 18"></path>
+          </svg>
+        `;
+      }
+
+      return badge;
+    }
+
+    function createDateTimeCell(date, time) {
+      const td = document.createElement("td");
+      td.className = "time-cell";
+
+      const strong = document.createElement("strong");
+      strong.textContent = formatDateLabel(date);
+      td.appendChild(strong);
+
+      const small = document.createElement("small");
+      small.textContent = time || "Vaqt kiritilmagan";
+      td.appendChild(small);
+
+      return td;
+    }
+
+    function createDeadlineCell(reminder) {
+      const td = document.createElement("td");
+      td.className = "deadline-cell";
+
+      if (reminder) {
+        const reminderNode = document.createElement("span");
+        const toneClass = reminder.tone && reminder.tone !== "neutral" ? ` payment-reminder--${reminder.tone}` : "";
+        reminderNode.className = `payment-reminder${toneClass}`;
+        reminderNode.textContent = reminder.dateLabel || reminder.text;
+        if (reminder.exactDate) {
+          const reminderDateTime = `${formatDateLabel(reminder.exactDate)} ${reminder.exactTime || ""}`.trim();
+          reminderNode.title = reminderDateTime;
+          reminderNode.setAttribute("aria-label", `${reminder.dateLabel || reminder.text}. ${reminderDateTime}`);
+        }
+        td.appendChild(reminderNode);
+
+        const small = document.createElement("small");
+        small.textContent = reminder.text;
+        td.appendChild(small);
+      } else {
+        const strong = document.createElement("strong");
+        strong.textContent = "-";
+        td.appendChild(strong);
+
+        const small = document.createElement("small");
+        small.textContent = "To'lov qilinmaguncha hisoblanmaydi";
+        td.appendChild(small);
+      }
+
+      return td;
+    }
+
+    function closeStudentContextMenu() {
+      activeContextStudent = null;
+      studentContextMenu.hidden = true;
+    }
+
+    function openStudentContextMenu(student, clientX, clientY) {
+      activeContextStudent = student;
+      studentContextMenu.hidden = false;
+
+      requestAnimationFrame(() => {
+        const menuRect = studentContextMenu.getBoundingClientRect();
+        const left = Math.min(clientX, window.innerWidth - menuRect.width - 12);
+        const top = Math.min(clientY, window.innerHeight - menuRect.height - 12);
+
+        studentContextMenu.style.left = `${Math.max(12, left)}px`;
+        studentContextMenu.style.top = `${Math.max(12, top)}px`;
+      });
+    }
+
+    function deleteStudent(student) {
+      if (!student) {
+        return;
+      }
+
+      const studentName = student.name || student.student || "O'quvchi";
+      const confirmed = window.confirm(`${studentName}ni haqiqatan ham o'chirasizmi?`);
+      if (!confirmed) {
+        closeStudentContextMenu();
+        return;
+      }
+
+      if (student.source === "stored") {
+        const storedStudents = loadSavedStudents().filter((item) => String(item.id) !== String(student.id));
+        saveStudents(storedStudents);
+      } else {
+        const deletedDemoIds = new Set(loadDeletedDemoIds());
+        deletedDemoIds.add(String(student.id));
+        saveDeletedDemoIds(Array.from(deletedDemoIds));
+      }
+
+      closeStudentContextMenu();
+      renderStudents();
+    }
+
+    function renderStudents() {
+      const allStudents = getVisibleStudents();
+      courseTableBody.innerHTML = "";
+      closeStudentContextMenu();
+
+      if (!allStudents.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 8;
+        cell.className = "empty-state";
+        cell.textContent = "Hali bu kursga o'quvchi qo'shilmagan.";
+        row.appendChild(cell);
+        courseTableBody.appendChild(row);
+        return;
+      }
+
+      allStudents.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.dataset.studentId = String(item.id);
+        row.dataset.studentSource = item.source;
+        row.dataset.studentName = item.student;
+
+        const idCell = document.createElement("td");
+        idCell.textContent = String(index + 1);
+        row.appendChild(idCell);
+
+        row.appendChild(createCell(item.student, "", "student-cell"));
+        row.appendChild(createCell(courseName, item.group || "Qo'shilgan o'quvchi", "course-cell"));
+
+        const amountCell = document.createElement("td");
+        amountCell.className = "amount-cell";
+        amountCell.textContent = item.amount;
+        row.appendChild(amountCell);
+
+        const reminder = getNextPaymentReminder(item);
+
+        const statusCell = document.createElement("td");
+        statusCell.appendChild(createStatusBadge(item));
+        row.appendChild(statusCell);
+
+        row.appendChild(createDateTimeCell(item.date, item.time));
+        row.appendChild(createDeadlineCell(reminder));
+
+        const actionsCell = document.createElement("td");
+        actionsCell.className = "actions-cell";
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "Delete";
+        deleteButton.setAttribute("aria-label", `${item.student}ni o'chirish`);
+        deleteButton.addEventListener("click", () => {
+          deleteStudent({
+            id: item.id,
+            source: item.source,
+            name: item.student
+          });
+        });
+        actionsCell.appendChild(deleteButton);
+        row.appendChild(actionsCell);
+
+        courseTableBody.appendChild(row);
+      });
+    }
+
+    const courseLearningContent = getCourseLearningContent(courseName);
+
+    courseTitle.textContent = courseName;
+    courseDescription.textContent = `${courseLearningContent.intro} Pastda o'quvchilar ro'yxati, to'lov holati va tugash muddati ham ko'rsatiladi.`;
+    renderCourseLearningContent(courseLearningContent);
+    document.title = `${courseName} | IT Course`;
+    setTheme(loadThemePreference());
+
+    themeToggle.addEventListener("click", () => {
+      const activeTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      setTheme(activeTheme === "dark" ? "light" : "dark");
+    });
+
+    courseTableBody.addEventListener("contextmenu", (event) => {
+      const studentCell = event.target.closest(".student-cell");
+      const row = event.target.closest("tr");
+
+      if (!studentCell || !row?.dataset.studentId) {
+        return;
+      }
+
+      event.preventDefault();
+      openStudentContextMenu(
+        {
+          id: row.dataset.studentId,
+          source: row.dataset.studentSource,
+          name: row.dataset.studentName
+        },
+        event.clientX,
+        event.clientY
+      );
+    });
+
+    studentContextDeleteButton.addEventListener("click", () => {
+      deleteStudent(activeContextStudent);
+    });
+
+    studentContextMenu.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (studentContextMenu.hidden || studentContextMenu.contains(event.target)) {
+        return;
+      }
+
+      closeStudentContextMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeStudentContextMenu();
+      }
+    });
+
+    window.addEventListener("resize", closeStudentContextMenu);
+    window.addEventListener("scroll", closeStudentContextMenu, true);
+
+    renderStudents();
+  </script>
+</body>
+</html>

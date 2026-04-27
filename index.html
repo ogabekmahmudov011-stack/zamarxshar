@@ -1,0 +1,3017 @@
+﻿<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT CENTER | Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --bg-soft: #fbf8f2;
+      --bg-deep: #e8decd;
+      --surface: rgba(255, 252, 247, 0.82);
+      --surface-strong: rgba(255, 250, 245, 0.96);
+      --surface-dark: #173430;
+      --text: #14221f;
+      --muted: #596a63;
+      --line: rgba(20, 34, 31, 0.08);
+      --accent: #d96f43;
+      --accent-strong: #b75228;
+      --accent-soft: rgba(217, 111, 67, 0.16);
+      --mint: #a8cfc3;
+      --mint-strong: #2d6b5f;
+      --gold: #c79d4a;
+      --success: #2d8a61;
+      --warning: #b67b14;
+      --danger: #c05444;
+      --shadow: 0 24px 70px rgba(64, 54, 42, 0.14);
+      --shadow-soft: 0 14px 30px rgba(64, 54, 42, 0.08);
+    }
+
+    body[data-theme="dark"] {
+      --bg: #081310;
+      --bg-soft: #0f1e1a;
+      --bg-deep: #132823;
+      --surface: rgba(16, 31, 27, 0.82);
+      --surface-strong: rgba(18, 35, 31, 0.94);
+      --surface-dark: #ebf6f1;
+      --text: #edf3ef;
+      --muted: #9bb2aa;
+      --line: rgba(237, 243, 239, 0.1);
+      --accent: #f19469;
+      --accent-strong: #ffb08a;
+      --accent-soft: rgba(241, 148, 105, 0.18);
+      --mint: #4f8779;
+      --mint-strong: #9fd1c4;
+      --gold: #e0ba70;
+      --success: #68c394;
+      --warning: #ebb75a;
+      --danger: #eb8c7c;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --shadow-soft: 0 14px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(217, 111, 67, 0.22), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(45, 107, 95, 0.18), transparent 22%),
+        radial-gradient(circle at bottom left, rgba(168, 207, 195, 0.28), transparent 28%),
+        linear-gradient(145deg, var(--bg-soft) 0%, var(--bg) 48%, var(--bg-deep) 100%);
+      overflow-x: hidden;
+    }
+
+    body.admin-locked {
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.16), transparent 78%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body[data-theme="dark"]::before {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      background: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .orb {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      filter: blur(34px);
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb--a {
+      top: -120px;
+      right: -100px;
+      background: rgba(217, 111, 67, 0.55);
+    }
+
+    .orb--b {
+      left: -140px;
+      bottom: -100px;
+      background: rgba(45, 107, 95, 0.5);
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 24px;
+      max-width: 1580px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      height: calc(100vh - 48px);
+      padding: 24px;
+      border-radius: 32px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .sidebar__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand__eyebrow {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .brand__title {
+      display: block;
+      margin-top: 3px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .sidebar__section-title {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sidebar__nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-link span:first-child {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .nav-link small {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .nav-link:hover,
+    .nav-link.is-active {
+      background: rgba(255, 255, 255, 0.5);
+      border-color: var(--line);
+      transform: translateX(4px);
+    }
+
+    body[data-theme="dark"] .nav-link:hover,
+    body[data-theme="dark"] .nav-link.is-active {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .sidebar__meta,
+    .sidebar__promo,
+    .sidebar__pages {
+      padding: 18px;
+      border-radius: 24px;
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .meta-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .meta-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .meta-item strong {
+      font-size: 1.1rem;
+    }
+
+    .sidebar__promo h3,
+    .sidebar__pages h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .sidebar__promo p,
+    .sidebar__pages p,
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .sidebar__promo {
+      display: grid;
+      gap: 14px;
+      margin-top: auto;
+      background:
+        linear-gradient(145deg, rgba(217, 111, 67, 0.12), rgba(45, 107, 95, 0.09)),
+        var(--surface-strong);
+    }
+
+    .sidebar__promo strong {
+      font-size: 2rem;
+      font-family: "Cormorant Garamond", serif;
+      line-height: 1;
+    }
+
+    .page-links {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .page-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.54);
+      border: 1px solid var(--line);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    body[data-theme="dark"] .page-link {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .page-link:hover {
+      transform: translateX(4px);
+      background: rgba(217, 111, 67, 0.1);
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .topbar__left {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .topbar__copy h1 {
+      margin: 8px 0 0;
+      max-width: 12ch;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      line-height: 0.94;
+      letter-spacing: -0.05em;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.52);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    body[data-theme="dark"] .eyebrow {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .topbar__copy p:last-child {
+      margin: 12px 0 0;
+      max-width: 58ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .topbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .language-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 14px 0 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #112520 0%, #18352f 100%);
+      border: 1px solid rgba(168, 207, 195, 0.2);
+      box-shadow: 0 16px 34px rgba(8, 19, 16, 0.24);
+      color: #edf3ef;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .language-switch:hover {
+      transform: translateY(-1px);
+      border-color: rgba(168, 207, 195, 0.34);
+      box-shadow: 0 20px 38px rgba(8, 19, 16, 0.28);
+    }
+
+    .language-switch:focus-within {
+      border-color: rgba(217, 111, 67, 0.62);
+      box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.14), 0 18px 36px rgba(8, 19, 16, 0.28);
+    }
+
+    .language-switch__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(237, 243, 239, 0.86);
+    }
+
+    .language-switch__svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .language-switch__copy {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .language-switch__label {
+      color: rgba(237, 243, 239, 0.68);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .language-switch__select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      min-width: 110px;
+      padding-right: 0;
+      border: 0;
+      background: transparent;
+      color: #f5fbf8;
+      font: inherit;
+      font-size: 1.02rem;
+      font-weight: 800;
+      line-height: 1.1;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .language-switch__arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 2px;
+      color: rgba(237, 243, 239, 0.7);
+      pointer-events: none;
+      flex-shrink: 0;
+    }
+
+    .language-switch__arrow-svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+
+    body[data-theme="dark"] .language-switch {
+      background: linear-gradient(135deg, rgba(12, 27, 23, 0.98) 0%, rgba(21, 49, 43, 0.98) 100%);
+      border-color: rgba(159, 209, 196, 0.2);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .icon-button {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .icon-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(217, 111, 67, 0.3);
+    }
+
+    .theme-toggle {
+      width: 58px;
+      height: 58px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #15332d 0%, #1d433c 100%);
+      border: 2px solid rgba(255, 255, 255, 0.92);
+      box-shadow: 0 14px 30px rgba(8, 19, 16, 0.24);
+      color: #f6fbf8;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(8, 19, 16, 0.28);
+      border-color: #ffffff;
+    }
+
+    .theme-toggle:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.16), 0 18px 34px rgba(8, 19, 16, 0.28);
+    }
+
+    .theme-toggle__icon {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-toggle__svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    body[data-theme="dark"] .theme-toggle {
+      background: linear-gradient(135deg, rgba(236, 243, 239, 0.12) 0%, rgba(236, 243, 239, 0.06) 100%);
+      border-color: rgba(236, 243, 239, 0.88);
+      color: #edf3ef;
+    }
+
+    .admin-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .admin-chip small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .admin-chip strong {
+      display: block;
+      font-size: 0.98rem;
+    }
+
+    .admin-chip__copy {
+      min-width: 0;
+    }
+
+    .admin-chip__logout {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(217, 111, 67, 0.12);
+      color: var(--accent-strong);
+      font-weight: 700;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .admin-chip__logout:hover {
+      background: rgba(217, 111, 67, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 24;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(160deg, rgba(8, 19, 16, 0.64), rgba(8, 19, 16, 0.82)),
+        radial-gradient(circle at top right, rgba(217, 111, 67, 0.24), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(45, 107, 95, 0.22), transparent 32%);
+      backdrop-filter: blur(10px);
+    }
+
+    .auth-card {
+      width: min(100%, 520px);
+      padding: 30px;
+      border-radius: 32px;
+      background: #ffffff;
+      border: 1px solid rgba(104, 88, 255, 0.16);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+      color: #132421;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 6px;
+      background: linear-gradient(90deg, #6477f3, #7d4fc7);
+    }
+
+    body[data-theme="dark"] .auth-card {
+      background: rgba(12, 24, 21, 0.96);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-card h2 {
+      margin: 18px 0 10px;
+      font-size: clamp(2rem, 5vw, 2.7rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .auth-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .auth-card__controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .auth-field {
+      display: grid;
+      gap: 8px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .auth-field input {
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    body[data-theme="dark"] .auth-field input {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .auth-field input:focus {
+      border-color: rgba(217, 111, 67, 0.6);
+      box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .auth-phone {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    body[data-theme="dark"] .auth-phone {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .auth-phone:focus-within {
+      border-color: rgba(100, 119, 243, 0.45);
+      box-shadow: 0 0 0 4px rgba(100, 119, 243, 0.12);
+    }
+
+    .auth-phone__prefix {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #6477f3, #7d4fc7);
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .auth-phone input {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .auth-phone input:focus {
+      box-shadow: none;
+      transform: none;
+    }
+
+    .auth-submit {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #6477f3, #7d4fc7);
+      color: #ffffff;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 18px 34px rgba(100, 119, 243, 0.22);
+    }
+
+    .auth-status {
+      min-height: 1.5em;
+      margin-top: 16px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .auth-status.error {
+      color: var(--danger);
+    }
+
+    body.admin-locked .shell {
+      filter: blur(16px);
+      opacity: 0.24;
+      pointer-events: none;
+      user-select: none;
+      transform: scale(0.985);
+      transition: filter 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    body.admin-locked .sidebar-overlay {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .content-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: 30px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 36%);
+      pointer-events: none;
+    }
+
+    .panel-head h2 {
+      margin: 8px 0 0;
+      font-size: 1.55rem;
+      line-height: 1.2;
+    }
+
+    .panel-head p {
+      margin-top: 10px;
+      max-width: 62ch;
+    }
+    .content-grid {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head__actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: var(--surface-strong);
+    }
+
+    table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 16px 18px;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+
+    tbody td {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr {
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(217, 111, 67, 0.06);
+    }
+
+    .person-cell strong,
+    .course-cell strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .person-cell small,
+    .course-cell small,
+    .table-time {
+      color: var(--muted);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .status-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-badge--paid {
+      color: var(--success);
+      background: rgba(45, 138, 97, 0.12);
+    }
+
+    .status-badge--pending {
+      color: var(--warning);
+      background: rgba(182, 123, 20, 0.12);
+    }
+
+    .status-badge--late {
+      color: var(--danger);
+      background: rgba(192, 84, 68, 0.12);
+    }
+
+    .status-badge--new {
+      color: var(--warning);
+      background: rgba(182, 123, 20, 0.12);
+    }
+
+    .status-badge--accepted {
+      color: var(--success);
+      background: rgba(45, 138, 97, 0.12);
+    }
+
+    .table-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--text);
+      font-weight: 700;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    body[data-theme="dark"] .table-action {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .table-action:hover:not([disabled]) {
+      transform: translateY(-1px);
+      border-color: rgba(45, 107, 95, 0.22);
+      background: rgba(45, 107, 95, 0.1);
+    }
+
+    .table-action[disabled] {
+      opacity: 0.68;
+      cursor: default;
+    }
+
+    .table-action--primary {
+      background: linear-gradient(135deg, rgba(168, 207, 195, 0.84), rgba(114, 204, 165, 0.92));
+      color: #12312b;
+      border-color: transparent;
+    }
+
+    .students-overview {
+      display: grid;
+      gap: 18px;
+    }
+
+    .students-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .students-stat {
+      padding: 18px 20px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 236, 0.92));
+      box-shadow: var(--shadow-soft);
+    }
+
+    body[data-theme="dark"] .students-stat {
+      background: linear-gradient(180deg, rgba(18, 31, 28, 0.96), rgba(14, 24, 22, 0.94));
+    }
+
+    .students-stat__label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .students-stat strong {
+      display: block;
+      margin-top: 14px;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .students-stat[data-tone="total"] strong {
+      color: var(--accent-strong);
+    }
+
+    .students-stat[data-tone="paid"] strong {
+      color: var(--success);
+    }
+
+    .students-stat[data-tone="pending"] strong {
+      color: var(--warning);
+    }
+
+    .students-stat[data-tone="late"] strong {
+      color: var(--danger);
+    }
+
+    .students-table {
+      min-width: 880px;
+    }
+
+    .table-index {
+      width: 72px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .person-cell strong,
+    .phone-cell strong,
+    .payment-cell strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .phone-cell small,
+    .payment-cell small {
+      color: var(--muted);
+    }
+
+    .phone-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .phone-link:hover {
+      color: var(--accent-strong);
+    }
+
+    .subject-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(45, 107, 95, 0.12);
+      color: var(--mint-strong);
+      font-weight: 700;
+      font-size: 0.84rem;
+      line-height: 1.2;
+    }
+
+    body[data-theme="dark"] .subject-pill {
+      background: rgba(159, 209, 196, 0.12);
+      color: #d9efe8;
+    }
+
+    .footer {
+      padding: 18px 8px 2px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 9, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 8;
+    }
+
+    .mobile-toggle,
+    .sidebar-close {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      max-width: min(360px, calc(100vw - 32px));
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: var(--surface-dark);
+      color: #f8f5ef;
+      box-shadow: var(--shadow);
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      z-index: 20;
+    }
+
+    .toast.is-visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 1320px) {
+      .shell {
+        grid-template-columns: 280px minmax(0, 1fr);
+      }
+
+      .students-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 24px;
+        top: 24px;
+        bottom: 24px;
+        width: min(340px, calc(100vw - 48px));
+        height: auto;
+        z-index: 12;
+        transform: translateX(-120%);
+        transition: transform 0.3s ease;
+      }
+
+      body.sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+
+      body.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .mobile-toggle,
+      .sidebar-close {
+        display: grid;
+      }
+
+      .sidebar-close {
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.45);
+        border: 1px solid var(--line);
+      }
+
+      body[data-theme="dark"] .sidebar-close {
+        background: rgba(255, 255, 255, 0.04);
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .topbar__actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        padding: 16px;
+        gap: 18px;
+      }
+
+      .panel,
+      .sidebar {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .topbar__copy h1 {
+        max-width: none;
+      }
+
+      .auth-gate {
+        padding: 16px;
+      }
+
+      .auth-card {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      .students-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .admin-chip {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .students-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="admin-locked" data-theme="light">
+  <div class="orb orb--a"></div>
+  <div class="orb orb--b"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="auth-gate" id="admin-gate" role="dialog" aria-modal="true" aria-labelledby="admin-gate-title">
+    <section class="auth-card">
+      <div class="auth-card__controls">
+        <label class="language-switch">
+          <span class="language-switch__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
+              <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="language-switch__copy">
+            <span class="language-switch__label" data-language-label>Til</span>
+            <select class="language-switch__select" data-language-select>
+              <option value="uz">O'zbekcha</option>
+              <option value="en">English</option>
+              <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
+            </select>
+          </span>
+          <span class="language-switch__arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </label>
+      </div>
+      <span class="eyebrow" id="admin-gate-eyebrow">Tizimga kirish</span>
+      <h2 id="admin-gate-title">Tizimga kirish</h2>
+      <p id="admin-gate-description">Davom etish uchun login va parolni kiriting. Kirish muvaffaqiyatli bo'lsa, sessiya shu brauzerda saqlanadi.</p>
+      <form class="auth-form" id="admin-login-form">
+        <label class="auth-field" for="admin-username">
+          <span id="admin-username-label">Login</span>
+          <input id="admin-username" name="username" type="text" autocomplete="username" placeholder="Loginni kiriting" required>
+        </label>
+        <label class="auth-field" for="admin-phone">
+          <span id="admin-phone-label">Telefon raqam</span>
+          <span class="auth-phone">
+            <span class="auth-phone__prefix">+998</span>
+            <input id="admin-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="90 123 45 67" required>
+          </span>
+        </label>
+        <label class="auth-field" for="admin-password">
+          <span id="admin-password-label">Parol</span>
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" placeholder="Parolni kiriting" required>
+        </label>
+        <button class="auth-submit" id="admin-login-submit" type="submit">Tizimga kirish</button>
+      </form>
+      <p class="auth-status" id="admin-login-status" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__top">
+        <div class="brand">
+          <div>
+            <span class="brand__eyebrow">IT CENTER</span>
+            <strong class="brand__title" id="brand-title">Admin Console</strong>
+          </div>
+        </div>
+        <button class="sidebar-close" id="sidebar-close" type="button" aria-label="Menyuni yopish">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <section>
+        <p class="sidebar__section-title" id="sidebar-section-title">Bo'limlar</p>
+        <nav class="sidebar__nav" id="sidebar-nav" aria-label="Admin navigatsiyasi"></nav>
+      </section>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="icon-button mobile-toggle" id="sidebar-open" type="button" aria-label="Menyuni ochish">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="topbar__copy">
+            <span class="eyebrow" id="topbar-eyebrow">Admin panel</span>
+            <h1 id="topbar-title">Markaz boshqaruvi</h1>
+            <p id="topbar-description">Bu yerda o'quvchilar ro'yxati, telefon raqamlari va to'lov holatini ko'rishingiz mumkin.</p>
+          </div>
+        </div>
+
+        <div class="topbar__actions">
+          <label class="language-switch">
+            <span class="language-switch__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
+                <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="language-switch__copy">
+              <span class="language-switch__label" data-language-label>Til</span>
+              <select class="language-switch__select" data-language-select>
+                <option value="uz">O'zbekcha</option>
+                <option value="en">English</option>
+                <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
+              </select>
+            </span>
+            <span class="language-switch__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </label>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Rang rejimini almashtirish">
+            <span class="theme-toggle__icon" aria-hidden="true">
+              <svg class="theme-toggle__svg" id="theme-toggle-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="4" stroke-width="1.8"/>
+                <path d="M12 2.75V5.25M12 18.75V21.25M21.25 12H18.75M5.25 12H2.75M18.54 5.46L16.77 7.23M7.23 16.77L5.46 18.54M18.54 18.54L16.77 16.77M7.23 7.23L5.46 5.46" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+          <div class="admin-chip">
+            <div class="admin-chip__copy">
+              <small id="admin-chip-label">Tizim sessiya</small>
+              <strong id="admin-chip-name">Tekshirilmoqda...</strong>
+            </div>
+            <button class="admin-chip__logout" id="admin-logout" type="button" hidden>Chiqish</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="content-grid">
+        <article class="panel" id="applications">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow" id="applications-eyebrow">Arizalar</span>
+              <h2 id="applications-title">Ariza qabuli</h2>
+              <p id="applications-description">Saytdan yuborilgan arizalar shu yerda ko'rinadi va qabul qilinadi.</p>
+            </div>
+          </div>
+
+          <div class="students-overview">
+            <div class="students-summary">
+              <article class="students-stat" data-tone="total">
+                <span class="students-stat__label" id="applications-total-label">Jami ariza</span>
+                <strong id="applications-total-value">0</strong>
+              </article>
+              <article class="students-stat" data-tone="pending">
+                <span class="students-stat__label" id="applications-new-label">Yangi</span>
+                <strong id="applications-new-value">0</strong>
+              </article>
+              <article class="students-stat" data-tone="paid">
+                <span class="students-stat__label" id="applications-accepted-label">Qabul qilingan</span>
+                <strong id="applications-accepted-value">0</strong>
+              </article>
+            </div>
+
+            <div class="table-wrap">
+              <table class="students-table">
+                <thead>
+                  <tr>
+                    <th id="applications-column-index">No</th>
+                    <th id="applications-column-applicant">Ariza</th>
+                    <th id="applications-column-phone">Telefon</th>
+                    <th id="applications-column-course">Kurs</th>
+                    <th id="applications-column-status">Holat</th>
+                    <th id="applications-column-action">Amal</th>
+                  </tr>
+                </thead>
+                <tbody id="applications-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel" id="students">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow" id="courses-eyebrow">O'quvchilar</span>
+              <h2 id="courses-title">O'quvchilar ro'yxati va to'lov holati</h2>
+              <p id="courses-description">Quyida o'quvchilarning ismi, telefon raqami, qaysi fan yo'nalishida o'qishi va to'lov holati ko'rsatilgan.</p>
+            </div>
+          </div>
+
+          <div class="students-overview">
+            <div class="students-summary">
+              <article class="students-stat" data-tone="total">
+                <span class="students-stat__label" id="students-total-label">Jami o'quvchi</span>
+                <strong id="students-total-value">0</strong>
+              </article>
+              <article class="students-stat" data-tone="paid">
+                <span class="students-stat__label" id="students-paid-label">To'langan</span>
+                <strong id="students-paid-value">0</strong>
+              </article>
+              <article class="students-stat" data-tone="pending">
+                <span class="students-stat__label" id="students-pending-label">Kutilmoqda</span>
+                <strong id="students-pending-value">0</strong>
+              </article>
+              <article class="students-stat" data-tone="late">
+                <span class="students-stat__label" id="students-late-label">Muddati o'tgan</span>
+                <strong id="students-late-value">0</strong>
+              </article>
+            </div>
+
+            <div class="table-wrap">
+              <table class="students-table">
+                <thead>
+                  <tr>
+                    <th id="students-column-index">No</th>
+                    <th id="students-column-student">O'quvchi</th>
+                    <th id="students-column-phone">Telefon</th>
+                    <th id="students-column-subject">Fan</th>
+                    <th id="students-column-amount">To'lov</th>
+                    <th id="students-column-status">Holat</th>
+                  </tr>
+                </thead>
+                <tbody id="students-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <footer class="footer" id="footer-text">
+        IT CENTER admin paneli - o'quvchilar va to'lovlar nazorati.
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeToggleIcon = document.getElementById("theme-toggle-icon");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOpen = document.getElementById("sidebar-open");
+    const sidebarClose = document.getElementById("sidebar-close");
+    const sidebarOverlay = document.getElementById("sidebar-overlay");
+    const toast = document.getElementById("toast");
+    const toastButtons = document.querySelectorAll("[data-toast]");
+    const languageSelects = document.querySelectorAll("[data-language-select]");
+    const languageLabels = document.querySelectorAll("[data-language-label]");
+    const adminGate = document.getElementById("admin-gate");
+    const adminGateEyebrow = document.getElementById("admin-gate-eyebrow");
+    const adminGateTitle = document.getElementById("admin-gate-title");
+    const adminGateDescription = document.getElementById("admin-gate-description");
+    const adminLoginForm = document.getElementById("admin-login-form");
+    const adminUsernameLabel = document.getElementById("admin-username-label");
+    const adminPhoneLabel = document.getElementById("admin-phone-label");
+    const adminPasswordLabel = document.getElementById("admin-password-label");
+    const adminLoginSubmit = document.getElementById("admin-login-submit");
+    const adminUsernameInput = document.getElementById("admin-username");
+    const adminPhoneInput = document.getElementById("admin-phone");
+    const adminPasswordInput = document.getElementById("admin-password");
+    const adminLoginStatus = document.getElementById("admin-login-status");
+    const brandTitle = document.getElementById("brand-title");
+    const sidebarSectionTitle = document.getElementById("sidebar-section-title");
+    const sidebarNav = document.getElementById("sidebar-nav");
+    const topbarEyebrow = document.getElementById("topbar-eyebrow");
+    const topbarTitle = document.getElementById("topbar-title");
+    const topbarDescription = document.getElementById("topbar-description");
+    const adminChipLabel = document.getElementById("admin-chip-label");
+    const adminChipName = document.getElementById("admin-chip-name");
+    const adminLogoutButton = document.getElementById("admin-logout");
+    const applicationsEyebrow = document.getElementById("applications-eyebrow");
+    const applicationsTitle = document.getElementById("applications-title");
+    const applicationsDescription = document.getElementById("applications-description");
+    const applicationsTotalLabel = document.getElementById("applications-total-label");
+    const applicationsTotalValue = document.getElementById("applications-total-value");
+    const applicationsNewLabel = document.getElementById("applications-new-label");
+    const applicationsNewValue = document.getElementById("applications-new-value");
+    const applicationsAcceptedLabel = document.getElementById("applications-accepted-label");
+    const applicationsAcceptedValue = document.getElementById("applications-accepted-value");
+    const applicationsColumnIndex = document.getElementById("applications-column-index");
+    const applicationsColumnApplicant = document.getElementById("applications-column-applicant");
+    const applicationsColumnPhone = document.getElementById("applications-column-phone");
+    const applicationsColumnCourse = document.getElementById("applications-column-course");
+    const applicationsColumnStatus = document.getElementById("applications-column-status");
+    const applicationsColumnAction = document.getElementById("applications-column-action");
+    const applicationsTableBody = document.getElementById("applications-table-body");
+    const coursesEyebrow = document.getElementById("courses-eyebrow");
+    const coursesTitle = document.getElementById("courses-title");
+    const coursesDescription = document.getElementById("courses-description");
+    const studentsTotalLabel = document.getElementById("students-total-label");
+    const studentsTotalValue = document.getElementById("students-total-value");
+    const studentsPaidLabel = document.getElementById("students-paid-label");
+    const studentsPaidValue = document.getElementById("students-paid-value");
+    const studentsPendingLabel = document.getElementById("students-pending-label");
+    const studentsPendingValue = document.getElementById("students-pending-value");
+    const studentsLateLabel = document.getElementById("students-late-label");
+    const studentsLateValue = document.getElementById("students-late-value");
+    const studentsColumnIndex = document.getElementById("students-column-index");
+    const studentsColumnStudent = document.getElementById("students-column-student");
+    const studentsColumnPhone = document.getElementById("students-column-phone");
+    const studentsColumnSubject = document.getElementById("students-column-subject");
+    const studentsColumnAmount = document.getElementById("students-column-amount");
+    const studentsColumnStatus = document.getElementById("students-column-status");
+    const studentsTableBody = document.getElementById("students-table-body");
+    const footerText = document.getElementById("footer-text");
+    const themeStorageKey = "it-center-admin-theme";
+    const adminLocalSessionKey = "it-center-admin-local-session";
+    const adminApplicationsStorageKey = "it-center-admin-applications";
+    const adminStudentsStorageKey = "it-center-admin-students";
+    const languageStorageKey = "it-center-admin-language";
+    const supportedLanguages = ["uz", "en", "ru"];
+
+    const studentOverviewData = [
+      { name: "Azizbek Karimov", phone: "901234567", subjectIndex: 0, amount: 350000, status: "paid" },
+      { name: "Madina Ergasheva", phone: "931112233", subjectIndex: 4, amount: 350000, status: "pending" },
+      { name: "Jahongir To'raev", phone: "997654321", subjectIndex: 2, amount: 350000, status: "late" },
+      { name: "Sevinch Qodirova", phone: "901987654", subjectIndex: 3, amount: 350000, status: "paid" },
+      { name: "Maftuna Jo'rayeva", phone: "945551122", subjectIndex: 8, amount: 350000, status: "pending" },
+      { name: "Behruz Qodirov", phone: "998221144", subjectIndex: 6, amount: 350000, status: "paid" },
+      { name: "Umida Rasulova", phone: "909761245", subjectIndex: 1, amount: 350000, status: "late" },
+      { name: "Diyorbek Xasanov", phone: "934005577", subjectIndex: 5, amount: 350000, status: "paid" },
+      { name: "Nilufar Sattorova", phone: "974449988", subjectIndex: 7, amount: 350000, status: "pending" },
+      { name: "Shaxzod Mamatov", phone: "998880011", subjectIndex: 9, amount: 350000, status: "paid" }
+    ];
+
+    const moonIcon = `
+      <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.8 6.8 0 0 0 20 14.5Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    `;
+
+    const sunIcon = `
+      <circle cx="12" cy="12" r="4" stroke-width="1.8"/>
+      <path d="M12 2.75V5.25M12 18.75V21.25M21.25 12H18.75M5.25 12H2.75M18.54 5.46L16.77 7.23M7.23 16.77L5.46 18.54M18.54 18.54L16.77 16.77M7.23 7.23L5.46 5.46" stroke-width="1.8" stroke-linecap="round"/>
+    `;
+
+    const translations = {
+      uz: {
+        meta: {
+          title: "IT CENTER | Admin Panel"
+        },
+        language: {
+          label: "Til",
+          options: {
+            uz: "O'zbekcha",
+            en: "English",
+            ru: "Р СѓСЃСЃРєРёР№"
+          }
+        },
+        actions: {
+          openMenu: "Menyuni ochish",
+          closeMenu: "Menyuni yopish",
+          themeDark: "Qora rejimga o'tish",
+          themeLight: "Yorug' rejimga o'tish"
+        },
+        gate: {
+          eyebrow: "Tizimga kirish",
+          title: "Tizimga kirish",
+          description: "Davom etish uchun login va parolni kiriting. Kirish muvaffaqiyatli bo'lsa, sessiya shu brauzerda saqlanadi.",
+          fields: {
+            username: "Login",
+            phone: "Telefon raqam",
+            password: "Parol"
+          },
+          placeholders: {
+            username: "Loginni kiriting",
+            phone: "90 123 45 67",
+            password: "Parolni kiriting"
+          },
+          submit: "Tizimga kirish",
+          messages: {
+            missing: "Login, telefon raqam va parolni kiriting.",
+            incompletePhone: "Telefon raqamni to'liq kiriting.",
+            checking: "Tekshirilmoqda...",
+            loginError: "Tizimga kirishda xato yuz berdi.",
+            offlineHint: "Server ulanmagan. Tugmani bossangiz lokal rejimda panel ichiga kirasiz.",
+            sessionEnded: "Sessiya yakunlandi. Qayta kirish uchun login va parolni kiriting."
+          }
+        },
+        brand: {
+          title: "Admin Console"
+        },
+        sidebar: {
+          sectionTitle: "Bo'limlar",
+          navAria: "Admin navigatsiyasi",
+          items: [
+            {
+              title: "O'quvchilar",
+              subtitle: "Telefon va to'lov"
+            }
+          ]
+        },
+        topbar: {
+          eyebrow: "Admin panel",
+          title: "Markaz boshqaruvi",
+          description: "Bu yerda o'quvchilar ro'yxati, telefon raqamlari va to'lov holatini ko'rishingiz mumkin."
+        },
+        adminChip: {
+          demoMode: "Demo rejim",
+          passwordUnset: "Parol sozlanmagan",
+          localSession: "Lokal sessiya",
+          systemSession: "Tizim sessiya",
+          loginRequired: "Kirish talab qilinadi",
+          loginPrompt: "Tizimga kiring",
+          checking: "Tekshirilmoqda...",
+          logout: "Chiqish",
+          defaultName: "Admin"
+        },
+        coursesSection: {
+          eyebrow: "O'quvchilar",
+          title: "O'quvchilar ro'yxati va to'lov holati",
+          description: "Quyida o'quvchilarning ismi, telefon raqami, fan yo'nalishi va to'lov holati bir joyda ko'rsatilgan."
+        },
+        applicationsSection: {
+          eyebrow: "Arizalar",
+          title: "Ariza qabuli",
+          description: "Saytdan yuborilgan arizalar shu yerda ko'rinadi va qabul qilinadi."
+        },
+        courseTitles: [
+          "Matematika va Geometriya",
+          "Fizika",
+          "Ona Tili va Adabiyot",
+          "Tarix",
+          "Ingliz Tili",
+          "Biologiya",
+          "Kimyo",
+          "Geografiya",
+          "Informatika",
+          "Rus Tili"
+        ],
+        studentTable: {
+          summary: {
+            total: "Jami o'quvchi",
+            paid: "To'langan",
+            pending: "Kutilmoqda",
+            late: "Muddati o'tgan"
+          },
+          columns: {
+            index: "No",
+            student: "O'quvchi",
+            phone: "Telefon",
+            subject: "Fan",
+            amount: "To'lov",
+            status: "Holat"
+          },
+          statuses: {
+            paid: "To'langan",
+            pending: "Kutilmoqda",
+            late: "Muddati o'tgan"
+          },
+          details: {
+            paid: "To'lov qabul qilingan",
+            pending: "Tasdiq kutilmoqda",
+            late: "To'lov kechikkan"
+          },
+          empty: "Hozircha o'quvchi yo'q."
+        },
+        applicationTable: {
+          summary: {
+            total: "Jami ariza",
+            fresh: "Yangi",
+            accepted: "Qabul qilingan"
+          },
+          columns: {
+            index: "No",
+            applicant: "Ariza",
+            phone: "Telefon",
+            course: "Kurs",
+            status: "Holat",
+            action: "Amal"
+          },
+          statuses: {
+            new: "Yangi",
+            accepted: "Qabul qilingan"
+          },
+          details: {
+            new: "Tasdiq kutilmoqda",
+            accepted: "O'quvchilar ro'yxatiga qo'shildi"
+          },
+          buttons: {
+            accept: "Qabul qilish",
+            accepted: "Qabul qilindi"
+          },
+          empty: "Hozircha ariza yo'q."
+        },
+        footer: "IT CENTER admin paneli - o'quvchilar va to'lovlar nazorati.",
+        toasts: {
+          localOpened: "Tizim lokal rejimda ochildi.",
+          loginSuccess: "Tizimga kirildi.",
+          localFallback: "Server ulanmaganligi uchun tizim lokal rejimda ochildi.",
+          logout: "Tizimdan chiqildi.",
+          applicationAccepted: "Ariza qabul qilinib, o'quvchilar ro'yxatiga qo'shildi."
+        }
+      },
+      en: {
+        meta: {
+          title: "IT CENTER | Admin Panel"
+        },
+        language: {
+          label: "Lang",
+          options: {
+            uz: "Uzbek",
+            en: "English",
+            ru: "Russian"
+          }
+        },
+        actions: {
+          openMenu: "Open menu",
+          closeMenu: "Close menu",
+          themeDark: "Switch to dark mode",
+          themeLight: "Switch to light mode"
+        },
+        gate: {
+          eyebrow: "System login",
+          title: "Sign in",
+          description: "Enter your login and password to continue. If authentication succeeds, the session will be saved in this browser.",
+          fields: {
+            username: "Login",
+            phone: "Phone number",
+            password: "Password"
+          },
+          placeholders: {
+            username: "Enter your login",
+            phone: "90 123 45 67",
+            password: "Enter your password"
+          },
+          submit: "Sign in",
+          messages: {
+            missing: "Enter your login, phone number, and password.",
+            incompletePhone: "Enter the full phone number.",
+            checking: "Checking...",
+            loginError: "Unable to sign in.",
+            offlineHint: "The server is unavailable. Press the button to enter the panel in local mode.",
+            sessionEnded: "Session ended. Sign in again with your login and password."
+          }
+        },
+        brand: {
+          title: "Admin Console"
+        },
+        sidebar: {
+          sectionTitle: "Sections",
+          navAria: "Admin navigation",
+          items: [
+            {
+              title: "Students",
+              subtitle: "Phone and payments"
+            }
+          ]
+        },
+        topbar: {
+          eyebrow: "Admin panel",
+          title: "Center operations",
+          description: "View students, phone numbers, and payment status here."
+        },
+        adminChip: {
+          demoMode: "Demo mode",
+          passwordUnset: "Password not set",
+          localSession: "Local session",
+          systemSession: "System session",
+          loginRequired: "Sign-in required",
+          loginPrompt: "Please sign in",
+          checking: "Checking...",
+          logout: "Log out",
+          defaultName: "Admin"
+        },
+        coursesSection: {
+          eyebrow: "Students",
+          title: "Student list and payment status",
+          description: "This section shows each student's name, phone number, subject, and current payment status."
+        },
+        applicationsSection: {
+          eyebrow: "Applications",
+          title: "Application intake",
+          description: "Applications sent from the site appear here and can be accepted."
+        },
+        courseTitles: [
+          "Mathematics & Geometry",
+          "Physics",
+          "Native Language & Literature",
+          "History",
+          "English Language",
+          "Biology",
+          "Chemistry",
+          "Geography",
+          "Computer Science",
+          "Russian Language"
+        ],
+        studentTable: {
+          summary: {
+            total: "Total students",
+            paid: "Paid",
+            pending: "Pending",
+            late: "Overdue"
+          },
+          columns: {
+            index: "No",
+            student: "Student",
+            phone: "Phone",
+            subject: "Subject",
+            amount: "Payment",
+            status: "Status"
+          },
+          statuses: {
+            paid: "Paid",
+            pending: "Pending",
+            late: "Overdue"
+          },
+          details: {
+            paid: "Payment received",
+            pending: "Waiting for confirmation",
+            late: "Payment is overdue"
+          },
+          empty: "No students found yet."
+        },
+        applicationTable: {
+          summary: {
+            total: "Total applications",
+            fresh: "New",
+            accepted: "Accepted"
+          },
+          columns: {
+            index: "No",
+            applicant: "Application",
+            phone: "Phone",
+            course: "Course",
+            status: "Status",
+            action: "Action"
+          },
+          statuses: {
+            new: "New",
+            accepted: "Accepted"
+          },
+          details: {
+            new: "Waiting for confirmation",
+            accepted: "Added to the student list"
+          },
+          buttons: {
+            accept: "Accept",
+            accepted: "Accepted"
+          },
+          empty: "No applications yet."
+        },
+        footer: "IT CENTER admin panel for student and payment tracking.",
+        toasts: {
+          localOpened: "The panel opened in local mode.",
+          loginSuccess: "Signed in.",
+          localFallback: "The panel opened in local mode because the server is unavailable.",
+          logout: "Signed out.",
+          applicationAccepted: "The application was accepted and added to the student list."
+        }
+      },
+      ru: {
+        meta: {
+          title: "IT CENTER | РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°"
+        },
+        language: {
+          label: "РЇР·С‹Рє",
+          options: {
+            uz: "РЈР·Р±РµРєСЃРєРёР№",
+            en: "РђРЅРіР»РёР№СЃРєРёР№",
+            ru: "Р СѓСЃСЃРєРёР№"
+          }
+        },
+        actions: {
+          openMenu: "РћС‚РєСЂС‹С‚СЊ РјРµРЅСЋ",
+          closeMenu: "Р—Р°РєСЂС‹С‚СЊ РјРµРЅСЋ",
+          themeDark: "РџРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° С‚С‘РјРЅСѓСЋ С‚РµРјСѓ",
+          themeLight: "РџРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° СЃРІРµС‚Р»СѓСЋ С‚РµРјСѓ"
+        },
+        gate: {
+          eyebrow: "Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ",
+          title: "Р’РѕР№С‚Рё",
+          description: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ. РџРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ РІС…РѕРґР° СЃРµСЃСЃРёСЏ СЃРѕС…СЂР°РЅРёС‚СЃСЏ РІ СЌС‚РѕРј Р±СЂР°СѓР·РµСЂРµ.",
+          fields: {
+            username: "Р›РѕРіРёРЅ",
+            phone: "РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°",
+            password: "РџР°СЂРѕР»СЊ"
+          },
+          placeholders: {
+            username: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ",
+            phone: "90 123 45 67",
+            password: "Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ"
+          },
+          submit: "Р’РѕР№С‚Рё",
+          messages: {
+            missing: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ, РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° Рё РїР°СЂРѕР»СЊ.",
+            incompletePhone: "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РїРѕР»РЅРѕСЃС‚СЊСЋ.",
+            checking: "РџСЂРѕРІРµСЂСЏРµРј...",
+            loginError: "РќРµ СѓРґР°Р»РѕСЃСЊ РІРѕР№С‚Рё РІ СЃРёСЃС‚РµРјСѓ.",
+            offlineHint: "РЎРµСЂРІРµСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ. РќР°Р¶РјРёС‚Рµ РєРЅРѕРїРєСѓ, С‡С‚РѕР±С‹ РѕС‚РєСЂС‹С‚СЊ РїР°РЅРµР»СЊ РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ.",
+            sessionEnded: "РЎРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°. Р’РѕР№РґРёС‚Рµ СЃРЅРѕРІР°, РёСЃРїРѕР»СЊР·СѓСЏ Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ."
+          }
+        },
+        brand: {
+          title: "РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°"
+        },
+        sidebar: {
+          sectionTitle: "Р Р°Р·РґРµР»С‹",
+          navAria: "РќР°РІРёРіР°С†РёСЏ Р°РґРјРёРЅ-РїР°РЅРµР»Рё",
+          items: [
+            {
+              title: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u044b",
+              subtitle: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u0438 \u043e\u043f\u043b\u0430\u0442\u0430"
+            }
+          ]
+        },
+        topbar: {
+          eyebrow: "РђРґРјРёРЅ-РїР°РЅРµР»СЊ",
+          title: "РЈРїСЂР°РІР»РµРЅРёРµ С†РµРЅС‚СЂРѕРј",
+          description: "\u0417\u0434\u0435\u0441\u044c \u043f\u043e\u043a\u0430\u0437\u0430\u043d\u044b \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432, \u0438\u0445 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u044b \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b.",
+          searchPlaceholder: "РС‰РёС‚Рµ РїРѕ СЃС‚СѓРґРµРЅС‚Сѓ, РєСѓСЂСЃСѓ РёР»Рё ID"
+        },
+        adminChip: {
+          demoMode: "Р”РµРјРѕ-СЂРµР¶РёРј",
+          passwordUnset: "РџР°СЂРѕР»СЊ РЅРµ Р·Р°РґР°РЅ",
+          localSession: "Р›РѕРєР°Р»СЊРЅР°СЏ СЃРµСЃСЃРёСЏ",
+          systemSession: "РЎРёСЃС‚РµРјРЅР°СЏ СЃРµСЃСЃРёСЏ",
+          loginRequired: "РўСЂРµР±СѓРµС‚СЃСЏ РІС…РѕРґ",
+          loginPrompt: "Р’РѕР№РґРёС‚Рµ РІ СЃРёСЃС‚РµРјСѓ",
+          checking: "РџСЂРѕРІРµСЂСЏРµРј...",
+          logout: "Р’С‹Р№С‚Рё",
+          defaultName: "РђРґРјРёРЅ"
+        },
+        coursesSection: {
+          eyebrow: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u044b",
+          title: "\u0421\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b",
+          description: "\u0417\u0434\u0435\u0441\u044c \u0432\u0438\u0434\u043d\u044b \u0438\u043c\u0435\u043d\u0430 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432, \u0438\u0445 \u043d\u043e\u043c\u0435\u0440\u0430, \u043f\u0440\u0435\u0434\u043c\u0435\u0442 \u0438 \u0442\u0435\u043a\u0443\u0449\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b."
+        },
+        applicationsSection: {
+          eyebrow: "\u0417\u0430\u044f\u0432\u043a\u0438",
+          title: "\u041f\u0440\u0438\u0451\u043c \u0437\u0430\u044f\u0432\u043e\u043a",
+          description: "\u0417\u0434\u0435\u0441\u044c \u043f\u043e\u044f\u0432\u043b\u044f\u044e\u0442\u0441\u044f \u0437\u0430\u044f\u0432\u043a\u0438 \u0441 \u0441\u0430\u0439\u0442\u0430, \u0438 \u0438\u0445 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u0438\u043d\u044f\u0442\u044c."
+        },
+        courseTitles: [
+          "\u041c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430 \u0438 \u0433\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u044f",
+          "\u0424\u0438\u0437\u0438\u043a\u0430",
+          "\u0420\u043e\u0434\u043d\u043e\u0439 \u044f\u0437\u044b\u043a \u0438 \u043b\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
+          "\u0418\u0441\u0442\u043e\u0440\u0438\u044f",
+          "\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a",
+          "\u0411\u0438\u043e\u043b\u043e\u0433\u0438\u044f",
+          "\u0425\u0438\u043c\u0438\u044f",
+          "\u0413\u0435\u043e\u0433\u0440\u0430\u0444\u0438\u044f",
+          "\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0442\u0438\u043a\u0430",
+          "\u0420\u0443\u0441\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a"
+        ],
+        studentTable: {
+          summary: {
+            total: "\u0412\u0441\u0435\u0433\u043e \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432",
+            paid: "\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e",
+            pending: "\u041e\u0436\u0438\u0434\u0430\u0435\u0442\u0441\u044f",
+            late: "\u041f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u043e"
+          },
+          columns: {
+            index: "No",
+            student: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442",
+            phone: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d",
+            subject: "\u041f\u0440\u0435\u0434\u043c\u0435\u0442",
+            amount: "\u041e\u043f\u043b\u0430\u0442\u0430",
+            status: "\u0421\u0442\u0430\u0442\u0443\u0441"
+          },
+          statuses: {
+            paid: "\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e",
+            pending: "\u041e\u0436\u0438\u0434\u0430\u0435\u0442\u0441\u044f",
+            late: "\u041f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u043e"
+          },
+          details: {
+            paid: "\u041f\u043b\u0430\u0442\u0435\u0436 \u043f\u0440\u0438\u043d\u044f\u0442",
+            pending: "\u0416\u0434\u0451\u043c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f",
+            late: "\u041e\u043f\u043b\u0430\u0442\u0430 \u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u0430"
+          },
+          empty: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442."
+        },
+        applicationTable: {
+          summary: {
+            total: "\u0412\u0441\u0435\u0433\u043e \u0437\u0430\u044f\u0432\u043e\u043a",
+            fresh: "\u041d\u043e\u0432\u044b\u0435",
+            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u044b"
+          },
+          columns: {
+            index: "No",
+            applicant: "\u0417\u0430\u044f\u0432\u043a\u0430",
+            phone: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d",
+            course: "\u041a\u0443\u0440\u0441",
+            status: "\u0421\u0442\u0430\u0442\u0443\u0441",
+            action: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435"
+          },
+          statuses: {
+            new: "\u041d\u043e\u0432\u0430\u044f",
+            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u0430"
+          },
+          details: {
+            new: "\u0416\u0434\u0451\u043c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f",
+            accepted: "\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0430 \u0432 \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432"
+          },
+          buttons: {
+            accept: "\u041f\u0440\u0438\u043d\u044f\u0442\u044c",
+            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u043e"
+          },
+          empty: "\u0417\u0430\u044f\u0432\u043e\u043a \u043f\u043e\u043a\u0430 \u043d\u0435\u0442."
+        },
+        footer: "\u0410\u0434\u043c\u0438\u043d-\u043f\u0430\u043d\u0435\u043b\u044c IT CENTER \u0434\u043b\u044f \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044f \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u0438 \u043e\u043f\u043b\u0430\u0442.",
+        toasts: {
+          localOpened: "РџР°РЅРµР»СЊ РѕС‚РєСЂС‹С‚Р° РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ.",
+          loginSuccess: "Р’С…РѕРґ РІС‹РїРѕР»РЅРµРЅ.",
+          localFallback: "РџР°РЅРµР»СЊ РѕС‚РєСЂС‹С‚Р° РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЃРµСЂРІРµСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ.",
+          logout: "Р’С‹ РІС‹С€Р»Рё РёР· СЃРёСЃС‚РµРјС‹.",
+          applicationAccepted: "\u0417\u0430\u044f\u0432\u043a\u0430 \u043f\u0440\u0438\u043d\u044f\u0442\u0430 \u0438 \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0430 \u0432 \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432.",
+          focusUpdated: "Р¤РѕРєСѓСЃ РЅР° СЃРµРіРѕРґРЅСЏ РѕР±РЅРѕРІР»С‘РЅ."
+        }
+      }
+    };
+
+    let toastTimer = null;
+    let adminAuthMode = "server";
+    let currentLanguage = loadLanguagePreference();
+    const adminChipState = {
+      enabled: true,
+      authenticated: false,
+      username: "",
+      checking: true
+    };
+    let activeSubjectIndex = null;
+
+    function text() {
+      return translations[currentLanguage] || translations.uz;
+    }
+
+    function formatMoney(amount) {
+      const digits = Number.isFinite(amount) ? amount : 0;
+      const grouped = String(Math.round(digits)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      if (currentLanguage === "en") {
+        return `${grouped} UZS`;
+      }
+      if (currentLanguage === "ru") {
+        return `${grouped} сум`;
+      }
+      return `${grouped} so'm`;
+    }
+
+    function formatPhone(phone) {
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (digits.length !== 9) {
+        return String(phone || "");
+      }
+      return `+998 ${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)}`;
+    }
+
+    function getLocale() {
+      if (currentLanguage === "en") {
+        return "en-US";
+      }
+      if (currentLanguage === "ru") {
+        return "ru-RU";
+      }
+      return "uz-UZ";
+    }
+
+    function readStoredItems(storageKey) {
+      try {
+        const rawValue = localStorage.getItem(storageKey);
+        if (!rawValue) {
+          return [];
+        }
+
+        const parsedValue = JSON.parse(rawValue);
+        return Array.isArray(parsedValue) ? parsedValue : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function writeStoredItems(storageKey, items) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(items));
+      } catch {
+        return;
+      }
+    }
+
+    function getStoredApplications() {
+      return readStoredItems(adminApplicationsStorageKey)
+        .filter((item) => item && typeof item === "object" && item.id)
+        .sort((left, right) => new Date(right.submittedAt || 0).getTime() - new Date(left.submittedAt || 0).getTime());
+    }
+
+    function getStoredStudents() {
+      return readStoredItems(adminStudentsStorageKey)
+        .filter((item) => item && typeof item === "object" && item.name);
+    }
+
+    function getAllStudentEntries() {
+      return [...getStoredStudents(), ...studentOverviewData];
+    }
+
+    function getApplicationCounts(items) {
+      return {
+        total: items.length,
+        fresh: items.filter((item) => item.status !== "accepted").length,
+        accepted: items.filter((item) => item.status === "accepted").length
+      };
+    }
+
+    function formatDateTime(value) {
+      const parsedDate = new Date(value);
+      if (Number.isNaN(parsedDate.getTime())) {
+        return "";
+      }
+
+      return parsedDate.toLocaleString(getLocale(), {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function resolveStudentSubject(item, ui) {
+      if (item?.subjectLabel) {
+        return item.subjectLabel;
+      }
+
+      if (Number.isInteger(item?.subjectIndex)) {
+        return ui.courseTitles[item.subjectIndex] || ui.courseTitles[0];
+      }
+
+      return item?.courseTitle || getAllSubjectsLabel();
+    }
+
+    function ensureStudentFromApplication(application) {
+      if (!application?.id) {
+        return;
+      }
+
+      const storedStudents = getStoredStudents();
+      const alreadyAdded = storedStudents.some((item) => item.applicationId === application.id);
+
+      if (alreadyAdded) {
+        return;
+      }
+
+      storedStudents.unshift({
+        applicationId: application.id,
+        name: application.name || "",
+        phone: String(application.phone || "").replace(/\D/g, "").slice(-9),
+        subjectIndex: null,
+        subjectLabel: application.courseTitle || "",
+        amount: Number.isFinite(Number(application.amount)) ? Number(application.amount) : 0,
+        status: "pending"
+      });
+
+      writeStoredItems(adminStudentsStorageKey, storedStudents);
+    }
+
+    function acceptApplication(applicationId) {
+      const storedApplications = getStoredApplications();
+      const nextApplications = storedApplications.map((item) => {
+        if (item.id !== applicationId || item.status === "accepted") {
+          return item;
+        }
+
+        const acceptedEntry = {
+          ...item,
+          status: "accepted",
+          acceptedAt: new Date().toISOString()
+        };
+        ensureStudentFromApplication(acceptedEntry);
+        return acceptedEntry;
+      });
+
+      writeStoredItems(adminApplicationsStorageKey, nextApplications);
+      renderApplicationsOverview();
+      renderSidebarNav();
+      renderStudentOverview();
+      showToast(text().toasts.applicationAccepted || "");
+    }
+
+    function scrollToHashTarget() {
+      if (body.classList.contains("admin-locked") || !window.location.hash) {
+        return;
+      }
+
+      const target = document.querySelector(window.location.hash);
+      if (!target) {
+        return;
+      }
+
+      window.setTimeout(() => {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 80);
+    }
+
+    function getAllSubjectsLabel() {
+      if (currentLanguage === "en") {
+        return "All subjects";
+      }
+      if (currentLanguage === "ru") {
+        return "\u0412\u0441\u0435 \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u044b";
+      }
+      return "Barcha fanlar";
+    }
+
+    function getFilteredSectionCopy(subject) {
+      if (currentLanguage === "en") {
+        return {
+          eyebrow: subject,
+          title: `Students in ${subject}`,
+          description: `The list below shows students studying ${subject} and their payment status.`
+        };
+      }
+      if (currentLanguage === "ru") {
+        return {
+          eyebrow: subject,
+          title: `\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u044b: ${subject}`,
+          description: `\u041d\u0438\u0436\u0435 \u043f\u043e\u043a\u0430\u0437\u0430\u043d\u044b \u0443\u0447\u0435\u043d\u0438\u043a\u0438 \u043f\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u0443 ${subject} \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u0438\u0445 \u043e\u043f\u043b\u0430\u0442\u044b.`
+        };
+      }
+      return {
+        eyebrow: subject,
+        title: `${subject} bo'yicha o'quvchilar`,
+        description: `Quyida ${subject} fanida o'qiyotgan o'quvchilar va to'lov holati ko'rsatilgan.`
+      };
+    }
+
+    function getVisibleStudents() {
+      const allStudents = getAllStudentEntries();
+
+      if (activeSubjectIndex === null) {
+        return allStudents;
+      }
+
+      return allStudents.filter((item) => item.subjectIndex === activeSubjectIndex);
+    }
+
+    function getStudentCounts(items) {
+      return {
+        total: items.length,
+        paid: items.filter((item) => item.status === "paid").length,
+        pending: items.filter((item) => item.status === "pending").length,
+        late: items.filter((item) => item.status === "late").length
+      };
+    }
+
+    function renderSidebarNav() {
+      const ui = text();
+      if (!sidebarNav || !Array.isArray(ui.courseTitles)) {
+        return;
+      }
+
+      const allStudents = getAllStudentEntries();
+      const allStudentsCount = String(allStudents.length).padStart(2, "0");
+      const courseLinks = ui.courseTitles.map((subject, index) => {
+        const count = allStudents.filter((item) => item.subjectIndex === index).length;
+        const isActive = activeSubjectIndex === index;
+
+        return `
+          <a class="nav-link${isActive ? " is-active" : ""}" href="#students" data-subject-index="${index}"${isActive ? ' aria-current="page"' : ""}>
+            <span>${subject}</span>
+            <small>${String(count).padStart(2, "0")}</small>
+          </a>
+        `;
+      }).join("");
+
+      sidebarNav.innerHTML = `
+        <a class="nav-link${activeSubjectIndex === null ? " is-active" : ""}" href="#students" data-subject-index=""${activeSubjectIndex === null ? ' aria-current="page"' : ""}>
+          <span>${getAllSubjectsLabel()}</span>
+          <small>${allStudentsCount}</small>
+        </a>
+        ${courseLinks}
+      `;
+    }
+
+    function renderApplicationsOverview() {
+      const ui = text();
+      if (!applicationsTableBody || !ui.applicationTable) {
+        return;
+      }
+
+      const applications = getStoredApplications();
+      const counts = getApplicationCounts(applications);
+
+      if (applicationsEyebrow) applicationsEyebrow.textContent = ui.applicationsSection.eyebrow;
+      if (applicationsTitle) applicationsTitle.textContent = ui.applicationsSection.title;
+      if (applicationsDescription) applicationsDescription.textContent = ui.applicationsSection.description;
+
+      if (applicationsTotalLabel) applicationsTotalLabel.textContent = ui.applicationTable.summary.total;
+      if (applicationsNewLabel) applicationsNewLabel.textContent = ui.applicationTable.summary.fresh;
+      if (applicationsAcceptedLabel) applicationsAcceptedLabel.textContent = ui.applicationTable.summary.accepted;
+      if (applicationsTotalValue) applicationsTotalValue.textContent = String(counts.total);
+      if (applicationsNewValue) applicationsNewValue.textContent = String(counts.fresh);
+      if (applicationsAcceptedValue) applicationsAcceptedValue.textContent = String(counts.accepted);
+
+      if (applicationsColumnIndex) applicationsColumnIndex.textContent = ui.applicationTable.columns.index;
+      if (applicationsColumnApplicant) applicationsColumnApplicant.textContent = ui.applicationTable.columns.applicant;
+      if (applicationsColumnPhone) applicationsColumnPhone.textContent = ui.applicationTable.columns.phone;
+      if (applicationsColumnCourse) applicationsColumnCourse.textContent = ui.applicationTable.columns.course;
+      if (applicationsColumnStatus) applicationsColumnStatus.textContent = ui.applicationTable.columns.status;
+      if (applicationsColumnAction) applicationsColumnAction.textContent = ui.applicationTable.columns.action;
+
+      applicationsTableBody.innerHTML = "";
+
+      if (!applications.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 6;
+        cell.textContent = ui.applicationTable.empty;
+        row.appendChild(cell);
+        applicationsTableBody.appendChild(row);
+        return;
+      }
+
+      applications.forEach((item, index) => {
+        const row = document.createElement("tr");
+
+        const indexCell = document.createElement("td");
+        indexCell.className = "table-index";
+        indexCell.textContent = String(index + 1).padStart(2, "0");
+        row.appendChild(indexCell);
+
+        const applicantCell = document.createElement("td");
+        applicantCell.className = "person-cell";
+        const applicantName = document.createElement("strong");
+        applicantName.textContent = item.name || "-";
+        const applicantMeta = document.createElement("small");
+        const metaParts = [];
+        if (item.planTitle) metaParts.push(item.planTitle);
+        if (item.studyModeLabel) metaParts.push(item.studyModeLabel);
+        if (item.startDate) metaParts.push(item.startDate);
+        if (item.submittedAt) metaParts.push(formatDateTime(item.submittedAt));
+        applicantMeta.textContent = metaParts.join(" · ");
+        applicantCell.append(applicantName, applicantMeta);
+        row.appendChild(applicantCell);
+
+        const phoneCell = document.createElement("td");
+        phoneCell.className = "phone-cell";
+        const phoneLink = document.createElement("a");
+        phoneLink.className = "phone-link";
+        phoneLink.href = `tel:+998${String(item.phone || "").replace(/\D/g, "").slice(-9)}`;
+        phoneLink.textContent = formatPhone(item.phone);
+        phoneCell.appendChild(phoneLink);
+        row.appendChild(phoneCell);
+
+        const courseCell = document.createElement("td");
+        courseCell.className = "course-cell";
+        const courseName = document.createElement("strong");
+        courseName.textContent = item.courseTitle || "-";
+        const courseMeta = document.createElement("small");
+        courseMeta.textContent = item.amount ? formatMoney(item.amount) : "";
+        courseCell.append(courseName, courseMeta);
+        row.appendChild(courseCell);
+
+        const statusCell = document.createElement("td");
+        const statusBadge = document.createElement("span");
+        const normalizedStatus = item.status === "accepted" ? "accepted" : "new";
+        statusBadge.className = `status-badge status-badge--${normalizedStatus}`;
+        statusBadge.textContent = ui.applicationTable.statuses[normalizedStatus];
+        statusCell.appendChild(statusBadge);
+        row.appendChild(statusCell);
+
+        const actionCell = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "table-actions";
+        const acceptButton = document.createElement("button");
+        acceptButton.type = "button";
+        acceptButton.className = "table-action table-action--primary";
+        acceptButton.textContent = normalizedStatus === "accepted"
+          ? ui.applicationTable.buttons.accepted
+          : ui.applicationTable.buttons.accept;
+        acceptButton.disabled = normalizedStatus === "accepted";
+        acceptButton.addEventListener("click", () => {
+          acceptApplication(item.id);
+        });
+        actions.appendChild(acceptButton);
+        actionCell.appendChild(actions);
+        row.appendChild(actionCell);
+
+        applicationsTableBody.appendChild(row);
+      });
+    }
+
+    function renderStudentOverview() {
+      const ui = text();
+      if (!studentsTableBody || !ui.studentTable) {
+        return;
+      }
+
+      const visibleStudents = getVisibleStudents();
+      const counts = getStudentCounts(visibleStudents);
+      const activeSubject = activeSubjectIndex === null ? "" : ui.courseTitles[activeSubjectIndex];
+      const sectionCopy = activeSubject ? getFilteredSectionCopy(activeSubject) : ui.coursesSection;
+
+      if (coursesEyebrow) coursesEyebrow.textContent = sectionCopy.eyebrow;
+      if (coursesTitle) coursesTitle.textContent = sectionCopy.title;
+      if (coursesDescription) coursesDescription.textContent = sectionCopy.description;
+
+      if (studentsTotalLabel) studentsTotalLabel.textContent = ui.studentTable.summary.total;
+      if (studentsPaidLabel) studentsPaidLabel.textContent = ui.studentTable.summary.paid;
+      if (studentsPendingLabel) studentsPendingLabel.textContent = ui.studentTable.summary.pending;
+      if (studentsLateLabel) studentsLateLabel.textContent = ui.studentTable.summary.late;
+      if (studentsTotalValue) studentsTotalValue.textContent = String(counts.total);
+      if (studentsPaidValue) studentsPaidValue.textContent = String(counts.paid);
+      if (studentsPendingValue) studentsPendingValue.textContent = String(counts.pending);
+      if (studentsLateValue) studentsLateValue.textContent = String(counts.late);
+
+      if (studentsColumnIndex) studentsColumnIndex.textContent = ui.studentTable.columns.index;
+      if (studentsColumnStudent) studentsColumnStudent.textContent = ui.studentTable.columns.student;
+      if (studentsColumnPhone) studentsColumnPhone.textContent = ui.studentTable.columns.phone;
+      if (studentsColumnSubject) studentsColumnSubject.textContent = ui.studentTable.columns.subject;
+      if (studentsColumnAmount) studentsColumnAmount.textContent = ui.studentTable.columns.amount;
+      if (studentsColumnStatus) studentsColumnStatus.textContent = ui.studentTable.columns.status;
+
+      studentsTableBody.innerHTML = "";
+
+      if (!visibleStudents.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 6;
+        cell.textContent = ui.studentTable.empty;
+        row.appendChild(cell);
+        studentsTableBody.appendChild(row);
+        return;
+      }
+
+      visibleStudents.forEach((item, index) => {
+        const row = document.createElement("tr");
+        const visibleSubjectTitle = resolveStudentSubject(item, ui);
+
+        const indexCell = document.createElement("td");
+        indexCell.className = "table-index";
+        indexCell.textContent = String(index + 1).padStart(2, "0");
+        row.appendChild(indexCell);
+
+        const studentCell = document.createElement("td");
+        studentCell.className = "person-cell";
+        const studentName = document.createElement("strong");
+        studentName.textContent = item.name;
+        studentCell.appendChild(studentName);
+        row.appendChild(studentCell);
+
+        const phoneCell = document.createElement("td");
+        phoneCell.className = "phone-cell";
+        const phoneLink = document.createElement("a");
+        phoneLink.className = "phone-link";
+        phoneLink.href = `tel:+998${item.phone}`;
+        phoneLink.textContent = formatPhone(item.phone);
+        phoneCell.appendChild(phoneLink);
+        row.appendChild(phoneCell);
+
+        const subjectCell = document.createElement("td");
+        const subjectPill = document.createElement("span");
+        subjectPill.className = "subject-pill";
+        subjectPill.textContent = visibleSubjectTitle;
+        subjectCell.appendChild(subjectPill);
+        row.appendChild(subjectCell);
+
+        const amountCell = document.createElement("td");
+        amountCell.className = "payment-cell";
+        const amountValue = document.createElement("strong");
+        amountValue.textContent = formatMoney(item.amount);
+        const amountNote = document.createElement("small");
+        amountNote.textContent = ui.studentTable.details[item.status];
+        amountCell.append(amountValue, amountNote);
+        row.appendChild(amountCell);
+
+        const statusCell = document.createElement("td");
+        const statusBadge = document.createElement("span");
+        statusBadge.className = `status-badge status-badge--${item.status}`;
+        statusBadge.textContent = ui.studentTable.statuses[item.status];
+        statusCell.appendChild(statusBadge);
+        row.appendChild(statusCell);
+
+        studentsTableBody.appendChild(row);
+      });
+    }
+
+    function loadLanguagePreference() {
+      try {
+        const savedLanguage = localStorage.getItem(languageStorageKey);
+        if (supportedLanguages.includes(savedLanguage)) {
+          return savedLanguage;
+        }
+      } catch {
+        return "uz";
+      }
+
+      return "uz";
+    }
+
+    function saveLanguagePreference(language) {
+      try {
+        localStorage.setItem(languageStorageKey, language);
+      } catch {
+        return;
+      }
+    }
+
+    function getTextValue(path) {
+      return path.split(".").reduce((value, key) => value?.[key], text());
+    }
+
+    function setLanguage(language) {
+      currentLanguage = supportedLanguages.includes(language) ? language : "uz";
+      saveLanguagePreference(currentLanguage);
+      applyTranslations();
+    }
+
+    function readLocalAdminSession() {
+      try {
+        const raw = localStorage.getItem(adminLocalSessionKey);
+        if (!raw) {
+          return null;
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed.username !== "string") {
+          return null;
+        }
+
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveLocalAdminSession(username, phone = "") {
+      localStorage.setItem(adminLocalSessionKey, JSON.stringify({
+        username,
+        phone,
+        authenticatedAt: Date.now()
+      }));
+    }
+
+    function clearLocalAdminSession() {
+      localStorage.removeItem(adminLocalSessionKey);
+    }
+
+    function setAdminGateStatus(message = "", isError = false, translationKey = "") {
+      if (!adminLoginStatus) {
+        return;
+      }
+
+      adminLoginStatus.textContent = message;
+      adminLoginStatus.dataset.i18nKey = translationKey;
+      adminLoginStatus.classList.toggle("error", Boolean(isError));
+    }
+
+    function setAdminGateStatusByKey(key, isError = false) {
+      setAdminGateStatus(getTextValue(key) || "", isError, key);
+    }
+
+    function refreshAdminGateStatus() {
+      if (!adminLoginStatus) {
+        return;
+      }
+
+      const key = adminLoginStatus.dataset.i18nKey;
+      if (key) {
+        adminLoginStatus.textContent = getTextValue(key) || adminLoginStatus.textContent;
+      }
+    }
+
+    function setAdminLockState(isLocked) {
+      body.classList.toggle("admin-locked", Boolean(isLocked));
+
+      if (adminGate) {
+        adminGate.hidden = !isLocked;
+      }
+
+      if (isLocked) {
+        toggleSidebar(false);
+        return;
+      }
+
+      scrollToHashTarget();
+    }
+
+    function renderAdminChip() {
+      if (!adminChipLabel || !adminChipName || !adminLogoutButton) {
+        return;
+      }
+
+      const chipText = text().adminChip;
+
+      if (!adminChipState.enabled) {
+        adminChipLabel.textContent = chipText.demoMode;
+        adminChipName.textContent = chipText.passwordUnset;
+        adminLogoutButton.hidden = true;
+        return;
+      }
+
+      if (adminChipState.checking) {
+        adminChipLabel.textContent = chipText.systemSession;
+        adminChipName.textContent = chipText.checking;
+        adminLogoutButton.hidden = true;
+        return;
+      }
+
+      if (adminChipState.authenticated) {
+        adminChipLabel.textContent = adminAuthMode === "local" ? chipText.localSession : chipText.systemSession;
+        adminChipName.textContent = adminChipState.username || chipText.defaultName;
+        adminLogoutButton.hidden = false;
+        return;
+      }
+
+      adminChipLabel.textContent = chipText.loginRequired;
+      adminChipName.textContent = chipText.loginPrompt;
+      adminLogoutButton.hidden = true;
+    }
+
+    function updateAdminChip(state = {}) {
+      Object.assign(adminChipState, state);
+      renderAdminChip();
+    }
+
+    async function syncAdminSession({ focusOnLock = false } = {}) {
+      try {
+        const response = await fetch("/api/admin/session", {
+          cache: "no-store"
+        });
+        const payload = await response.json();
+        const enabled = Boolean(payload?.enabled);
+        const authenticated = enabled ? Boolean(payload?.authenticated) : true;
+        const username = payload?.username || "";
+        const usernameHint = payload?.usernameHint || "";
+        adminAuthMode = "server";
+
+        if (adminUsernameInput && usernameHint && !adminUsernameInput.value.trim()) {
+          adminUsernameInput.value = usernameHint;
+        }
+
+        updateAdminChip({
+          enabled,
+          authenticated,
+          username: username || usernameHint,
+          checking: false
+        });
+        setAdminLockState(!authenticated);
+        setAdminGateStatus("");
+
+        if (!authenticated && focusOnLock) {
+          window.setTimeout(() => adminUsernameInput?.focus(), 0);
+        }
+      } catch {
+        adminAuthMode = "local";
+        const localSession = readLocalAdminSession();
+        const authenticated = Boolean(localSession);
+        const username = localSession?.username || text().adminChip.defaultName;
+
+        updateAdminChip({
+          enabled: true,
+          authenticated,
+          username,
+          checking: false
+        });
+        setAdminLockState(!authenticated);
+        if (authenticated) {
+          setAdminGateStatus("");
+        } else {
+          setAdminGateStatusByKey("gate.messages.offlineHint");
+        }
+
+        if (!authenticated && focusOnLock) {
+          window.setTimeout(() => adminUsernameInput?.focus(), 0);
+        }
+      }
+    }
+
+    function updateThemeButton() {
+      if (!themeToggle || !themeToggleIcon) {
+        return;
+      }
+
+      const isDark = body.dataset.theme === "dark";
+      themeToggleIcon.innerHTML = isDark ? moonIcon : sunIcon;
+      themeToggle.dataset.themeState = isDark ? "dark" : "light";
+      themeToggle.setAttribute("aria-label", isDark ? text().actions.themeLight : text().actions.themeDark);
+      themeToggle.setAttribute("title", isDark ? text().actions.themeLight : text().actions.themeDark);
+    }
+
+    function setTheme(theme) {
+      body.dataset.theme = theme;
+      localStorage.setItem(themeStorageKey, theme);
+      updateThemeButton();
+    }
+
+    function normalizeAdminPhone(value) {
+      return String(value || "").replace(/\D/g, "").slice(0, 9);
+    }
+
+    function formatAdminPhone(value) {
+      const digits = normalizeAdminPhone(value);
+      const first = digits.slice(0, 2);
+      const second = digits.slice(2, 5);
+      const third = digits.slice(5, 7);
+      const fourth = digits.slice(7, 9);
+
+      return [first, second, third, fourth].filter(Boolean).join(" ");
+    }
+
+    function toggleSidebar(forceOpen) {
+      const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !body.classList.contains("sidebar-open");
+      body.classList.toggle("sidebar-open", shouldOpen);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("is-visible");
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("is-visible");
+      }, 2600);
+    }
+
+    function applyTranslations() {
+      const ui = text();
+
+      document.documentElement.lang = currentLanguage;
+      document.title = ui.meta.title;
+
+      languageLabels.forEach((label) => {
+        label.textContent = ui.language.label;
+      });
+
+      languageSelects.forEach((select) => {
+        select.value = currentLanguage;
+        Array.from(select.options).forEach((option) => {
+          option.textContent = ui.language.options[option.value] || option.textContent;
+        });
+      });
+
+      if (brandTitle) {
+        brandTitle.textContent = ui.brand.title;
+      }
+
+      if (adminGateEyebrow) adminGateEyebrow.textContent = ui.gate.eyebrow;
+      if (adminGateTitle) adminGateTitle.textContent = ui.gate.title;
+      if (adminGateDescription) adminGateDescription.textContent = ui.gate.description;
+      if (adminUsernameLabel) adminUsernameLabel.textContent = ui.gate.fields.username;
+      if (adminPhoneLabel) adminPhoneLabel.textContent = ui.gate.fields.phone;
+      if (adminPasswordLabel) adminPasswordLabel.textContent = ui.gate.fields.password;
+      if (adminLoginSubmit) adminLoginSubmit.textContent = ui.gate.submit;
+      if (adminUsernameInput) adminUsernameInput.placeholder = ui.gate.placeholders.username;
+      if (adminPhoneInput) adminPhoneInput.placeholder = ui.gate.placeholders.phone;
+      if (adminPasswordInput) adminPasswordInput.placeholder = ui.gate.placeholders.password;
+
+      if (sidebarSectionTitle) {
+        sidebarSectionTitle.textContent = ui.sidebar.sectionTitle;
+      }
+      if (sidebarNav) {
+        sidebarNav.setAttribute("aria-label", ui.sidebar.navAria);
+      }
+      renderSidebarNav();
+
+      if (sidebarOpen) {
+        sidebarOpen.setAttribute("aria-label", ui.actions.openMenu);
+      }
+      if (sidebarClose) {
+        sidebarClose.setAttribute("aria-label", ui.actions.closeMenu);
+      }
+
+      if (topbarEyebrow) topbarEyebrow.textContent = ui.topbar.eyebrow;
+      if (topbarTitle) topbarTitle.textContent = ui.topbar.title;
+      if (topbarDescription) topbarDescription.textContent = ui.topbar.description;
+
+      renderApplicationsOverview();
+      renderStudentOverview();
+
+      if (footerText) footerText.textContent = ui.footer;
+      if (adminLogoutButton) {
+        adminLogoutButton.textContent = ui.adminChip.logout;
+      }
+
+      refreshAdminGateStatus();
+      renderAdminChip();
+      updateThemeButton();
+    }
+
+    if (adminLoginForm) {
+      adminPhoneInput?.addEventListener("input", () => {
+        adminPhoneInput.value = formatAdminPhone(adminPhoneInput.value);
+      });
+
+      adminLoginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const username = adminUsernameInput?.value.trim() || "";
+        const phoneDigits = normalizeAdminPhone(adminPhoneInput?.value || "");
+        const password = adminPasswordInput?.value || "";
+        if (!username || !phoneDigits || !password) {
+          setAdminGateStatusByKey("gate.messages.missing", true);
+          if (!username) {
+            adminUsernameInput?.focus();
+          } else if (!phoneDigits) {
+            adminPhoneInput?.focus();
+          } else {
+            adminPasswordInput?.focus();
+          }
+          return;
+        }
+
+        if (phoneDigits.length !== 9) {
+          setAdminGateStatusByKey("gate.messages.incompletePhone", true);
+          adminPhoneInput?.focus();
+          return;
+        }
+
+        setAdminGateStatusByKey("gate.messages.checking");
+
+        if (adminAuthMode === "local") {
+          saveLocalAdminSession(username, `+998${phoneDigits}`);
+          updateAdminChip({
+            enabled: true,
+            authenticated: true,
+            username,
+            checking: false
+          });
+          setAdminLockState(false);
+          setAdminGateStatus("");
+          if (adminPasswordInput) {
+            adminPasswordInput.value = "";
+          }
+          showToast(text().toasts.localOpened);
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username,
+              phone: `+998${phoneDigits}`,
+              password
+            })
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            if (payload?.error) {
+              setAdminGateStatus(payload.error, true);
+            } else {
+              setAdminGateStatusByKey("gate.messages.loginError", true);
+            }
+            adminPasswordInput?.focus();
+            return;
+          }
+
+          updateAdminChip({
+            enabled: true,
+            authenticated: true,
+            username: payload?.username || username,
+            checking: false
+          });
+          setAdminLockState(false);
+          setAdminGateStatus("");
+          if (adminPasswordInput) {
+            adminPasswordInput.value = "";
+          }
+          showToast(text().toasts.loginSuccess);
+        } catch {
+          adminAuthMode = "local";
+          saveLocalAdminSession(username, `+998${phoneDigits}`);
+          updateAdminChip({
+            enabled: true,
+            authenticated: true,
+            username,
+            checking: false
+          });
+          setAdminLockState(false);
+          setAdminGateStatus("");
+          if (adminPasswordInput) {
+            adminPasswordInput.value = "";
+          }
+          showToast(text().toasts.localFallback);
+        }
+      });
+    }
+
+    if (adminLogoutButton) {
+      adminLogoutButton.addEventListener("click", async () => {
+        adminLogoutButton.disabled = true;
+
+        if (adminAuthMode === "server") {
+          try {
+            await fetch("/api/admin/logout", {
+              method: "POST"
+            });
+          } catch {
+            // Sessiya tozalash imkon qadar davom etadi.
+          }
+        }
+
+        clearLocalAdminSession();
+
+        updateAdminChip({
+          enabled: true,
+          authenticated: false,
+          username: "",
+          checking: false
+        });
+        setAdminLockState(true);
+        setAdminGateStatusByKey("gate.messages.sessionEnded");
+        if (adminPasswordInput) {
+          adminPasswordInput.value = "";
+        }
+        adminLogoutButton.disabled = false;
+        window.setTimeout(() => adminUsernameInput?.focus(), 0);
+        showToast(text().toasts.logout);
+      });
+    }
+
+    if (sidebarNav) {
+      sidebarNav.addEventListener("click", (event) => {
+        const link = event.target.closest(".nav-link");
+        if (!link) {
+          return;
+        }
+
+        event.preventDefault();
+        const nextSubjectIndex = link.dataset.subjectIndex;
+        const parsedSubjectIndex = Number(nextSubjectIndex);
+        activeSubjectIndex = nextSubjectIndex === "" || Number.isNaN(parsedSubjectIndex) ? null : parsedSubjectIndex;
+        renderSidebarNav();
+        renderStudentOverview();
+        toggleSidebar(false);
+      });
+    }
+
+    toastButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        showToast(button.dataset.toast);
+      });
+    });
+
+    languageSelects.forEach((select) => {
+      select.addEventListener("change", () => {
+        setLanguage(select.value);
+      });
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = body.dataset.theme === "dark" ? "light" : "dark";
+      setTheme(nextTheme);
+    });
+
+    if (sidebarOpen) {
+      sidebarOpen.addEventListener("click", () => toggleSidebar(true));
+    }
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener("click", () => toggleSidebar(false));
+    }
+
+    sidebarOverlay.addEventListener("click", () => toggleSidebar(false));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        toggleSidebar(false);
+      }
+    });
+
+    window.addEventListener("hashchange", scrollToHashTarget);
+    window.addEventListener("storage", (event) => {
+      if (event.key !== adminApplicationsStorageKey && event.key !== adminStudentsStorageKey) {
+        return;
+      }
+
+      renderApplicationsOverview();
+      renderSidebarNav();
+      renderStudentOverview();
+    });
+
+    const savedTheme = localStorage.getItem(themeStorageKey);
+    setTheme(savedTheme || "light");
+    applyTranslations();
+    syncAdminSession({
+      focusOnLock: true
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,409 @@
+const http = require("http");
+const crypto = require("crypto");
+const fs = require("fs");
+const fsp = require("fs/promises");
+const path = require("path");
+
+const rootDir = __dirname;
+const envFilePath = path.join(rootDir, ".env");
+
+const loadEnvFile = () => {
+  if (!fs.existsSync(envFilePath)) {
+    return;
+  }
+
+  const rawEnv = fs.readFileSync(envFilePath, "utf8");
+  rawEnv.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      return;
+    }
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) {
+      return;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    let value = trimmed.slice(separatorIndex + 1).trim();
+    if (!key || Object.prototype.hasOwnProperty.call(process.env, key)) {
+      return;
+    }
+
+    if (
+      (value.startsWith('"') && value.endsWith('"'))
+      || (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    process.env[key] = value;
+  });
+};
+
+loadEnvFile();
+
+const port = Number.parseInt(process.env.PORT || "3000", 10);
+const host = process.env.HOST || "127.0.0.1";
+const adminUsername = (process.env.ADMIN_USERNAME || "admin").trim() || "admin";
+const adminPassword = (process.env.ADMIN_PASSWORD || "").trim();
+const adminPhone = (process.env.ADMIN_PHONE || "").trim();
+const adminSessionCookieName = "it_center_admin_session";
+const adminSessionTtlHours = Math.max(1, Number.parseInt(process.env.ADMIN_SESSION_TTL_HOURS || "12", 10) || 12);
+const adminSessionTtlMs = adminSessionTtlHours * 60 * 60 * 1000;
+const adminSessions = new Map();
+const maxJsonBodyBytes = 1024 * 1024;
+const mimeTypes = {
+  ".css": "text/css; charset=utf-8",
+  ".gif": "image/gif",
+  ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".txt": "text/plain; charset=utf-8",
+  ".webp": "image/webp"
+};
+
+const sendText = (response, statusCode, message) => {
+  response.writeHead(statusCode, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  response.end(message);
+};
+
+const sendJson = (response, statusCode, payload) => {
+  response.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  response.end(JSON.stringify(payload));
+};
+
+const timingSafeCompare = (left, right) => {
+  const leftBuffer = Buffer.from(String(left), "utf8");
+  const rightBuffer = Buffer.from(String(right), "utf8");
+  if (leftBuffer.length !== rightBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
+};
+
+const normalizePhoneNumber = (value) => {
+  const digitsOnly = typeof value === "string" ? value.replace(/\D/g, "") : "";
+  if (digitsOnly.length === 9) {
+    return `998${digitsOnly}`;
+  }
+
+  if (digitsOnly.length === 12 && digitsOnly.startsWith("998")) {
+    return digitsOnly;
+  }
+
+  return "";
+};
+
+const isAdminProtectionEnabled = () => Boolean(adminPassword);
+
+const pruneExpiredAdminSessions = () => {
+  const now = Date.now();
+  for (const [token, session] of adminSessions.entries()) {
+    if (!session || session.expiresAt <= now) {
+      adminSessions.delete(token);
+    }
+  }
+};
+
+const parseCookies = (cookieHeader) => {
+  const cookies = {};
+  if (typeof cookieHeader !== "string" || !cookieHeader.trim()) {
+    return cookies;
+  }
+
+  cookieHeader.split(";").forEach((part) => {
+    const separatorIndex = part.indexOf("=");
+    if (separatorIndex === -1) {
+      return;
+    }
+
+    const key = part.slice(0, separatorIndex).trim();
+    const rawValue = part.slice(separatorIndex + 1).trim();
+    if (!key) {
+      return;
+    }
+
+    try {
+      cookies[key] = decodeURIComponent(rawValue);
+    } catch {
+      cookies[key] = rawValue;
+    }
+  });
+
+  return cookies;
+};
+
+const serializeCookie = (name, value, maxAgeSeconds) => {
+  const parts = [
+    `${name}=${encodeURIComponent(value)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax"
+  ];
+
+  if (Number.isFinite(maxAgeSeconds)) {
+    parts.push(`Max-Age=${Math.max(0, Math.floor(maxAgeSeconds))}`);
+  }
+
+  return parts.join("; ");
+};
+
+const createAdminSession = (username) => {
+  pruneExpiredAdminSessions();
+  const token = crypto.randomBytes(24).toString("hex");
+  adminSessions.set(token, {
+    username,
+    expiresAt: Date.now() + adminSessionTtlMs
+  });
+  return token;
+};
+
+const getAdminSessionFromRequest = (request) => {
+  if (!isAdminProtectionEnabled()) {
+    return {
+      username: adminUsername,
+      token: "",
+      expiresAt: Date.now() + adminSessionTtlMs
+    };
+  }
+
+  pruneExpiredAdminSessions();
+  const cookies = parseCookies(request.headers.cookie);
+  const token = cookies[adminSessionCookieName];
+  if (!token) {
+    return null;
+  }
+
+  const session = adminSessions.get(token);
+  if (!session) {
+    return null;
+  }
+
+  if (session.expiresAt <= Date.now()) {
+    adminSessions.delete(token);
+    return null;
+  }
+
+  return {
+    ...session,
+    token
+  };
+};
+
+const clearAdminSession = (token) => {
+  if (typeof token === "string" && token) {
+    adminSessions.delete(token);
+  }
+};
+
+const readJsonBody = (request) => new Promise((resolve, reject) => {
+  let rawBody = "";
+
+  request.setEncoding("utf8");
+  request.on("data", (chunk) => {
+    rawBody += chunk;
+
+    if (Buffer.byteLength(rawBody, "utf8") > maxJsonBodyBytes) {
+      const error = new Error("Payload too large");
+      error.statusCode = 413;
+      request.destroy(error);
+    }
+  });
+
+  request.on("end", () => {
+    if (!rawBody.trim()) {
+      resolve({});
+      return;
+    }
+
+    try {
+      resolve(JSON.parse(rawBody));
+    } catch {
+      const error = new Error("JSON body noto'g'ri formatda yuborildi.");
+      error.statusCode = 400;
+      reject(error);
+    }
+  });
+
+  request.on("error", (error) => {
+    if (error?.statusCode) {
+      reject(error);
+      return;
+    }
+
+    const normalizedError = new Error("So'rov body sini o'qib bo'lmadi.");
+    normalizedError.statusCode = 400;
+    reject(normalizedError);
+  });
+});
+
+const handleAdminSessionStatus = (request, response) => {
+  const session = getAdminSessionFromRequest(request);
+  sendJson(response, 200, {
+    enabled: isAdminProtectionEnabled(),
+    authenticated: Boolean(session),
+    username: session?.username || "",
+    usernameHint: adminUsername
+  });
+};
+
+const handleAdminLogin = async (request, response) => {
+  try {
+    if (!isAdminProtectionEnabled()) {
+      sendJson(response, 200, {
+        enabled: false,
+        authenticated: true,
+        username: adminUsername,
+        usernameHint: adminUsername
+      });
+      return;
+    }
+
+    const body = await readJsonBody(request);
+    const username = typeof body?.username === "string" ? body.username.trim() : "";
+    const phone = normalizePhoneNumber(body?.phone);
+    const password = typeof body?.password === "string" ? body.password : "";
+
+    if (!username || !phone || !password) {
+      sendJson(response, 400, {
+        error: "Login, telefon raqam va parolni kiriting."
+      });
+      return;
+    }
+
+    const normalizedAdminPhone = normalizePhoneNumber(adminPhone);
+
+    const isValidAdminLogin = (
+      timingSafeCompare(username, adminUsername)
+      && timingSafeCompare(password, adminPassword)
+      && (!normalizedAdminPhone || timingSafeCompare(phone, normalizedAdminPhone))
+    );
+
+    if (!isValidAdminLogin) {
+      sendJson(response, 401, {
+        error: "Login, telefon raqam yoki parol noto'g'ri."
+      });
+      return;
+    }
+
+    const sessionToken = createAdminSession(adminUsername);
+    response.setHeader("Set-Cookie", serializeCookie(adminSessionCookieName, sessionToken, adminSessionTtlMs / 1000));
+
+    sendJson(response, 200, {
+      enabled: true,
+      authenticated: true,
+      username: adminUsername,
+      usernameHint: adminUsername
+    });
+  } catch (error) {
+    sendJson(response, error?.statusCode || 500, {
+      error: error?.message || "Tizimga kirishda xato yuz berdi."
+    });
+  }
+};
+
+const handleAdminLogout = (request, response) => {
+  const session = getAdminSessionFromRequest(request);
+  clearAdminSession(session?.token);
+  response.setHeader("Set-Cookie", serializeCookie(adminSessionCookieName, "", 0));
+  sendJson(response, 200, {
+    authenticated: false
+  });
+};
+
+const resolveFilePath = (pathname) => {
+  const normalizedPathname = pathname === "/" ? "/index.html" : pathname;
+  const decodedPath = decodeURIComponent(normalizedPathname);
+  const absolutePath = path.resolve(rootDir, `.${decodedPath}`);
+  if (!absolutePath.startsWith(rootDir)) {
+    return null;
+  }
+
+  return absolutePath;
+};
+
+const serveStaticFile = async (request, response, pathname) => {
+  const absolutePath = resolveFilePath(pathname);
+  if (!absolutePath) {
+    sendText(response, 403, "Forbidden");
+    return;
+  }
+
+  try {
+    const stats = await fsp.stat(absolutePath);
+    const filePath = stats.isDirectory() ? path.join(absolutePath, "index.html") : absolutePath;
+    const finalStats = stats.isDirectory() ? await fsp.stat(filePath) : stats;
+    if (!finalStats.isFile()) {
+      throw new Error("Not a file");
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType = mimeTypes[ext] || "application/octet-stream";
+    const fileBuffer = await fsp.readFile(filePath);
+
+    response.writeHead(200, {
+      "Content-Type": contentType,
+      "Cache-Control": ext === ".html" ? "no-store" : "public, max-age=300"
+    });
+
+    if (request.method === "HEAD") {
+      response.end();
+      return;
+    }
+
+    response.end(fileBuffer);
+  } catch {
+    sendText(response, 404, "Not found");
+  }
+};
+
+const server = http.createServer(async (request, response) => {
+  if (!request.url) {
+    sendText(response, 400, "Bad request");
+    return;
+  }
+
+  const parsedUrl = new URL(request.url, `http://${request.headers.host || `${host}:${port}`}`);
+  const pathname = parsedUrl.pathname;
+
+  response.setHeader("X-Content-Type-Options", "nosniff");
+
+  if (request.method === "GET" && pathname === "/api/admin/session") {
+    handleAdminSessionStatus(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/admin/login") {
+    await handleAdminLogin(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/admin/logout") {
+    handleAdminLogout(request, response);
+    return;
+  }
+
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    sendText(response, 405, "Method not allowed");
+    return;
+  }
+
+  await serveStaticFile(request, response, pathname);
+});
+
+server.listen(port, host, () => {
+  console.log(`IT CENTER server running at http://${host}:${port}`);
+});

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT CENTER | Sahifa</title>
+  <style>
+    :root {
+      --bg: #efe6d8;
+      --paper: rgba(255, 252, 247, 0.94);
+      --paper-line: rgba(61, 46, 33, 0.1);
+      --text: #231a14;
+      --muted: rgba(35, 26, 20, 0.58);
+      --accent: #c86941;
+      --accent-soft: rgba(200, 105, 65, 0.14);
+      --idle: #7e756f;
+      --saving: #d08c32;
+      --saved: #2b9a64;
+      --shadow: 0 24px 70px rgba(71, 50, 36, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(200, 105, 65, 0.16), transparent 24%),
+        radial-gradient(circle at right bottom, rgba(109, 142, 121, 0.18), transparent 28%),
+        linear-gradient(160deg, #f7efe3 0%, var(--bg) 52%, #e6dacb 100%);
+    }
+
+    body[data-save-state="saving"] .status-dot {
+      background: var(--saving);
+      box-shadow: 0 0 0 8px rgba(208, 140, 50, 0.14);
+      transform: scale(1.06);
+    }
+
+    body[data-save-state="saved"] .status-dot {
+      background: var(--saved);
+      box-shadow: 0 0 0 8px rgba(43, 154, 100, 0.12);
+    }
+
+    a,
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .shell {
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .paper {
+      position: relative;
+      min-height: calc(100vh - 36px);
+      max-width: 1120px;
+      margin: 0 auto;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.16)),
+        var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .paper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(transparent 37px, rgba(49, 38, 30, 0.045) 38px, transparent 39px);
+      background-size: 100% 46px;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--paper-line);
+      background: rgba(255, 250, 244, 0.84);
+      backdrop-filter: blur(12px);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-button,
+    .status-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid rgba(61, 46, 33, 0.08);
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: 0 12px 22px rgba(63, 46, 31, 0.08);
+    }
+
+    .icon-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .icon-button svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .section-pill {
+      max-width: min(50vw, 540px);
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(61, 46, 33, 0.08);
+      background: rgba(255, 255, 255, 0.78);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--idle);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .editor {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      min-height: calc(100vh - 128px);
+      padding: clamp(28px, 4vw, 46px) clamp(24px, 6vw, 80px) clamp(56px, 10vw, 120px);
+      border: 0;
+      outline: none;
+      resize: none;
+      background: transparent;
+      color: var(--text);
+      caret-color: var(--accent);
+      font: 500 clamp(1.18rem, 2vw, 1.52rem) / 1.85 Georgia, "Times New Roman", serif;
+      letter-spacing: 0.01em;
+      tab-size: 2;
+    }
+
+    .editor::placeholder {
+      color: rgba(35, 26, 20, 0.3);
+    }
+
+    .editor::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .editor::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      border: 3px solid transparent;
+      background: rgba(200, 105, 65, 0.28);
+      background-clip: content-box;
+    }
+
+    .corner-accent {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      width: 92px;
+      height: 92px;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.18)),
+        var(--accent-soft);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 18px 34px rgba(63, 46, 31, 0.08);
+      pointer-events: none;
+    }
+
+    .corner-accent::before,
+    .corner-accent::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .corner-accent::before {
+      top: 22px;
+      height: 14px;
+    }
+
+    .corner-accent::after {
+      bottom: 22px;
+      height: 10px;
+      opacity: 0.38;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 12px;
+      }
+
+      .paper {
+        min-height: calc(100vh - 24px);
+        border-radius: 22px;
+      }
+
+      .toolbar {
+        padding: 12px;
+      }
+
+      .icon-button,
+      .status-wrap {
+        width: 42px;
+        height: 42px;
+      }
+
+      .editor {
+        min-height: calc(100vh - 106px);
+        padding: 18px 18px 86px;
+        font-size: 1.08rem;
+      }
+
+      .corner-accent {
+        right: 18px;
+        bottom: 18px;
+        width: 72px;
+        height: 72px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .section-pill {
+        max-width: 48vw;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body data-save-state="idle">
+  <main class="shell">
+    <section class="paper" id="paper">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <a class="icon-button" href="index.html" aria-label="Bosh sahifaga qaytish" title="Orqaga">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+          </a>
+          <div class="section-pill" id="page-section-label"></div>
+        </div>
+        <div class="status-wrap" aria-hidden="true">
+          <span class="status-dot"></span>
+        </div>
+      </div>
+
+      <label class="sr-only" for="page-editor">Yozish maydoni</label>
+      <textarea id="page-editor" class="editor" spellcheck="false" autocomplete="off" autocapitalize="sentences"></textarea>
+      <div class="corner-accent" aria-hidden="true"></div>
+      <p class="sr-only" id="save-status" aria-live="polite">Tayyor</p>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const requestedSection = params.get("section") || "default";
+    const requestedLabel = (params.get("label") || "").trim();
+    const validSections = new Set(["project", "focus", "roadmap", "note"]);
+    const section = validSections.has(requestedSection) ? requestedSection : "default";
+    const pageNames = {
+      project: "Loyiha",
+      focus: "Yo'nalishlar",
+      roadmap: "Bosqichlar",
+      note: "Eslatma",
+      default: "Sahifa"
+    };
+
+    const editor = document.getElementById("page-editor");
+    const paper = document.getElementById("paper");
+    const saveStatus = document.getElementById("save-status");
+    const sectionLabel = document.getElementById("page-section-label");
+    const pageLabel = requestedLabel || pageNames[section] || pageNames.default;
+    const storageKey = `plain-page-content-${section}`;
+    const saveTimeKey = `plain-page-saved-at-${section}`;
+    const backupDbName = "it-center-page-backups";
+    const backupStoreName = "pages";
+    let saveTimer = 0;
+
+    document.body.dataset.section = section;
+    document.title = `IT CENTER | ${pageLabel}`;
+
+    if (sectionLabel) {
+      sectionLabel.textContent = pageLabel;
+    }
+
+    if (editor) {
+      editor.placeholder = `${pageLabel} uchun yozishni shu yerda boshlang...`;
+    }
+
+    const setSaveState = (state, message) => {
+      document.body.dataset.saveState = state;
+      if (saveStatus) {
+        saveStatus.textContent = message;
+      }
+    };
+
+    const openBackupDb = () => new Promise((resolve, reject) => {
+      if (!("indexedDB" in window)) {
+        resolve(null);
+        return;
+      }
+
+      const request = indexedDB.open(backupDbName, 1);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(backupStoreName)) {
+          db.createObjectStore(backupStoreName, { keyPath: "id" });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+
+    const readBackup = async () => {
+      const db = await openBackupDb();
+      if (!db) {
+        return null;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(backupStoreName, "readonly");
+        const store = transaction.objectStore(backupStoreName);
+        const request = store.get(storageKey);
+
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const writeBackup = async (content, savedAt) => {
+      const db = await openBackupDb();
+      if (!db) {
+        return;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(backupStoreName, "readwrite");
+        const store = transaction.objectStore(backupStoreName);
+        const request = store.put({
+          id: storageKey,
+          content,
+          savedAt
+        });
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const pickNewestContent = (localContent, localSavedAt, backupEntry) => {
+      const backupContent = backupEntry?.content ?? null;
+      const backupSavedAt = backupEntry?.savedAt ?? "";
+
+      if (localContent === null && backupContent === null) {
+        return { content: "", savedAt: "" };
+      }
+
+      if (localContent !== null && backupContent === null) {
+        return { content: localContent, savedAt: localSavedAt || "" };
+      }
+
+      if (localContent === null && backupContent !== null) {
+        return { content: backupContent, savedAt: backupSavedAt };
+      }
+
+      const localTime = localSavedAt ? new Date(localSavedAt).getTime() : 0;
+      const backupTime = backupSavedAt ? new Date(backupSavedAt).getTime() : 0;
+      return backupTime > localTime
+        ? { content: backupContent || "", savedAt: backupSavedAt }
+        : { content: localContent || "", savedAt: localSavedAt || "" };
+    };
+
+    const writeLocalCopy = (content, savedAt) => {
+      localStorage.setItem(storageKey, content);
+      localStorage.setItem(saveTimeKey, savedAt);
+    };
+
+    const saveEditorContent = async (stateAfterSave = "saved") => {
+      if (!editor) {
+        return;
+      }
+
+      const savedAt = new Date().toISOString();
+      writeLocalCopy(editor.value, savedAt);
+
+      try {
+        await writeBackup(editor.value, savedAt);
+      } catch {
+        // Local storage already has the latest copy.
+      }
+
+      setSaveState(stateAfterSave, "Saqlandi");
+    };
+
+    const scheduleSave = () => {
+      if (!editor) {
+        return;
+      }
+
+      setSaveState("saving", "Saqlanmoqda");
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => {
+        saveEditorContent("saved");
+      }, 220);
+    };
+
+    const restoreSavedContent = async () => {
+      const localContent = localStorage.getItem(storageKey);
+      const localSavedAt = localStorage.getItem(saveTimeKey);
+
+      let backupEntry = null;
+      try {
+        backupEntry = await readBackup();
+      } catch {
+        backupEntry = null;
+      }
+
+      const restored = pickNewestContent(localContent, localSavedAt, backupEntry);
+      if (editor) {
+        editor.value = restored.content || "";
+      }
+
+      setSaveState(
+        restored.content ? "saved" : "idle",
+        restored.content ? "Oldingi yozuv tiklandi" : "Tayyor"
+      );
+    };
+
+    if (editor) {
+      editor.addEventListener("input", scheduleSave);
+      editor.addEventListener("blur", () => {
+        saveEditorContent("saved");
+      });
+    }
+
+    if (paper && editor) {
+      paper.addEventListener("click", (event) => {
+        if (event.target.closest("a, button")) {
+          return;
+        }
+        editor.focus();
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        saveEditorContent("saved");
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        saveEditorContent("saved");
+      }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      saveEditorContent("saved");
+    });
+
+    window.addEventListener("pagehide", () => {
+      saveEditorContent("saved");
+    });
+
+    restoreSavedContent().then(() => {
+      window.requestAnimationFrame(() => {
+        editor?.focus();
+      });
+    });
+  </script>
+</body>
+</html>

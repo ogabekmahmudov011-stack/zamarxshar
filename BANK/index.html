@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>O'quv Markaz Kurslari</title>
+    <script>
+      (function () {
+        try {
+          document.documentElement.dataset.theme = localStorage.getItem("bank-theme") || "dark";
+          document.documentElement.lang = localStorage.getItem("bank-language") || "uz";
+        } catch (error) {
+          document.documentElement.dataset.theme = "dark";
+          document.documentElement.lang = "uz";
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Rejimni almashtirish" title="Rejimni almashtirish">
+      <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2.5v2.2"></path>
+          <path d="M12 19.3v2.2"></path>
+          <path d="m5.3 5.3 1.6 1.6"></path>
+          <path d="m17.1 17.1 1.6 1.6"></path>
+          <path d="M2.5 12h2.2"></path>
+          <path d="M19.3 12h2.2"></path>
+          <path d="m5.3 18.7 1.6-1.6"></path>
+          <path d="m17.1 6.9 1.6-1.6"></path>
+        </svg>
+      </span>
+      <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M20 14.2A8 8 0 1 1 9.8 4 6.5 6.5 0 0 0 20 14.2Z"></path>
+        </svg>
+      </span>
+    </button>
+
+    <div class="language-switcher" data-language-switcher role="group" aria-label="Language switcher">
+      <button
+        class="language-switcher__toggle"
+        type="button"
+        data-language-toggle
+        aria-label="Tilni tanlash"
+        aria-expanded="false"
+        aria-controls="languageOptions"
+      >
+        <span class="language-switcher__globe" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M3 12h18"></path>
+            <path d="M12 3a13.4 13.4 0 0 1 0 18"></path>
+            <path d="M12 3a13.4 13.4 0 0 0 0 18"></path>
+            <path d="M5 7.5c2 1 4.5 1.5 7 1.5s5-.5 7-1.5"></path>
+            <path d="M5 16.5c2-1 4.5-1.5 7-1.5s5 .5 7 1.5"></path>
+          </svg>
+        </span>
+      </button>
+      <div class="language-switcher__panel" id="languageOptions" data-language-panel>
+        <button class="lang-button" type="button" data-language="uz" aria-label="O'zbekcha" title="O'zbekcha">
+          <span class="lang-button__code">UZ</span>
+        </button>
+        <button class="lang-button" type="button" data-language="ru" aria-label="Russkiy" title="Russkiy">
+          <span class="lang-button__code">RU</span>
+        </button>
+        <button class="lang-button" type="button" data-language="en" aria-label="English" title="English">
+          <span class="lang-button__code">EN</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="page-shell">
+      <header class="bank-banner">
+        <div class="bank-brand">
+          <div class="bank-logo" aria-hidden="true">
+            <span class="bank-logo__mark">B</span>
+          </div>
+
+          <div class="bank-brand__text">
+            <h1 data-i18n="bank.brandMain">Bank</h1>
+          </div>
+        </div>
+
+        <div class="bank-contact">
+          <div class="bank-contact__select">
+            <span data-i18n="bank.apparatus">Bning apparati</span>
+            <span class="bank-contact__chevron" aria-hidden="true">&or;</span>
+          </div>
+
+          <div class="bank-contact__row">
+            <div class="bank-contact__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M8.2 4.6h2.4l1.1 4.2-1.7 1.3a14.2 14.2 0 0 0 4 4l1.3-1.7 4.2 1.1v2.4c0 .7-.6 1.3-1.3 1.3A13.9 13.9 0 0 1 6.9 5.9c0-.7.6-1.3 1.3-1.3Z"></path>
+              </svg>
+            </div>
+
+            <div class="bank-contact__item">
+              <span class="bank-contact__label" data-i18n="bank.contactPhone">Aloqa telefon raqami</span>
+              <span class="bank-contact__value">+998</span>
+            </div>
+
+            <div class="bank-contact__item">
+              <span class="bank-contact__label" data-i18n="bank.hotline">Ishonch telefoni</span>
+              <span class="bank-contact__value">+998</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="course-section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow eyebrow--small" data-i18n="index.sectionLabel">Fanlar</span>
+              <h2 data-i18n="index.sectionTitle">Faningizni tanlang</h2>
+            </div>
+            <p data-i18n="index.sectionText">
+              O'quvchi o'rganmoqchi bo'lgan maktab fanini tanlaydi va keyingi
+              sahifada batafsil ma'lumot hamda to'lov variantlarini ko'radi.
+            </p>
+          </div>
+
+          <div class="course-grid" id="courseGrid"></div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="language.js"></script>
+    <script src="theme.js"></script>
+    <script src="courses.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

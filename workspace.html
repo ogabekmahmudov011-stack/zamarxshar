@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT CENTER Workspace</title>
+  <style>
+    :root {
+      --bg: #f2ece2;
+      --bg-deep: #e2d7c8;
+      --surface: rgba(255, 251, 246, 0.84);
+      --surface-strong: rgba(255, 252, 248, 0.94);
+      --line: rgba(41, 32, 23, 0.08);
+      --text: #201712;
+      --muted: rgba(32, 23, 18, 0.58);
+      --accent: #c86c42;
+      --accent-dark: #a8532c;
+      --accent-soft: rgba(200, 108, 66, 0.16);
+      --success: #2d9967;
+      --warning: #d09435;
+      --shadow: 0 28px 80px rgba(56, 41, 30, 0.14);
+      --shadow-soft: 0 14px 36px rgba(56, 41, 30, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(200, 108, 66, 0.16), transparent 28%),
+        radial-gradient(circle at right top, rgba(82, 135, 109, 0.12), transparent 22%),
+        linear-gradient(155deg, #fbf4ea 0%, var(--bg) 46%, var(--bg-deep) 100%);
+    }
+
+    body[data-save-state="saving"] .save-pill {
+      background: rgba(208, 148, 53, 0.16);
+      color: #8b5914;
+      border-color: rgba(208, 148, 53, 0.2);
+    }
+
+    body[data-save-state="saved"] .save-pill {
+      background: rgba(45, 153, 103, 0.16);
+      color: #14633f;
+      border-color: rgba(45, 153, 103, 0.2);
+    }
+
+    a,
+    button,
+    input,
+    textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+    img,
+    video {
+      max-width: 100%;
+      display: block;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 22px;
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .sidebar,
+    .main {
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 18px;
+      align-self: start;
+      min-height: calc(100vh - 36px);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand__mark {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(244, 232, 219, 0.86)),
+        var(--accent-soft);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .brand__eyebrow {
+      margin: 0 0 4px;
+      font-size: 0.75rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand__title {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .brand__text p:last-child {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .sidebar-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .sidebar-card h2,
+    .sidebar-card h3,
+    .card h2,
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.76rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sidebar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ghost-link,
+    .secondary-button,
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .ghost-link:hover,
+    .secondary-button:hover,
+    .primary-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border-color: transparent;
+      color: #fff8f2;
+      box-shadow: 0 14px 26px rgba(200, 108, 66, 0.24);
+    }
+
+    .secondary-button {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .ghost-link {
+      background: rgba(255, 255, 255, 0.54);
+    }
+
+    .pages-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .page-link {
+      display: block;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.48);
+      text-decoration: none;
+    }
+
+    .page-link:hover,
+    .page-link.is-active {
+      border-color: rgba(200, 108, 66, 0.22);
+      background: rgba(200, 108, 66, 0.08);
+    }
+
+    .page-link__title {
+      display: block;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .page-link__meta {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .pages-empty {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(41, 32, 23, 0.14);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.38);
+      line-height: 1.55;
+    }
+
+    .main {
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .topbar__main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .title-input {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      padding: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.06;
+    }
+
+    .title-input::placeholder {
+      color: rgba(32, 23, 18, 0.32);
+    }
+
+    .topbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .save-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .card {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cover-card__header,
+    .media-card__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .cover-preview {
+      min-height: 220px;
+      border-radius: 22px;
+      border: 1px dashed rgba(41, 32, 23, 0.16);
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(200, 108, 66, 0.12), rgba(255, 255, 255, 0.76)),
+        rgba(255, 255, 255, 0.54);
+      display: grid;
+      place-items: center;
+    }
+
+    .cover-preview img {
+      width: 100%;
+      height: 100%;
+      max-height: 360px;
+      object-fit: cover;
+    }
+
+    .empty-state {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .editor-card textarea {
+      width: 100%;
+      min-height: 320px;
+      resize: vertical;
+      border: 1px solid rgba(41, 32, 23, 0.1);
+      border-radius: 20px;
+      background:
+        linear-gradient(transparent 39px, rgba(41, 32, 23, 0.05) 40px, transparent 41px),
+        rgba(255, 255, 255, 0.74);
+      background-size: 100% 48px;
+      padding: 18px 18px 20px;
+      outline: none;
+      color: var(--text);
+      caret-color: var(--accent);
+      font: 500 1.02rem/1.8 Georgia, "Times New Roman", serif;
+    }
+
+    .editor-card textarea:focus,
+    .title-input:focus {
+      outline: none;
+    }
+
+    .media-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .media-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .media-item {
+      border-radius: 20px;
+      border: 1px solid rgba(41, 32, 23, 0.1);
+      background: rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+      display: grid;
+    }
+
+    .media-item__preview {
+      min-height: 160px;
+      background:
+        linear-gradient(145deg, rgba(200, 108, 66, 0.1), rgba(255, 255, 255, 0.74));
+      display: grid;
+      place-items: center;
+    }
+
+    .media-item__preview img,
+    .media-item__preview video {
+      width: 100%;
+      height: 100%;
+      max-height: 260px;
+      object-fit: cover;
+    }
+
+    .media-item__preview audio {
+      width: calc(100% - 20px);
+      margin: 18px 10px;
+    }
+
+    .file-chip {
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .media-item__body {
+      padding: 14px 14px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .media-item__name {
+      font-weight: 700;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .media-item__meta {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .media-item__actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-button {
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+
+    .mini-button--danger {
+      color: #a13535;
+    }
+
+    .tips {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1080px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        min-height: auto;
+      }
+
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        padding: 12px;
+        gap: 14px;
+      }
+
+      .sidebar,
+      .main {
+        border-radius: 24px;
+      }
+
+      .topbar,
+      .card,
+      .sidebar-card {
+        padding: 18px;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .topbar__actions,
+      .cover-card__header,
+      .media-card__header {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body data-save-state="idle">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand__mark">IT</div>
+        <div class="brand__text">
+          <p class="brand__eyebrow" id="workspace-sidebar-section">Workspace</p>
+          <h1 class="brand__title">IT CENTER</h1>
+          <p>Oddiy va toza ish maydoni.</p>
+        </div>
+      </div>
+
+      <section class="sidebar-card">
+        <p class="eyebrow">Navigatsiya</p>
+        <div class="sidebar-actions">
+          <a class="ghost-link" href="index.html">Bosh sahifa</a>
+          <button class="primary-button" id="workspace-new-page" type="button">Yangi sahifa</button>
+        </div>
+      </section>
+
+      <section class="sidebar-card">
+        <p class="eyebrow">Sahifalar</p>
+        <div class="pages-list" id="workspace-pages-list"></div>
+      </section>
+
+      <section class="sidebar-card tips">
+        <p class="eyebrow">Eslatma</p>
+        <p>Bu workspace endi faqat yozuv, cover va media saqlash uchun ishlaydi.</p>
+        <p>Matnlar `Ctrl+S` bilan yoki avtomatik tarzda saqlanadi.</p>
+      </section>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__main">
+          <p class="eyebrow" id="workspace-context-label">Workspace</p>
+          <label class="sr-only" for="workspace-title">Sahifa nomi</label>
+          <input id="workspace-title" class="title-input" type="text" placeholder="Sahifa nomi">
+        </div>
+        <div class="topbar__actions">
+          <span class="save-pill" id="workspace-save-label">Tayyor</span>
+          <button class="secondary-button" id="workspace-clear-page" type="button">Tozalash</button>
+          <button class="secondary-button" id="workspace-delete-page" type="button" hidden>O'chirish</button>
+        </div>
+      </header>
+
+      <section class="card cover-card">
+        <div class="cover-card__header">
+          <div>
+            <p class="eyebrow">Cover</p>
+            <h2>Sahifa cover rasmi</h2>
+          </div>
+          <div class="media-actions">
+            <button class="secondary-button" id="workspace-cover-upload-button" type="button">Rasm yuklash</button>
+            <button class="secondary-button" id="workspace-cover-remove-button" type="button">Coverni olib tashlash</button>
+          </div>
+        </div>
+        <div class="cover-preview" id="workspace-cover-preview">
+          <div class="empty-state" id="workspace-cover-empty">Hozircha cover rasmi tanlanmagan.</div>
+          <img id="workspace-cover-image" alt="Sahifa cover rasmi" hidden>
+        </div>
+        <input id="workspace-cover-input" type="file" accept="image/*" hidden>
+      </section>
+
+      <section class="editor-grid">
+        <section class="card editor-card">
+          <p class="eyebrow">Asosiy yozuv</p>
+          <h2>Birlamchi matn</h2>
+          <label class="sr-only" for="workspace-editor">Asosiy yozuv</label>
+          <textarea id="workspace-editor" placeholder="Asosiy g'oyalar, vazifalar yoki rejangizni shu yerga yozing..."></textarea>
+        </section>
+
+        <section class="card editor-card">
+          <p class="eyebrow">Qo'shimcha</p>
+          <h2>Ikkinchi bo'lim</h2>
+          <label class="sr-only" for="workspace-editor-below">Qo'shimcha yozuv</label>
+          <textarea id="workspace-editor-below" placeholder="Qo'shimcha detallar, meeting yozuvlari yoki izohlar shu yerga tushadi..."></textarea>
+        </section>
+      </section>
+
+      <section class="card media-card">
+        <div class="media-card__header">
+          <div>
+            <p class="eyebrow">Media</p>
+            <h2>Qo'lda qo'shilgan fayllar</h2>
+          </div>
+          <div class="media-actions">
+            <button class="secondary-button" id="workspace-upload-files" type="button">Fayl yuklash</button>
+            <button class="secondary-button" id="workspace-add-link" type="button">Link qo'shish</button>
+            <button class="secondary-button" id="workspace-clear-media" type="button">Medianı tozalash</button>
+          </div>
+        </div>
+        <div class="media-list" id="workspace-media-list"></div>
+        <input id="workspace-file-input" type="file" multiple hidden>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const workspaceParams = new URLSearchParams(window.location.search);
+    const requestedSection = (workspaceParams.get("section") || "default").trim() || "default";
+    const requestedPageId = (workspaceParams.get("page") || "").trim();
+    const requestedPageLabel = (workspaceParams.get("label") || "").trim();
+    const sectionNames = {
+      project: "Loyiha",
+      focus: "Yo'nalishlar",
+      roadmap: "Bosqichlar",
+      note: "Eslatma",
+      default: "Workspace"
+    };
+    const sectionDescription = {
+      project: "Loyiha uchun ish maydoni",
+      focus: "Yo'nalishlar uchun ish maydoni",
+      roadmap: "Bosqichlar uchun ish maydoni",
+      note: "Eslatma uchun ish maydoni",
+      default: "Asosiy ish maydoni"
+    };
+
+    const currentSectionLabel = sectionNames[requestedSection] || sectionNames.default;
+    const storagePrefix = requestedPageId
+      ? `it-center-workspace-${requestedSection}-${requestedPageId}`
+      : `it-center-workspace-${requestedSection}`;
+    const titleStorageKey = `${storagePrefix}-title`;
+    const editorStorageKey = `${storagePrefix}-editor`;
+    const editorBelowStorageKey = `${storagePrefix}-editor-below`;
+    const mediaStorageKey = `${storagePrefix}-media`;
+    const coverStorageKey = `${storagePrefix}-cover`;
+    const pagesRegistryKey = `it-center-workspace-pages-${requestedSection}`;
+    const mediaDbName = "it-center-workspace-media";
+    const mediaStoreName = "pages";
+
+    const sidebarSection = document.getElementById("workspace-sidebar-section");
+    const contextLabel = document.getElementById("workspace-context-label");
+    const titleInput = document.getElementById("workspace-title");
+    const editorTop = document.getElementById("workspace-editor");
+    const editorBottom = document.getElementById("workspace-editor-below");
+    const saveLabel = document.getElementById("workspace-save-label");
+    const pagesList = document.getElementById("workspace-pages-list");
+    const newPageButton = document.getElementById("workspace-new-page");
+    const clearPageButton = document.getElementById("workspace-clear-page");
+    const deletePageButton = document.getElementById("workspace-delete-page");
+    const coverUploadButton = document.getElementById("workspace-cover-upload-button");
+    const coverRemoveButton = document.getElementById("workspace-cover-remove-button");
+    const coverInput = document.getElementById("workspace-cover-input");
+    const coverImage = document.getElementById("workspace-cover-image");
+    const coverEmpty = document.getElementById("workspace-cover-empty");
+    const uploadFilesButton = document.getElementById("workspace-upload-files");
+    const addLinkButton = document.getElementById("workspace-add-link");
+    const clearMediaButton = document.getElementById("workspace-clear-media");
+    const fileInput = document.getElementById("workspace-file-input");
+    const mediaList = document.getElementById("workspace-media-list");
+
+    let saveTimer = 0;
+    let mediaItems = [];
+    let coverItem = null;
+    let previewUrls = [];
+
+    const nowIso = () => new Date().toISOString();
+
+    const setSaveState = (state, message) => {
+      document.body.dataset.saveState = state;
+      if (saveLabel) {
+        saveLabel.textContent = message;
+      }
+    };
+
+    const normalizeWorkspacePageLabel = (value) => {
+      const normalized = typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
+      return normalized;
+    };
+
+    const getDefaultWorkspacePageLabel = () => requestedPageLabel || currentSectionLabel || "Yangi sahifa";
+
+    const formatDate = (value) => {
+      const date = new Date(value || "");
+      if (Number.isNaN(date.getTime())) {
+        return "Hozir";
+      }
+      return date.toLocaleString("uz-UZ");
+    };
+
+    const buildWorkspacePageUrl = ({ pageId = "", label = "" } = {}) => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("section", requestedSection);
+
+      if (pageId) {
+        url.searchParams.set("page", pageId);
+      } else {
+        url.searchParams.delete("page");
+      }
+
+      if (label) {
+        url.searchParams.set("label", label);
+      } else {
+        url.searchParams.delete("label");
+      }
+
+      url.hash = "";
+      return url.toString();
+    };
+
+    const createWorkspacePageId = (seed = "") => {
+      const base = seed
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+
+      return base || `page-${Date.now().toString(36)}`;
+    };
+
+    const readWorkspacePages = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(pagesRegistryKey) || "[]");
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+
+        return parsed
+          .map((item) => {
+            const pageId = typeof item?.pageId === "string" ? item.pageId.trim() : "";
+            if (!pageId) {
+              return null;
+            }
+
+            return {
+              pageId,
+              label: normalizeWorkspacePageLabel(item.label) || "Yangi sahifa",
+              createdAt: typeof item.createdAt === "string" ? item.createdAt : nowIso(),
+              updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : nowIso()
+            };
+          })
+          .filter(Boolean);
+      } catch {
+        return [];
+      }
+    };
+
+    let workspacePages = readWorkspacePages();
+
+    const persistWorkspacePages = () => {
+      localStorage.setItem(pagesRegistryKey, JSON.stringify(workspacePages));
+    };
+
+    const upsertWorkspacePageEntry = ({ pageId, label } = {}) => {
+      const normalizedPageId = (pageId || "").trim();
+      if (!normalizedPageId) {
+        return null;
+      }
+
+      const normalizedLabel = normalizeWorkspacePageLabel(label) || "Yangi sahifa";
+      const now = nowIso();
+      const existingIndex = workspacePages.findIndex((item) => item.pageId === normalizedPageId);
+      const existingItem = existingIndex >= 0 ? workspacePages[existingIndex] : null;
+      const nextItem = {
+        pageId: normalizedPageId,
+        label: normalizedLabel,
+        createdAt: existingItem?.createdAt || now,
+        updatedAt: now
+      };
+
+      if (existingIndex >= 0) {
+        workspacePages[existingIndex] = nextItem;
+      } else {
+        workspacePages.push(nextItem);
+      }
+
+      persistWorkspacePages();
+      renderWorkspacePages();
+      return nextItem;
+    };
+
+    const removeWorkspacePageEntry = (pageId) => {
+      workspacePages = workspacePages.filter((item) => item.pageId !== pageId);
+      persistWorkspacePages();
+      renderWorkspacePages();
+    };
+
+    const renderWorkspacePages = () => {
+      if (!pagesList) {
+        return;
+      }
+
+      pagesList.replaceChildren();
+
+      const rootLink = document.createElement("a");
+      rootLink.className = `page-link${requestedPageId ? "" : " is-active"}`;
+      rootLink.href = buildWorkspacePageUrl({
+        pageId: "",
+        label: requestedPageLabel || currentSectionLabel
+      });
+      rootLink.innerHTML = `
+        <span class="page-link__title">${requestedPageLabel || currentSectionLabel}</span>
+        <span class="page-link__meta">Asosiy sahifa</span>
+      `;
+      pagesList.appendChild(rootLink);
+
+      const sortedPages = [...workspacePages].sort((left, right) => {
+        const leftTime = new Date(left.updatedAt || left.createdAt).getTime();
+        const rightTime = new Date(right.updatedAt || right.createdAt).getTime();
+        return rightTime - leftTime;
+      });
+
+      if (!sortedPages.length) {
+        const emptyNode = document.createElement("div");
+        emptyNode.className = "pages-empty";
+        emptyNode.textContent = "Hozircha qo'shimcha sahifalar yo'q. Kerak bo'lsa yangi sahifa yarating.";
+        pagesList.appendChild(emptyNode);
+        return;
+      }
+
+      sortedPages.forEach((entry) => {
+        const link = document.createElement("a");
+        link.className = `page-link${entry.pageId === requestedPageId ? " is-active" : ""}`;
+        link.href = buildWorkspacePageUrl({
+          pageId: entry.pageId,
+          label: entry.label
+        });
+        link.innerHTML = `
+          <span class="page-link__title">${entry.label}</span>
+          <span class="page-link__meta">Yangilangan: ${formatDate(entry.updatedAt)}</span>
+        `;
+        pagesList.appendChild(link);
+      });
+    };
+
+    const openMediaDb = () => new Promise((resolve, reject) => {
+      if (!("indexedDB" in window)) {
+        resolve(null);
+        return;
+      }
+
+      const request = indexedDB.open(mediaDbName, 1);
+
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(mediaStoreName)) {
+          db.createObjectStore(mediaStoreName, { keyPath: "id" });
+        }
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+
+    const readStoredMedia = async () => {
+      const db = await openMediaDb();
+      if (!db) {
+        return [];
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readonly");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.get(mediaStorageKey);
+
+        request.onsuccess = () => resolve(request.result?.items || []);
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const writeStoredMedia = async (items) => {
+      const db = await openMediaDb();
+      if (!db) {
+        return;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readwrite");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.put({
+          id: mediaStorageKey,
+          items,
+          updatedAt: nowIso()
+        });
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const clearStoredMedia = async () => {
+      const db = await openMediaDb();
+      if (!db) {
+        return;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readwrite");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.delete(mediaStorageKey);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const readStoredCover = async () => {
+      const db = await openMediaDb();
+      if (!db) {
+        return null;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readonly");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.get(coverStorageKey);
+
+        request.onsuccess = () => resolve(request.result?.item || null);
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const writeStoredCover = async (item) => {
+      const db = await openMediaDb();
+      if (!db) {
+        return;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readwrite");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.put({
+          id: coverStorageKey,
+          item,
+          updatedAt: nowIso()
+        });
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const clearStoredCover = async () => {
+      const db = await openMediaDb();
+      if (!db) {
+        return;
+      }
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(mediaStoreName, "readwrite");
+        const store = transaction.objectStore(mediaStoreName);
+        const request = store.delete(coverStorageKey);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+    };
+
+    const revokePreviewUrls = () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      previewUrls = [];
+    };
+
+    const resolvePreviewUrl = (item) => {
+      if (typeof item?.url === "string" && item.url.trim()) {
+        return item.url;
+      }
+
+      if (item?.blob instanceof Blob) {
+        const objectUrl = URL.createObjectURL(item.blob);
+        previewUrls.push(objectUrl);
+        return objectUrl;
+      }
+
+      return "";
+    };
+
+    const detectMediaKind = (file) => {
+      const mimeType = (file?.type || "").toLowerCase();
+      if (mimeType.startsWith("image/")) {
+        return "image";
+      }
+      if (mimeType.startsWith("video/")) {
+        return "video";
+      }
+      if (mimeType.startsWith("audio/")) {
+        return "audio";
+      }
+      return "file";
+    };
+
+    const createMediaItemId = () => window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+    const renderCover = () => {
+      const hasCover = Boolean(coverItem);
+      const previewUrl = hasCover ? resolvePreviewUrl(coverItem) : "";
+
+      if (coverImage) {
+        coverImage.hidden = !previewUrl;
+        if (previewUrl) {
+          coverImage.src = previewUrl;
+        } else {
+          coverImage.removeAttribute("src");
+        }
+      }
+
+      if (coverEmpty) {
+        coverEmpty.hidden = hasCover;
+      }
+    };
+
+    const renderMediaItems = () => {
+      if (!mediaList) {
+        return;
+      }
+
+      revokePreviewUrls();
+      mediaList.replaceChildren();
+      renderCover();
+
+      if (!mediaItems.length) {
+        const emptyNode = document.createElement("div");
+        emptyNode.className = "pages-empty";
+        emptyNode.textContent = "Hozircha media qo'shilmagan. Fayl yuklang yoki link biriktiring.";
+        mediaList.appendChild(emptyNode);
+        return;
+      }
+
+      mediaItems.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "media-item";
+
+        const preview = document.createElement("div");
+        preview.className = "media-item__preview";
+
+        const previewUrl = resolvePreviewUrl(item);
+        if ((item.kind === "image" || item.kind === "sticker") && previewUrl) {
+          const image = document.createElement("img");
+          image.src = previewUrl;
+          image.alt = item.name || "Rasm";
+          preview.appendChild(image);
+        } else if (item.kind === "video" && previewUrl) {
+          const video = document.createElement("video");
+          video.src = previewUrl;
+          video.controls = true;
+          video.preload = "metadata";
+          preview.appendChild(video);
+        } else if (item.kind === "audio" && previewUrl) {
+          const audio = document.createElement("audio");
+          audio.src = previewUrl;
+          audio.controls = true;
+          preview.appendChild(audio);
+        } else if (item.kind === "bookmark" && previewUrl) {
+          const linkWrap = document.createElement("div");
+          linkWrap.className = "file-chip";
+          linkWrap.innerHTML = `<strong>Link</strong><br>${item.name || previewUrl}`;
+          preview.appendChild(linkWrap);
+        } else {
+          const fileChip = document.createElement("div");
+          fileChip.className = "file-chip";
+          fileChip.innerHTML = `<strong>Fayl</strong><br>${item.type || "Noma'lum tur"}`;
+          preview.appendChild(fileChip);
+        }
+
+        const body = document.createElement("div");
+        body.className = "media-item__body";
+
+        const name = document.createElement("div");
+        name.className = "media-item__name";
+        name.textContent = item.name || "Media";
+
+        const meta = document.createElement("div");
+        meta.className = "media-item__meta";
+        meta.textContent = `${item.kind || "media"} • ${formatDate(item.savedAt)}`;
+
+        const actions = document.createElement("div");
+        actions.className = "media-item__actions";
+
+        if (item.kind === "bookmark" && previewUrl) {
+          const openLink = document.createElement("a");
+          openLink.className = "mini-button";
+          openLink.href = previewUrl;
+          openLink.target = "_blank";
+          openLink.rel = "noopener noreferrer";
+          openLink.textContent = "Ochish";
+          actions.appendChild(openLink);
+        }
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "mini-button mini-button--danger";
+        removeButton.type = "button";
+        removeButton.dataset.mediaId = item.id;
+        removeButton.textContent = "O'chirish";
+        actions.appendChild(removeButton);
+
+        body.append(name, meta, actions);
+        card.append(preview, body);
+        mediaList.appendChild(card);
+      });
+    };
+
+    const getBookmarkLabel = (value) => {
+      try {
+        return new URL(value).hostname.replace(/^www\./, "") || "Web link";
+      } catch {
+        return "Web link";
+      }
+    };
+
+    const normalizeUrl = (value) => {
+      const trimmed = (value || "").trim();
+      if (!trimmed) {
+        return "";
+      }
+
+      const withProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:/.test(trimmed)
+        ? trimmed
+        : `https://${trimmed}`;
+
+      try {
+        return new URL(withProtocol).toString();
+      } catch {
+        return "";
+      }
+    };
+
+    const scheduleSave = () => {
+      setSaveState("saving", "Saqlanmoqda");
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => {
+        savePageText("saved");
+      }, 220);
+    };
+
+    const savePageText = (stateAfterSave = "saved") => {
+      const titleValue = normalizeWorkspacePageLabel(titleInput?.value) || getDefaultWorkspacePageLabel();
+      localStorage.setItem(titleStorageKey, titleValue);
+      localStorage.setItem(editorStorageKey, editorTop?.value || "");
+      localStorage.setItem(editorBelowStorageKey, editorBottom?.value || "");
+
+      if (requestedPageId) {
+        upsertWorkspacePageEntry({
+          pageId: requestedPageId,
+          label: titleValue
+        });
+      }
+
+      setSaveState(stateAfterSave, "Saqlandi");
+    };
+
+    const restorePageText = () => {
+      const storedTitle = localStorage.getItem(titleStorageKey);
+      const resolvedTitle = normalizeWorkspacePageLabel(storedTitle)
+        || requestedPageLabel
+        || currentSectionLabel;
+
+      if (titleInput) {
+        titleInput.value = resolvedTitle;
+      }
+
+      if (editorTop) {
+        editorTop.value = localStorage.getItem(editorStorageKey) || "";
+      }
+
+      if (editorBottom) {
+        editorBottom.value = localStorage.getItem(editorBelowStorageKey) || "";
+      }
+
+      document.title = `${resolvedTitle} | IT CENTER Workspace`;
+      if (contextLabel) {
+        contextLabel.textContent = currentSectionLabel;
+      }
+
+      if (requestedPageId) {
+        upsertWorkspacePageEntry({
+          pageId: requestedPageId,
+          label: resolvedTitle
+        });
+      }
+    };
+
+    const restoreMediaAndCover = async () => {
+      try {
+        mediaItems = await readStoredMedia();
+      } catch {
+        mediaItems = [];
+      }
+
+      try {
+        coverItem = await readStoredCover();
+      } catch {
+        coverItem = null;
+      }
+
+      renderMediaItems();
+    };
+
+    const persistMediaItems = async () => {
+      try {
+        await writeStoredMedia(mediaItems);
+      } catch {
+        // Keep current view even if persistence fails.
+      }
+    };
+
+    const persistCoverItem = async () => {
+      try {
+        if (coverItem) {
+          await writeStoredCover(coverItem);
+        } else {
+          await clearStoredCover();
+        }
+      } catch {
+        // Keep current view even if persistence fails.
+      }
+    };
+
+    const createItemsFromFiles = (files) => Array.from(files || []).map((file) => ({
+      id: createMediaItemId(),
+      kind: detectMediaKind(file),
+      name: file.name || "Fayl",
+      type: file.type || "application/octet-stream",
+      blob: file,
+      savedAt: nowIso()
+    }));
+
+    const removeCurrentPageData = async () => {
+      localStorage.removeItem(titleStorageKey);
+      localStorage.removeItem(editorStorageKey);
+      localStorage.removeItem(editorBelowStorageKey);
+      mediaItems = [];
+      coverItem = null;
+
+      try {
+        await clearStoredMedia();
+      } catch {
+        // Ignore storage cleanup failures.
+      }
+
+      try {
+        await clearStoredCover();
+      } catch {
+        // Ignore storage cleanup failures.
+      }
+
+      renderMediaItems();
+    };
+
+    if (sidebarSection) {
+      sidebarSection.textContent = currentSectionLabel;
+    }
+
+    if (titleInput) {
+      titleInput.placeholder = getDefaultWorkspacePageLabel();
+      titleInput.addEventListener("input", () => {
+        document.title = `${normalizeWorkspacePageLabel(titleInput.value) || getDefaultWorkspacePageLabel()} | IT CENTER Workspace`;
+        scheduleSave();
+      });
+      titleInput.addEventListener("blur", () => {
+        savePageText("saved");
+      });
+    }
+
+    [editorTop, editorBottom].forEach((node) => {
+      if (!node) {
+        return;
+      }
+
+      node.addEventListener("input", scheduleSave);
+      node.addEventListener("blur", () => {
+        savePageText("saved");
+      });
+    });
+
+    newPageButton?.addEventListener("click", () => {
+      const rawLabel = window.prompt("Yangi sahifa nomini kiriting:");
+      const normalizedLabel = normalizeWorkspacePageLabel(rawLabel);
+      if (!normalizedLabel) {
+        return;
+      }
+
+      const pageId = createWorkspacePageId(normalizedLabel);
+      localStorage.setItem(`it-center-workspace-${requestedSection}-${pageId}-title`, normalizedLabel);
+      upsertWorkspacePageEntry({
+        pageId,
+        label: normalizedLabel
+      });
+      window.location.href = buildWorkspacePageUrl({
+        pageId,
+        label: normalizedLabel
+      });
+    });
+
+    clearPageButton?.addEventListener("click", async () => {
+      const confirmed = window.confirm("Joriy sahifa matni va mediasi tozalansinmi?");
+      if (!confirmed) {
+        return;
+      }
+
+      if (titleInput) {
+        titleInput.value = requestedPageLabel || currentSectionLabel;
+      }
+      if (editorTop) {
+        editorTop.value = "";
+      }
+      if (editorBottom) {
+        editorBottom.value = "";
+      }
+
+      await removeCurrentPageData();
+      savePageText("saved");
+    });
+
+    if (deletePageButton) {
+      deletePageButton.hidden = !requestedPageId;
+      deletePageButton.addEventListener("click", async () => {
+        if (!requestedPageId) {
+          return;
+        }
+
+        const confirmed = window.confirm("Bu sahifa butunlay o'chirilsinmi?");
+        if (!confirmed) {
+          return;
+        }
+
+        await removeCurrentPageData();
+        removeWorkspacePageEntry(requestedPageId);
+        window.location.href = buildWorkspacePageUrl({
+          pageId: "",
+          label: currentSectionLabel
+        });
+      });
+    }
+
+    coverUploadButton?.addEventListener("click", () => {
+      coverInput?.click();
+    });
+
+    coverInput?.addEventListener("change", async () => {
+      const selectedFile = coverInput.files?.[0];
+      if (!selectedFile) {
+        return;
+      }
+
+      coverItem = {
+        name: selectedFile.name || "Cover",
+        type: selectedFile.type || "image/png",
+        blob: selectedFile,
+        savedAt: nowIso()
+      };
+      renderMediaItems();
+      await persistCoverItem();
+      setSaveState("saved", "Cover saqlandi");
+      coverInput.value = "";
+    });
+
+    coverRemoveButton?.addEventListener("click", async () => {
+      coverItem = null;
+      renderMediaItems();
+      await persistCoverItem();
+      setSaveState("saved", "Cover olib tashlandi");
+    });
+
+    uploadFilesButton?.addEventListener("click", () => {
+      fileInput?.click();
+    });
+
+    fileInput?.addEventListener("change", async () => {
+      const items = createItemsFromFiles(fileInput.files);
+      if (!items.length) {
+        return;
+      }
+
+      mediaItems = [...mediaItems, ...items];
+      renderMediaItems();
+      await persistMediaItems();
+      setSaveState("saved", `${items.length} ta media saqlandi`);
+      fileInput.value = "";
+    });
+
+    addLinkButton?.addEventListener("click", async () => {
+      const rawValue = window.prompt("Biriktirmoqchi bo'lgan linkni kiriting:");
+      const normalizedUrl = normalizeUrl(rawValue);
+      if (!normalizedUrl) {
+        return;
+      }
+
+      const isImage = /\.(png|jpe?g|gif|webp|svg)$/i.test(normalizedUrl);
+      mediaItems = [...mediaItems, {
+        id: createMediaItemId(),
+        kind: isImage ? "image" : "bookmark",
+        name: getBookmarkLabel(normalizedUrl),
+        type: isImage ? "image/url" : "text/url",
+        url: normalizedUrl,
+        savedAt: nowIso()
+      }];
+      renderMediaItems();
+      await persistMediaItems();
+      setSaveState("saved", "Link saqlandi");
+    });
+
+    clearMediaButton?.addEventListener("click", async () => {
+      const confirmed = window.confirm("Barcha media fayllari o'chirilsinmi?");
+      if (!confirmed) {
+        return;
+      }
+
+      mediaItems = [];
+      renderMediaItems();
+      await persistMediaItems();
+      setSaveState("saved", "Media tozalandi");
+    });
+
+    mediaList?.addEventListener("click", async (event) => {
+      const removeButton = event.target.closest("[data-media-id]");
+      if (!removeButton) {
+        return;
+      }
+
+      const targetId = removeButton.dataset.mediaId || "";
+      if (!targetId) {
+        return;
+      }
+
+      mediaItems = mediaItems.filter((item) => item.id !== targetId);
+      renderMediaItems();
+      await persistMediaItems();
+      setSaveState("saved", "Media o'chirildi");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        savePageText("saved");
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        savePageText("saved");
+      }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      savePageText("saved");
+      revokePreviewUrls();
+    });
+
+    window.addEventListener("pagehide", () => {
+      savePageText("saved");
+      revokePreviewUrls();
+    });
+
+    restorePageText();
+    renderWorkspacePages();
+    restoreMediaAndCover().then(() => {
+      setSaveState("idle", "Tayyor");
+      titleInput?.focus();
+    });
+  </script>
+</body>
+</html>

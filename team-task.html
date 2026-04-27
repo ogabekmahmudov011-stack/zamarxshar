@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT CENTER | Jamoa taski</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3efe8;
+      --surface: rgba(255, 255, 255, 0.84);
+      --surface-soft: rgba(255, 255, 255, 0.58);
+      --text: #172420;
+      --muted: #61726c;
+      --line: rgba(23, 36, 32, 0.12);
+      --accent: #d96f43;
+      --accent-soft: rgba(217, 111, 67, 0.14);
+      --shadow: 0 24px 60px rgba(51, 39, 27, 0.12);
+      --success: #2d8a61;
+      --warning: #b67b14;
+      --danger: #c05444;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #091411;
+      --surface: rgba(16, 28, 24, 0.92);
+      --surface-soft: rgba(255, 255, 255, 0.04);
+      --text: #edf3ef;
+      --muted: #9ab1a9;
+      --line: rgba(237, 243, 239, 0.1);
+      --accent: #f19469;
+      --accent-soft: rgba(241, 148, 105, 0.16);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+      --success: #68c394;
+      --warning: #ebb75a;
+      --danger: #eb8c7c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(217, 111, 67, 0.18), transparent 30%),
+        radial-gradient(circle at 82% 12%, rgba(45, 138, 97, 0.12), transparent 24%),
+        linear-gradient(145deg, #f8f4ee 0%, var(--bg) 100%);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 24px auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      padding: 26px;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .theme-toggle {
+      min-height: 46px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.02;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 70ch;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .meta-card {
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+    }
+
+    .meta-card small {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .meta-card strong {
+      font-size: 1rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 20px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+    }
+
+    .section p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .notes-field {
+      width: 100%;
+      min-height: 220px;
+      resize: vertical;
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface-soft);
+      color: var(--text);
+      font: inherit;
+      line-height: 1.65;
+      outline: none;
+    }
+
+    .notes-field:focus {
+      border-color: rgba(217, 111, 67, 0.45);
+      box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.1);
+    }
+
+    .notes-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .save-button,
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .save-button {
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), #c55a31);
+      color: #fffaf5;
+      cursor: pointer;
+    }
+
+    .back-link {
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--text);
+    }
+
+    .notes-status {
+      margin: 0;
+      color: var(--success);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      .content-grid,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-top,
+      .notes-actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="panel hero">
+      <div class="hero-top">
+        <div>
+          <span class="eyebrow" id="hero-eyebrow">Jamoa taski</span>
+          <h1 id="task-title">Task</h1>
+          <p id="task-description">Task tafsiloti shu sahifada ochiladi.</p>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" type="button">Theme</button>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-card">
+          <small id="stage-label">Bosqich</small>
+          <strong id="task-stage">Bugun</strong>
+        </div>
+        <div class="meta-card">
+          <small id="status-label">Holat</small>
+          <strong id="task-status">Yuqori prioritet</strong>
+        </div>
+        <div class="meta-card">
+          <small id="id-label">Task ID</small>
+          <strong id="task-id-value">#1</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel section">
+        <span class="section-tag" id="details-tag">Tafsilot</span>
+        <h2 id="details-title">Vazifa tavsifi</h2>
+        <p id="details-text">Tanlangan taskning asosiy tavsifi shu yerda ko'rsatiladi.</p>
+      </article>
+
+      <article class="panel section">
+        <span class="section-tag" id="notes-tag">Qaydlar</span>
+        <h2 id="notes-title">Shaxsiy qaydlar</h2>
+        <p id="notes-copy">Bu task bo'yicha ichki izoh yoki keyingi qadamlarni yozib qoldirishingiz mumkin.</p>
+        <textarea class="notes-field" id="task-notes" placeholder="Qaydlarni shu yerga yozing..."></textarea>
+        <div class="notes-actions">
+          <a class="back-link" href="index.html#team" id="back-link">Jamoaga qaytish</a>
+          <button class="save-button" id="save-notes" type="button">Saqlash</button>
+        </div>
+        <p class="notes-status" id="notes-status" aria-live="polite"></p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const taskId = params.get("task") || "1";
+    const themeStorageKey = "it-center-admin-theme";
+    const languageStorageKey = "it-center-admin-language";
+    const notesStorageKey = `it-center-team-task-note:${taskId}`;
+
+    const themeToggle = document.getElementById("theme-toggle");
+    const heroEyebrow = document.getElementById("hero-eyebrow");
+    const taskTitle = document.getElementById("task-title");
+    const taskDescription = document.getElementById("task-description");
+    const stageLabel = document.getElementById("stage-label");
+    const statusLabel = document.getElementById("status-label");
+    const idLabel = document.getElementById("id-label");
+    const taskStage = document.getElementById("task-stage");
+    const taskStatus = document.getElementById("task-status");
+    const taskIdValue = document.getElementById("task-id-value");
+    const detailsTag = document.getElementById("details-tag");
+    const detailsTitle = document.getElementById("details-title");
+    const detailsText = document.getElementById("details-text");
+    const notesTag = document.getElementById("notes-tag");
+    const notesTitle = document.getElementById("notes-title");
+    const notesCopy = document.getElementById("notes-copy");
+    const taskNotes = document.getElementById("task-notes");
+    const saveNotesButton = document.getElementById("save-notes");
+    const backLink = document.getElementById("back-link");
+    const notesStatus = document.getElementById("notes-status");
+
+    const translations = {
+      uz: {
+        metaTitle: "IT CENTER | Jamoa taski",
+        eyebrow: "Jamoa taski",
+        themeDark: "Qora rejimga o'tish",
+        themeLight: "Yorug' rejimga o'tish",
+        stageLabel: "Bosqich",
+        statusLabel: "Holat",
+        idLabel: "Task ID",
+        detailsTag: "Tafsilot",
+        detailsTitle: "Vazifa tavsifi",
+        notesTag: "Qaydlar",
+        notesTitle: "Shaxsiy qaydlar",
+        notesCopy: "Bu task bo'yicha ichki izoh yoki keyingi qadamlarni yozib qoldirishingiz mumkin.",
+        notesPlaceholder: "Qaydlarni shu yerga yozing...",
+        save: "Saqlash",
+        saved: "Qayd saqlandi.",
+        back: "Jamoaga qaytish",
+        tasks: {
+          "1": { title: "Yangi guruh e'loni", description: "Marketing jamoasi bilan 18:00 gacha frontend batch bannerini tayyorlash.", stage: "Bugun", status: "Yuqori prioritet" },
+          "2": { title: "CRM audit", description: "Yangi leadlarning source maydonlarini tekshirish va tozalash.", stage: "Bugun", status: "Jarayonda" },
+          "3": { title: "Kassa hisobi", description: "Kechikkan to'lovlar ro'yxatini admin bilan solishtirish.", stage: "Bugun", status: "Nazorat" },
+          "4": { title: "Teacher onboarding", description: "Yangi UI/UX mentor uchun test dars sanasini tasdiqlash.", stage: "Jarayonda", status: "Ko'rib chiqilmoqda" },
+          "5": { title: "Support ticket #08", description: "Login tiklash jarayonida kelgan feedback asosida forma soddalashtirilmoqda.", stage: "Jarayonda", status: "Barqaror" },
+          "6": { title: "Roadmap update", description: "Aprel oyidagi workshoplar taqvimi saytga joylandi.", stage: "Tayyor", status: "Yakunlangan" },
+          "7": { title: "Student survey", description: "Qoniqish so'rovi natijalari eksport qilindi va prezentatsiya tayyor.", stage: "Tayyor", status: "Arxivlandi" }
+        }
+      },
+      en: {
+        metaTitle: "IT CENTER | Team Task",
+        eyebrow: "Team task",
+        themeDark: "Switch to dark mode",
+        themeLight: "Switch to light mode",
+        stageLabel: "Stage",
+        statusLabel: "Status",
+        idLabel: "Task ID",
+        detailsTag: "Details",
+        detailsTitle: "Task description",
+        notesTag: "Notes",
+        notesTitle: "Personal notes",
+        notesCopy: "You can keep internal comments or the next action items for this task here.",
+        notesPlaceholder: "Write your notes here...",
+        save: "Save",
+        saved: "Notes saved.",
+        back: "Back to team",
+        tasks: {
+          "1": { title: "New group announcement", description: "Prepare the frontend batch banner with the marketing team before 18:00.", stage: "Today", status: "High priority" },
+          "2": { title: "CRM audit", description: "Review and clean the source fields for new leads.", stage: "Today", status: "In progress" },
+          "3": { title: "Cash reconciliation", description: "Compare the overdue payments list with the admin records.", stage: "Today", status: "Needs review" },
+          "4": { title: "Teacher onboarding", description: "Confirm the trial lesson date for the new UI/UX mentor.", stage: "In progress", status: "Under review" },
+          "5": { title: "Support ticket #08", description: "The recovery form is being simplified based on feedback from the login reset flow.", stage: "In progress", status: "Stable" },
+          "6": { title: "Roadmap update", description: "The April workshop calendar has been published on the site.", stage: "Done", status: "Completed" },
+          "7": { title: "Student survey", description: "Satisfaction survey results were exported and the presentation is ready.", stage: "Done", status: "Archived" }
+        }
+      },
+      ru: {
+        metaTitle: "\u0049\u0054\u0020\u0043\u0045\u004e\u0054\u0045\u0052\u0020\u007c\u0020\u0417\u0430\u0434\u0430\u0447\u0430\u0020\u043a\u043e\u043c\u0430\u043d\u0434\u044b",
+        eyebrow: "\u0417\u0430\u0434\u0430\u0447\u0430\u0020\u043a\u043e\u043c\u0430\u043d\u0434\u044b",
+        themeDark: "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0020\u043d\u0430\u0020\u0442\u0435\u043c\u043d\u0443\u044e\u0020\u0442\u0435\u043c\u0443",
+        themeLight: "\u041f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0438\u0442\u044c\u0020\u043d\u0430\u0020\u0441\u0432\u0435\u0442\u043b\u0443\u044e\u0020\u0442\u0435\u043c\u0443",
+        stageLabel: "\u042d\u0442\u0430\u043f",
+        statusLabel: "\u0421\u0442\u0430\u0442\u0443\u0441",
+        idLabel: "\u0054\u0061\u0073\u006b\u0020\u0049\u0044",
+        detailsTag: "\u0414\u0435\u0442\u0430\u043b\u0438",
+        detailsTitle: "\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435\u0020\u0437\u0430\u0434\u0430\u0447\u0438",
+        notesTag: "\u0417\u0430\u043c\u0435\u0442\u043a\u0438",
+        notesTitle: "\u041b\u0438\u0447\u043d\u044b\u0435\u0020\u0437\u0430\u043c\u0435\u0442\u043a\u0438",
+        notesCopy: "\u0417\u0434\u0435\u0441\u044c\u0020\u043c\u043e\u0436\u043d\u043e\u0020\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c\u0020\u0432\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u0438\u0439\u0020\u043a\u043e\u043c\u043c\u0435\u043d\u0442\u0430\u0440\u0438\u0439\u0020\u0438\u043b\u0438\u0020\u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0438\u0439\u0020\u0448\u0430\u0433\u0020\u043f\u043e\u0020\u0437\u0430\u0434\u0430\u0447\u0435\u002e",
+        notesPlaceholder: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435\u0020\u0441\u0432\u043e\u0438\u0020\u0437\u0430\u043c\u0435\u0442\u043a\u0438\u0020\u0437\u0434\u0435\u0441\u044c\u002e\u002e\u002e",
+        save: "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c",
+        saved: "\u0417\u0430\u043c\u0435\u0442\u043a\u0430\u0020\u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u0430\u002e",
+        back: "\u041d\u0430\u0437\u0430\u0434\u0020\u043a\u0020\u043a\u043e\u043c\u0430\u043d\u0434\u0435",
+        tasks: {
+          "1": { title: "New group announcement", description: "\u041f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u0438\u0442\u044c\u0020\u0431\u0430\u043d\u043d\u0435\u0440\u0020\u0434\u043b\u044f\u0020frontend\u0020batch\u0020\u0432\u043c\u0435\u0441\u0442\u0435\u0020\u0441\u0020\u043c\u0430\u0440\u043a\u0435\u0442\u0438\u043d\u0433\u043e\u0432\u043e\u0439\u0020\u043a\u043e\u043c\u0430\u043d\u0434\u043e\u0439\u0020\u0434\u043e\u002018:00.", stage: "\u0421\u0435\u0433\u043e\u0434\u043d\u044f", status: "\u0412\u044b\u0441\u043e\u043a\u0438\u0439\u0020\u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442" },
+          "2": { title: "CRM audit", description: "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c\u0020\u0438\u0020\u043e\u0447\u0438\u0441\u0442\u0438\u0442\u044c\u0020\u043f\u043e\u043b\u044f\u0020source\u0020\u0443\u0020\u043d\u043e\u0432\u044b\u0445\u0020\u043b\u0438\u0434\u043e\u0432\u002e", stage: "\u0421\u0435\u0433\u043e\u0434\u043d\u044f", status: "\u0412\u0020\u0440\u0430\u0431\u043e\u0442\u0435" },
+          "3": { title: "Cash reconciliation", description: "\u0421\u0432\u0435\u0440\u0438\u0442\u044c\u0020\u0441\u043f\u0438\u0441\u043e\u043a\u0020\u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u043d\u044b\u0445\u0020\u043e\u043f\u043b\u0430\u0442\u0020\u0441\u0020\u0430\u0434\u043c\u0438\u043d-\u0443\u0447\u0451\u0442\u043e\u043c\u002e", stage: "\u0421\u0435\u0433\u043e\u0434\u043d\u044f", status: "\u041d\u0430\u0020\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u0435" },
+          "4": { title: "Teacher onboarding", description: "\u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044c\u0020\u0434\u0430\u0442\u0443\u0020\u043f\u0440\u043e\u0431\u043d\u043e\u0433\u043e\u0020\u0437\u0430\u043d\u044f\u0442\u0438\u044f\u0020\u0434\u043b\u044f\u0020\u043d\u043e\u0432\u043e\u0433\u043e\u0020UI/UX\u0020\u043c\u0435\u043d\u0442\u043e\u0440\u0430\u002e", stage: "\u0412\u0020\u0440\u0430\u0431\u043e\u0442\u0435", status: "\u041d\u0430\u0020\u0440\u0430\u0441\u0441\u043c\u043e\u0442\u0440\u0435\u043d\u0438\u0438" },
+          "5": { title: "Support ticket #08", description: "\u0424\u043e\u0440\u043c\u0430\u0020\u0432\u043e\u0441\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f\u0020\u0432\u0445\u043e\u0434\u0430\u0020\u0443\u043f\u0440\u043e\u0449\u0430\u0435\u0442\u0441\u044f\u0020\u043d\u0430\u0020\u043e\u0441\u043d\u043e\u0432\u0435\u0020\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u043d\u043e\u0439\u0020\u043e\u0431\u0440\u0430\u0442\u043d\u043e\u0439\u0020\u0441\u0432\u044f\u0437\u0438\u002e", stage: "\u0412\u0020\u0440\u0430\u0431\u043e\u0442\u0435", status: "\u0421\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u043e" },
+          "6": { title: "Roadmap update", description: "\u041a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044c\u0020\u0430\u043f\u0440\u0435\u043b\u044c\u0441\u043a\u0438\u0445\u0020\u0432\u043e\u0440\u043a\u0448\u043e\u043f\u043e\u0432\u0020\u043e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u043d\u0020\u043d\u0430\u0020\u0441\u0430\u0439\u0442\u0435\u002e", stage: "\u0413\u043e\u0442\u043e\u0432\u043e", status: "\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e" },
+          "7": { title: "Student survey", description: "\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b\u0020\u043e\u043f\u0440\u043e\u0441\u0430\u0020\u0443\u0434\u043e\u0432\u043b\u0435\u0442\u0432\u043e\u0440\u0451\u043d\u043d\u043e\u0441\u0442\u0438\u0020\u044d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u044b\u002c\u0020\u043f\u0440\u0435\u0437\u0435\u043d\u0442\u0430\u0446\u0438\u044f\u0020\u0433\u043e\u0442\u043e\u0432\u0430\u002e", stage: "\u0413\u043e\u0442\u043e\u0432\u043e", status: "\u0412\u0020\u0430\u0440\u0445\u0438\u0432\u0435" }
+        }
+      }
+    };
+
+    let currentLanguage = loadLanguagePreference();
+
+    function text() {
+      return translations[currentLanguage] || translations.uz;
+    }
+
+    function loadLanguagePreference() {
+      try {
+        return localStorage.getItem(languageStorageKey) || "uz";
+      } catch {
+        return "uz";
+      }
+    }
+
+    function loadThemePreference() {
+      try {
+        return localStorage.getItem(themeStorageKey) || "light";
+      } catch {
+        return "light";
+      }
+    }
+
+    function setTheme(theme) {
+      const nextTheme = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      themeToggle.textContent = nextTheme === "dark" ? "Light" : "Dark";
+      themeToggle.setAttribute("aria-label", nextTheme === "dark" ? text().themeLight : text().themeDark);
+      themeToggle.setAttribute("title", nextTheme === "dark" ? text().themeLight : text().themeDark);
+
+      try {
+        localStorage.setItem(themeStorageKey, nextTheme);
+      } catch {
+        return;
+      }
+    }
+
+    function getTask() {
+      const task = text().tasks[taskId];
+      if (task) {
+        return task;
+      }
+
+      return text().tasks["1"];
+    }
+
+    function loadNotes() {
+      try {
+        return localStorage.getItem(notesStorageKey) || "";
+      } catch {
+        return "";
+      }
+    }
+
+    function saveNotes() {
+      try {
+        localStorage.setItem(notesStorageKey, taskNotes.value);
+      } catch {
+        return;
+      }
+
+      notesStatus.textContent = text().saved;
+    }
+
+    function applyTranslations() {
+      const ui = text();
+      const task = getTask();
+
+      document.documentElement.lang = currentLanguage;
+      document.title = `${task.title} | ${ui.metaTitle.replace("IT CENTER | ", "IT CENTER | ")}`;
+      heroEyebrow.textContent = ui.eyebrow;
+      taskTitle.textContent = task.title;
+      taskDescription.textContent = task.description;
+      stageLabel.textContent = ui.stageLabel;
+      statusLabel.textContent = ui.statusLabel;
+      idLabel.textContent = ui.idLabel;
+      taskStage.textContent = task.stage;
+      taskStatus.textContent = task.status;
+      taskIdValue.textContent = `#${taskId}`;
+      detailsTag.textContent = ui.detailsTag;
+      detailsTitle.textContent = ui.detailsTitle;
+      detailsText.textContent = task.description;
+      notesTag.textContent = ui.notesTag;
+      notesTitle.textContent = ui.notesTitle;
+      notesCopy.textContent = ui.notesCopy;
+      taskNotes.placeholder = ui.notesPlaceholder;
+      saveNotesButton.textContent = ui.save;
+      backLink.textContent = ui.back;
+      setTheme(loadThemePreference());
+    }
+
+    themeToggle.addEventListener("click", () => {
+      const activeTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      setTheme(activeTheme === "dark" ? "light" : "dark");
+    });
+
+    saveNotesButton.addEventListener("click", saveNotes);
+
+    taskNotes.value = loadNotes();
+    applyTranslations();
+  </script>
+</body>
+</html>
