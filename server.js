@@ -3,6 +3,12 @@ const crypto = require("crypto");
 const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
+const {
+  createEmptyStore,
+  normalizeStore,
+  readStore,
+  writeStore
+} = require("./admin-store");
 
 const rootDir = __dirname;
 const envFilePath = path.join(rootDir, ".env");
@@ -67,6 +73,36 @@ const mimeTypes = {
   ".txt": "text/plain; charset=utf-8",
   ".webp": "image/webp"
 };
+const removableSeedStudentNames = new Set([
+  "ogabek mahmudov",
+  "zxasxas xasxasx",
+  "laziz norbutayev",
+  "azizbek karimov",
+  "madina ergasheva",
+  "jahongir toraev",
+  "sevinch qodirova",
+  "maftuna jorayeva",
+  "behruz qodirov",
+  "umida rasulova",
+  "diyorbek xasanov",
+  "nilufar sattorova",
+  "shaxzod mamatov"
+]);
+const removableSeedStudentPhones = new Set([
+  "972233755",
+  "123432322",
+  "556458446",
+  "901234567",
+  "931112233",
+  "997654321",
+  "901987654",
+  "945551122",
+  "998221144",
+  "909761245",
+  "934005577",
+  "974449988",
+  "998880011"
+]);
 
 const sendText = (response, statusCode, message) => {
   response.writeHead(statusCode, {
@@ -107,7 +143,43 @@ const normalizePhoneNumber = (value) => {
   return "";
 };
 
+const normalizeSubjectTitle = (value) => String(value || "")
+  .trim()
+  .toLowerCase()
+  .normalize("NFKD")
+  .replace(/['"`‘’]+/g, "")
+  .replace(/[^\p{L}\p{N}]+/gu, " ")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const normalizeStudentPhone = (value) => String(value || "").replace(/\D/g, "").slice(-9);
+
+const shouldRemoveSeedStudent = (item) => {
+  const normalizedName = normalizeSubjectTitle(item?.name || item?.student || "");
+  const normalizedPhone = normalizeStudentPhone(item?.phone);
+
+  return removableSeedStudentNames.has(normalizedName)
+    || (normalizedPhone && removableSeedStudentPhones.has(normalizedPhone));
+};
+
 const isAdminProtectionEnabled = () => Boolean(adminPassword);
+
+const requireAdminSession = (request) => {
+  if (!isAdminProtectionEnabled()) {
+    return {
+      username: adminUsername
+    };
+  }
+
+  const session = getAdminSessionFromRequest(request);
+  if (!session) {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return session;
+};
 
 const parseCookies = (cookieHeader) => {
   const cookies = {};
@@ -214,6 +286,135 @@ const getAdminSessionFromRequest = (request) => {
 
 const clearAdminSession = () => {
   return;
+};
+
+const getStorageDateParts = (sourceDate = new Date()) => {
+  const safeDate = sourceDate instanceof Date && !Number.isNaN(sourceDate.getTime())
+    ? sourceDate
+    : new Date();
+
+  return {
+    date: `${safeDate.getFullYear()}-${String(safeDate.getMonth() + 1).padStart(2, "0")}-${String(safeDate.getDate()).padStart(2, "0")}`,
+    time: `${String(safeDate.getHours()).padStart(2, "0")}:${String(safeDate.getMinutes()).padStart(2, "0")}`
+  };
+};
+
+const parseAmountValue = (value) => {
+  if (Number.isFinite(value)) {
+    return value;
+  }
+
+  const digits = String(value || "").replace(/\D/g, "");
+  return digits ? Number.parseInt(digits, 10) : 0;
+};
+
+const createStudentDeleteKey = (item) => {
+  const applicationId = String(item?.applicationId || "").trim();
+  if (applicationId) {
+    return `application:${applicationId}`;
+  }
+
+  const studentId = String(item?.id || "").trim();
+  if (studentId) {
+    return `id:${studentId}`;
+  }
+
+  const normalizedName = normalizeSubjectTitle(item?.name || item?.student || "");
+  const normalizedPhone = normalizeStudentPhone(item?.phone);
+  const subjectIndex = Number.isInteger(item?.subjectIndex) ? item.subjectIndex : Number(item?.subjectIndex);
+  const amount = Number(item?.amount) || 0;
+  const status = String(item?.status || "").trim().toLowerCase();
+
+  return `fallback:${normalizedName}|${normalizedPhone}|${subjectIndex}|${amount}|${status}`;
+};
+
+const buildStudentEntryFromApplication = (application) => {
+  const acceptedAt = application?.acceptedAt ? new Date(application.acceptedAt) : new Date();
+  const dateParts = getStorageDateParts(acceptedAt);
+
+  return {
+    id: `student-${String(application?.id || "").trim() || Date.now()}`,
+    applicationId: String(application?.id || "").trim(),
+    name: String(application?.name || "").trim(),
+    phone: normalizeStudentPhone(application?.phone),
+    subjectIndex: Number.isInteger(application?.subjectIndex) ? application.subjectIndex : null,
+    subjectSlug: String(application?.courseSlug || application?.subjectSlug || "").trim(),
+    subjectLabel: String(application?.courseTitle || application?.subjectLabel || "").trim(),
+    courseTitle: String(application?.courseTitle || "").trim(),
+    courseSlug: String(application?.courseSlug || "").trim(),
+    amount: parseAmountValue(application?.amount),
+    planTitle: String(application?.planTitle || "").trim(),
+    status: "pending",
+    date: dateParts.date,
+    time: dateParts.time,
+    acceptedAt: acceptedAt.toISOString()
+  };
+};
+
+const reconcileStore = (value) => {
+  const store = normalizeStore(value);
+
+  store.applications = store.applications.filter((item) => !shouldRemoveSeedStudent(item));
+  store.students = store.students.filter((item) => !shouldRemoveSeedStudent(item));
+
+  store.applications.forEach((application) => {
+    if (application?.status !== "accepted" || !application?.id) {
+      return;
+    }
+
+    const alreadyExists = store.students.some((student) => String(student?.applicationId || "").trim() === String(application.id).trim());
+    if (!alreadyExists) {
+      store.students.unshift(buildStudentEntryFromApplication(application));
+    }
+  });
+
+  return store;
+};
+
+const readAdminStore = async () => reconcileStore(await readStore());
+
+const writeAdminStore = async (value) => writeStore(reconcileStore(value));
+
+const createApplicationEntry = (payload) => ({
+  id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+  source: String(payload?.source || "bank-course").trim() || "bank-course",
+  name: String(payload?.name || "").trim(),
+  phone: normalizeStudentPhone(payload?.phone),
+  courseTitle: String(payload?.courseTitle || "").trim(),
+  courseSlug: String(payload?.courseSlug || "").trim(),
+  planTitle: String(payload?.planTitle || "").trim(),
+  studyMode: String(payload?.studyMode || "offline").trim() || "offline",
+  studyModeLabel: String(payload?.studyModeLabel || "").trim(),
+  startDate: String(payload?.startDate || "").trim(),
+  amount: parseAmountValue(payload?.amount),
+  submittedAt: new Date().toISOString(),
+  status: "new"
+});
+
+const matchCourseValue = (item, courseSlug, courseTitle) => {
+  const normalizedSlug = String(courseSlug || "").trim().toLowerCase();
+  const normalizedTitle = normalizeSubjectTitle(courseTitle);
+
+  if (normalizedSlug) {
+    const itemSlug = String(item?.courseSlug || item?.subjectSlug || "").trim().toLowerCase();
+    if (itemSlug && itemSlug === normalizedSlug) {
+      return true;
+    }
+  }
+
+  if (!normalizedTitle) {
+    return false;
+  }
+
+  const candidates = [
+    item?.courseTitle,
+    item?.subjectLabel,
+    item?.subjectLabels?.uz,
+    item?.subjectLabels?.en,
+    item?.subjectLabels?.ru
+  ];
+
+  return candidates.some((value) => normalizeSubjectTitle(value) === normalizedTitle);
 };
 
 const readJsonBody = (request) => new Promise((resolve, reject) => {
@@ -336,6 +537,108 @@ const handleAdminLogout = (request, response) => {
   });
 };
 
+const handleAdminData = async (request, response) => {
+  try {
+    requireAdminSession(request);
+
+    if (request.method === "GET") {
+      const store = await readAdminStore();
+      sendJson(response, 200, store);
+      return;
+    }
+
+    if (request.method === "PUT") {
+      const body = await readJsonBody(request);
+      const nextStore = await writeAdminStore(body);
+      sendJson(response, 200, nextStore);
+      return;
+    }
+
+    sendText(response, 405, "Method not allowed");
+  } catch (error) {
+    sendJson(response, error?.statusCode || 500, {
+      error: error?.message || "Ma'lumotlarni yuklashda xato yuz berdi."
+    });
+  }
+};
+
+const handleApplicationSubmit = async (request, response) => {
+  try {
+    const body = await readJsonBody(request);
+    const entry = createApplicationEntry(body);
+
+    if (!entry.name || !entry.phone || !entry.courseTitle || !entry.planTitle || !entry.amount) {
+      sendJson(response, 400, {
+        error: "Ariza uchun kerakli ma'lumotlar to'liq yuborilmadi."
+      });
+      return;
+    }
+
+    const store = await readAdminStore();
+    store.applications.unshift(entry);
+    await writeAdminStore(store);
+
+    sendJson(response, 201, {
+      application: entry
+    });
+  } catch (error) {
+    sendJson(response, error?.statusCode || 500, {
+      error: error?.message || "Arizani saqlashda xato yuz berdi."
+    });
+  }
+};
+
+const handleCourseStudents = async (request, response) => {
+  try {
+    const parsedUrl = new URL(request.url, `http://${request.headers.host || `${host}:${port}`}`);
+    const courseSlug = parsedUrl.searchParams.get("courseSlug") || "";
+    const courseTitle = parsedUrl.searchParams.get("courseTitle") || parsedUrl.searchParams.get("course") || "";
+    const store = await readAdminStore();
+
+    const students = store.students
+      .filter((item) => matchCourseValue(item, courseSlug, courseTitle))
+      .map((item) => ({
+        id: String(item?.id || item?.applicationId || ""),
+        student: String(item?.name || "").trim(),
+        amount: `${parseAmountValue(item?.amount).toLocaleString("ru-RU")} so'm`,
+        status: item?.status === "paid" ? "paid" : "unpaid",
+        date: String(item?.date || "").trim(),
+        time: String(item?.time || "").trim(),
+        group: String(item?.planTitle || "Qabul qilingan o'quvchi").trim()
+      }))
+      .filter((item) => item.id && item.student);
+
+    sendJson(response, 200, {
+      students
+    });
+  } catch (error) {
+    sendJson(response, error?.statusCode || 500, {
+      error: error?.message || "O'quvchilar ro'yxatini yuklashda xato yuz berdi."
+    });
+  }
+};
+
+const handleCourseTeacher = async (request, response) => {
+  try {
+    const parsedUrl = new URL(request.url, `http://${request.headers.host || `${host}:${port}`}`);
+    const courseSlug = parsedUrl.searchParams.get("courseSlug") || "";
+    const courseTitle = parsedUrl.searchParams.get("courseTitle") || parsedUrl.searchParams.get("course") || "";
+    const store = await readAdminStore();
+
+    const teacher = store.teachers
+      .filter((item) => matchCourseValue(item, courseSlug, courseTitle))
+      .sort((left, right) => new Date(right.createdAt || 0).getTime() - new Date(left.createdAt || 0).getTime())[0];
+
+    sendJson(response, 200, {
+      teacher: teacher || null
+    });
+  } catch (error) {
+    sendJson(response, error?.statusCode || 500, {
+      error: error?.message || "Ustoz ma'lumotini yuklashda xato yuz berdi."
+    });
+  }
+};
+
 const resolveFilePath = (pathname) => {
   const normalizedPathname = pathname === "/" ? "/index.html" : pathname;
   const decodedPath = decodeURIComponent(normalizedPathname);
@@ -408,6 +711,26 @@ const handleRequest = async (request, response) => {
     return;
   }
 
+  if ((request.method === "GET" || request.method === "PUT") && pathname === "/api/admin/data") {
+    await handleAdminData(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/applications") {
+    await handleApplicationSubmit(request, response);
+    return;
+  }
+
+  if (request.method === "GET" && pathname === "/api/courses/students") {
+    await handleCourseStudents(request, response);
+    return;
+  }
+
+  if (request.method === "GET" && pathname === "/api/courses/teacher") {
+    await handleCourseTeacher(request, response);
+    return;
+  }
+
   if (request.method !== "GET" && request.method !== "HEAD") {
     sendText(response, 405, "Method not allowed");
     return;
@@ -428,3 +751,7 @@ module.exports.handleRequest = handleRequest;
 module.exports.handleAdminSessionStatus = handleAdminSessionStatus;
 module.exports.handleAdminLogin = handleAdminLogin;
 module.exports.handleAdminLogout = handleAdminLogout;
+module.exports.handleAdminData = handleAdminData;
+module.exports.handleApplicationSubmit = handleApplicationSubmit;
+module.exports.handleCourseStudents = handleCourseStudents;
+module.exports.handleCourseTeacher = handleCourseTeacher;

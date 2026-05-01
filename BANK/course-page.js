@@ -1,6 +1,7 @@
 const detailRoot = document.getElementById("courseDetail");
 const U = window.CoursePageUtils;
 let detailTopbarObserver = null;
+let teacherOverride = null;
 const teacherPhotoStorageKey = "bank-course-teacher-photos";
 const teacherCertificateStorageKey = "bank-course-teacher-certificates";
 const teacherPhotoCache = new Map();
@@ -400,14 +401,19 @@ function saveStoredTeacherCertificate(courseSlug, certificateRecord) {
 }
 
 function getTeacherProfile(course) {
-  const teacher = course && typeof course.teacher === "object" ? course.teacher : {};
+  const teacher = teacherOverride && typeof teacherOverride === "object"
+    ? teacherOverride
+    : (course && typeof course.teacher === "object" ? course.teacher : {});
   const name = String(teacher.name || "").trim() || U.t("detail.teacherNameFallback");
   const bio =
     String(teacher.bio || "").trim() ||
     U.t("detail.teacherBioFallback", { course: course.title });
-  const photo = getStoredTeacherPhoto(course.slug) || String(teacher.photo || "").trim();
-  const certificateFile =
-    getStoredTeacherCertificate(course.slug) || normalizeTeacherCertificateRecord(teacher.certificate);
+  const photo = String(teacher.photoDataUrl || teacher.photo || "").trim();
+  const certificateFile = normalizeTeacherCertificateRecord({
+    fileUrl: teacher.certificateDataUrl || teacher.certificate?.fileUrl,
+    fileName: teacher.certificateName || teacher.certificate?.fileName,
+    mimeType: teacher.certificateType || teacher.certificate?.mimeType || teacher.certificate?.type
+  }) || normalizeTeacherCertificateRecord(teacher.certificate);
   const certificateState = certificateFile
     ? "yes"
     : resolveTeacherCertificate(getTeacherCertificateStatusValue(teacher.certificate));
@@ -422,48 +428,15 @@ function getTeacherProfile(course) {
 }
 
 function buildTeacherPhotoMarkup(course, teacher) {
-  const inputId = getTeacherPhotoInputId(course.slug);
-  const uploadLabel = teacher.photo ? U.t("detail.teacherChangePhoto") : U.t("detail.teacherUploadPhoto");
-  const hiddenInputMarkup = `
-    <input
-      class="teacher-card__file-input"
-      id="${U.escapeHtml(inputId)}"
-      type="file"
-      accept="image/*"
-      data-teacher-photo-input
-    />
-  `;
-
   if (teacher.photo) {
     return `
       <img src="${U.escapeHtml(teacher.photo)}" alt="${U.escapeHtml(teacher.name)}" loading="lazy" />
-      ${hiddenInputMarkup}
-      <button
-        class="teacher-card__upload teacher-card__upload--overlay"
-        type="button"
-        data-teacher-photo-trigger
-        aria-label="${U.escapeHtml(uploadLabel)}"
-        title="${U.escapeHtml(uploadLabel)}"
-      >
-        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
-      </button>
     `;
   }
 
   return `
     <div class="teacher-card__placeholder">
-      ${hiddenInputMarkup}
-      <button
-        class="teacher-card__upload teacher-card__upload--empty"
-        type="button"
-        data-teacher-photo-trigger
-        aria-label="${U.escapeHtml(uploadLabel)}"
-        title="${U.escapeHtml(uploadLabel)}"
-      >
-        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
-      </button>
       <span class="teacher-card__placeholder-text">${U.t("detail.teacherPhotoPlaceholder")}</span>
-      <span class="teacher-card__upload-help">${U.t("detail.teacherUploadHint")}</span>
     </div>
   `;
 }
@@ -478,7 +451,6 @@ function refreshTeacherPhotoMedia(course) {
   const teacher = getTeacherProfile(course);
   media.classList.toggle("teacher-card__media--empty", !teacher.photo);
   media.innerHTML = buildTeacherPhotoMarkup(course, teacher);
-  bindTeacherPhotoUpload(course);
 }
 
 function bindTeacherPhotoUpload(course) {
@@ -531,20 +503,6 @@ function bindTeacherPhotoUpload(course) {
 }
 
 function buildTeacherCertificateMarkup(course, teacher) {
-  const inputId = getTeacherCertificateInputId(course.slug);
-  const uploadLabel = teacher.certificateFile
-    ? U.t("detail.teacherChangeCertificate")
-    : U.t("detail.teacherUploadCertificate");
-  const hiddenInputMarkup = `
-    <input
-      class="teacher-card__file-input"
-      id="${U.escapeHtml(inputId)}"
-      type="file"
-      accept="image/*,application/pdf"
-      data-teacher-certificate-input
-    />
-  `;
-
   if (teacher.certificateFile) {
     const isPdf = isTeacherCertificatePdf(teacher.certificateFile);
     const previewMedia = isPdf
@@ -565,7 +523,6 @@ function buildTeacherCertificateMarkup(course, teacher) {
       `;
 
     return `
-      ${hiddenInputMarkup}
       <div class="teacher-card__certificate-file teacher-card__certificate-file--filled">
         <button
           class="teacher-card__certificate-preview-trigger"
@@ -589,15 +546,14 @@ function buildTeacherCertificateMarkup(course, teacher) {
             >
               ${U.t("detail.teacherCertificateView")}
             </button>
-            <button
+            <a
               class="teacher-card__certificate-link teacher-card__certificate-link--button"
-              type="button"
-              data-teacher-certificate-trigger
-              aria-label="${U.escapeHtml(uploadLabel)}"
-              title="${U.escapeHtml(uploadLabel)}"
+              href="${U.escapeHtml(teacher.certificateFile.fileUrl)}"
+              target="_blank"
+              rel="noreferrer noopener"
             >
-              ${U.t("detail.teacherChangeCertificate")}
-            </button>
+              ${U.t("detail.teacherCertificateView")}
+            </a>
           </div>
         </div>
       </div>
@@ -605,20 +561,10 @@ function buildTeacherCertificateMarkup(course, teacher) {
   }
 
   return `
-    ${hiddenInputMarkup}
     <div class="teacher-card__certificate-file teacher-card__certificate-file--empty">
-      <button
-        class="teacher-card__upload teacher-card__upload--certificate"
-        type="button"
-        data-teacher-certificate-trigger
-        aria-label="${U.escapeHtml(uploadLabel)}"
-        title="${U.escapeHtml(uploadLabel)}"
-      >
-        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
-      </button>
       <div class="teacher-card__certificate-copy">
-        <strong class="teacher-card__certificate-file-name">${U.t("detail.teacherUploadCertificate")}</strong>
-        <span class="teacher-card__certificate-file-hint">${U.t("detail.teacherCertificateHint")}</span>
+        <strong class="teacher-card__certificate-file-name">${U.t("detail.teacherCertificate")}</strong>
+        <span class="teacher-card__certificate-file-hint">${U.t("detail.teacherCertificateUnknown")}</span>
       </div>
     </div>
   `;
@@ -693,7 +639,6 @@ function refreshTeacherCertificateSection(course) {
 
   const teacher = getTeacherProfile(course);
   certificateBlock.innerHTML = buildTeacherCertificateSectionMarkup(course, teacher);
-  bindTeacherCertificateUpload(course);
   bindTeacherCertificatePreview(course);
 }
 
@@ -1084,7 +1029,7 @@ function bindApplicationForm(course, selectedPlan) {
     successBanner.append(title, message);
   };
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(form);
@@ -1106,6 +1051,7 @@ function bindApplicationForm(course, selectedPlan) {
     successBanner.classList.remove("is-visible");
 
     const applicationState = {
+      courseSlug: course.slug,
       courseTitle: course.title,
       name,
       phone,
@@ -1116,12 +1062,19 @@ function bindApplicationForm(course, selectedPlan) {
       amount: selectedPlan.amount
     };
 
-    U.saveApplicationSubmission(course, selectedPlan, applicationState);
-    showSuccessMessage(applicationState);
-
-    form.reset();
-    phoneInput.value = U.formatPhoneNumber("", true);
-    phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
+    try {
+      await U.saveApplicationSubmission(course, selectedPlan, applicationState);
+      showSuccessMessage(applicationState);
+      form.reset();
+      phoneInput.value = U.formatPhoneNumber("", true);
+      phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
+    } catch (error) {
+      successBanner.textContent = "";
+      successBanner.classList.add("is-visible");
+      successBanner.append(Object.assign(document.createElement("p"), {
+        textContent: error?.message || "Arizani yuborishda xato yuz berdi."
+      }));
+    }
   });
 }
 
@@ -1170,7 +1123,7 @@ function renderCourseOverview(course, selectedPlan) {
   `;
 }
 
-function renderPage() {
+async function renderPage() {
   const { selectedSlug, selectedPlanId } = U.getQueryState();
   const course = U.getLocalizedCourseBySlug(selectedSlug);
 
@@ -1181,9 +1134,12 @@ function renderPage() {
   }
 
   const selectedPlan = U.getPlanById(course, selectedPlanId);
+  try {
+    teacherOverride = await U.fetchCourseTeacher(course);
+  } catch {
+    teacherOverride = null;
+  }
   renderCourseOverview(course, selectedPlan);
-  bindTeacherPhotoUpload(course);
-  bindTeacherCertificateUpload(course);
   bindTeacherCertificatePreview(course);
   bindRegisterTriggers();
   bindApplicationForm(course, selectedPlan);

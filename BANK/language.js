@@ -77,7 +77,7 @@ const uiTranslations = {
       paymentPageIntro:
         "Tanlangan fan uchun tarifni belgilang va to'lov usulini shu sahifada alohida tanlang.",
       paymentPageMethodsIntro:
-        "Avval tarifni tanlang, keyin quyidagi usullardan biri bilan demo to'lovni boshlang.",
+        "Avval tarifni tanlang, keyin quyidagi usullardan biri orqali to'lov ma'lumotlarini tayyorlang.",
       registerPageTitle: "Ro'yxatdan o'tish",
       registerPageIntro:
         "Arizani alohida to'ldiring. Tanlangan tarif saqlanadi va keyin to'lov sahifasiga o'tishingiz mumkin.",
@@ -103,8 +103,8 @@ const uiTranslations = {
       paymentsTitle: "To'lovlar",
       paymentsText: "Quyidagi usullardan birini tanlang",
       startPayment: "To'lovni boshlash",
-      paymentDemoTitle: "To'lov oynasi",
-      paymentDemoText: "Tanlangan usul uchun demo to'lov bo'limi ochildi.",
+      paymentDemoTitle: "To'lov ma'lumoti",
+      paymentDemoText: "Tanlangan usul uchun to'lov ma'lumotlari ko'rsatildi.",
       payingForLabel: "To'lov qilinayotgan fan",
       senderLabel: "Jo'natuvchi",
       receiverLabel: "Qabul qiluvchi",
@@ -144,7 +144,7 @@ const uiTranslations = {
       registrationSuccessMessage:
         "{name}, siz {course} fani uchun {plan} tarif bo'yicha ariza yubordingiz. Operator siz bilan {phone} raqami orqali bog'lanadi. O'qish formati: {studyMode}.",
       paymentSuccessMessage:
-        "{course} fani uchun {plan} tarifi va {paymentMethod} usuli bo'yicha demo to'lov oynasi tayyor.",
+        "{course} fani uchun {plan} tarifi va {paymentMethod} usuli bo'yicha to'lov ma'lumotlari tayyorlandi.",
       submitApplication: "Arizani yuborish",
       openAdminApplications: "Admin panelni ochish",
       goToPaymentPage: "To'lov sahifasiga o'tish",
@@ -235,7 +235,7 @@ const uiTranslations = {
       paymentPageIntro:
         "Выберите тариф для предмета и отдельно настройте способ оплаты на этой странице.",
       paymentPageMethodsIntro:
-        "Сначала выберите тариф, затем запустите демо-оплату одним из способов ниже.",
+        "Сначала выберите тариф, затем подготовьте платежные данные одним из способов ниже.",
       registerPageTitle: "Регистрация",
       registerPageIntro:
         "Заполните заявку отдельно. Выбранный тариф сохранится, и затем вы сможете перейти к оплате.",
@@ -261,8 +261,8 @@ const uiTranslations = {
       paymentsTitle: "Платежи",
       paymentsText: "Выберите один из способов ниже",
       startPayment: "Начать оплату",
-      paymentDemoTitle: "Окно оплаты",
-      paymentDemoText: "Открыт демо-блок оплаты для выбранного способа.",
+      paymentDemoTitle: "Данные оплаты",
+      paymentDemoText: "Показаны платежные данные для выбранного способа.",
       payingForLabel: "Какой предмет оплачивается",
       senderLabel: "Отправитель",
       receiverLabel: "Получатель",
@@ -302,7 +302,7 @@ const uiTranslations = {
       registrationSuccessMessage:
         "{name}, вы отправили заявку на предмет {course} по тарифу {plan}. Оператор свяжется с вами по номеру {phone}. Формат обучения: {studyMode}.",
       paymentSuccessMessage:
-        "Для предмета {course} подготовлено демо-окно оплаты по тарифу {plan} и способу {paymentMethod}.",
+        "Для предмета {course} подготовлены платежные данные по тарифу {plan} и способу {paymentMethod}.",
       submitApplication: "Отправить заявку",
       openAdminApplications: "Открыть админ-панель",
       goToPaymentPage: "Перейти к оплате",
@@ -393,7 +393,7 @@ const uiTranslations = {
       paymentPageIntro:
         "Choose the subject plan and set the payment method separately on this page.",
       paymentPageMethodsIntro:
-        "First choose a plan, then start a demo payment with one of the methods below.",
+        "First choose a plan, then prepare payment details using one of the methods below.",
       registerPageTitle: "Registration",
       registerPageIntro:
         "Submit the application separately. Your selected plan stays saved and you can move to payments afterward.",
@@ -419,8 +419,8 @@ const uiTranslations = {
       paymentsTitle: "Payments",
       paymentsText: "Choose one of the methods below",
       startPayment: "Start payment",
-      paymentDemoTitle: "Payment window",
-      paymentDemoText: "A demo payment section has been opened for the selected method.",
+      paymentDemoTitle: "Payment details",
+      paymentDemoText: "Payment details for the selected method are now shown.",
       payingForLabel: "Subject being paid for",
       senderLabel: "Sender",
       receiverLabel: "Receiver",
@@ -460,7 +460,7 @@ const uiTranslations = {
       registrationSuccessMessage:
         "{name}, you submitted an application for the {course} subject with the {plan} plan. An operator will contact you at {phone}. Study format: {studyMode}.",
       paymentSuccessMessage:
-        "A demo payment window is ready for the {course} subject with the {plan} plan and {paymentMethod} method.",
+        "Payment details are ready for the {course} subject with the {plan} plan and {paymentMethod} method.",
       submitApplication: "Submit application",
       openAdminApplications: "Open admin panel",
       goToPaymentPage: "Go to payment page",
@@ -1529,4 +1529,3 @@ if (languageSwitcher && languageToggle) {
     }
   });
 }
-

@@ -173,7 +173,7 @@ function bindApplicationForm(course, selectedPlan) {
     successBanner.append(title, message);
   };
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(form);
@@ -195,6 +195,7 @@ function bindApplicationForm(course, selectedPlan) {
     successBanner.classList.remove("is-visible");
 
     const applicationState = {
+      courseSlug: course.slug,
       courseTitle: course.title,
       name,
       phone,
@@ -205,12 +206,19 @@ function bindApplicationForm(course, selectedPlan) {
       amount: selectedPlan.amount
     };
 
-    U.saveApplicationSubmission(course, selectedPlan, applicationState);
-    showSuccessMessage(applicationState);
-
-    form.reset();
-    phoneInput.value = U.formatPhoneNumber("", true);
-    phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
+    try {
+      await U.saveApplicationSubmission(course, selectedPlan, applicationState);
+      showSuccessMessage(applicationState);
+      form.reset();
+      phoneInput.value = U.formatPhoneNumber("", true);
+      phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
+    } catch (error) {
+      successBanner.textContent = "";
+      successBanner.classList.add("is-visible");
+      successBanner.append(Object.assign(document.createElement("p"), {
+        textContent: error?.message || "Arizani yuborishda xato yuz berdi."
+      }));
+    }
   });
 }
 

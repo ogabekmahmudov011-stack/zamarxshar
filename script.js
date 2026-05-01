@@ -649,6 +649,7 @@ const saveProfile = (profile) => {
 
 const isAuthenticated = () =>
   localStorage.getItem(authStateKey) === "true" &&
+  localStorage.getItem(loginProviderKey) === "email-password" &&
   Boolean(localStorage.getItem(loginStorageKey) || localStorage.getItem(legacyLoginStorageKey) || getProfile().email);
 
 const setAuthenticated = (value) => {
@@ -1750,7 +1751,10 @@ if (loginForm && loginEmailInput) {
   if (storedLoginEmail) {
     loginEmailInput.value = storedLoginEmail;
     localStorage.setItem(loginStorageKey, storedLoginEmail);
-    if (localStorage.getItem(loginUseCaseKey) || localStorage.getItem(loginProviderKey)) {
+    if (
+      localStorage.getItem(loginUseCaseKey)
+      && localStorage.getItem(loginProviderKey) === "email-password"
+    ) {
       setAuthenticated(true);
       updateLoginButtonState();
     }
@@ -1811,12 +1815,6 @@ if (loginUseCaseOptions.length) {
 }
 
 if (loginProviderButtons.length) {
-  const providerLoginUrls = {
-    google: "https://accounts.google.com/signin",
-    apple: "https://appleid.apple.com/sign-in",
-    microsoft: "https://login.live.com"
-  };
-
   loginProviderButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const provider = button.dataset.provider;
@@ -1825,53 +1823,7 @@ if (loginProviderButtons.length) {
       }
 
       const providerLabel = provider.charAt(0).toUpperCase() + provider.slice(1);
-      const email = loginEmailInput?.value.trim() || localStorage.getItem(loginStorageKey) || "";
-
-      if (email) {
-        localStorage.setItem(loginStorageKey, email);
-        const profile = getProfile();
-        const nextProfile = { ...profile, email };
-        saveProfile(nextProfile);
-        if (profileEmailInput) {
-          profileEmailInput.value = email;
-        }
-        applyProfilePreview(nextProfile);
-      }
-
-      setAuthenticated(true);
-      localStorage.setItem(loginProviderKey, provider);
-      updateLoginButtonState();
-
-      if (provider === "passkey") {
-        if (!window.PublicKeyCredential) {
-          setLoginProviderStatus("Passkey bu brauzerda qo'llab-quvvatlanmaydi.", true);
-          return;
-        }
-
-        setLoginProviderStatus("Passkey tayyor. Qurilmangiz orqali tasdiqlang.");
-        return;
-      }
-
-      if (provider === "sso") {
-        const ssoOrg = window.prompt("SSO tashkilot nomi yoki domenini kiriting:");
-        if (!ssoOrg || !ssoOrg.trim()) {
-          setLoginProviderStatus("SSO uchun tashkilot nomi kiritilmadi.", true);
-          return;
-        }
-
-        localStorage.setItem("new-plan-sso-org", ssoOrg.trim());
-        setLoginProviderStatus(`SSO tanlandi: ${ssoOrg.trim()}`);
-        return;
-      }
-
-      const loginUrl = providerLoginUrls[provider];
-      if (loginUrl) {
-        window.open(loginUrl, "_blank", "noopener,noreferrer");
-        setLoginProviderStatus(`${providerLabel} login oynasi ochildi.`);
-        return;
-      }
-
-      setLoginProviderStatus(`${providerLabel} ulanishi tayyorlandi.`);
+      setLoginProviderStatus(`${providerLabel} login hozircha ulanmagan. Email va parol orqali davom eting.`, true);
     });
   });
 }

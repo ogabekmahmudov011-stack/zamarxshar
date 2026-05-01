@@ -2977,14 +2977,50 @@
     const contactGridBody = document.getElementById("contact-grid-body");
     const footerText = document.getElementById("footer-text");
     const themeStorageKey = "it-center-admin-theme";
-    const adminLocalSessionKey = "it-center-admin-local-session";
     const adminApplicationsStorageKey = "it-center-admin-applications";
     const adminStudentsStorageKey = "it-center-admin-students";
     const adminTeachersStorageKey = "it-center-admin-teachers";
     const languageStorageKey = "it-center-admin-language";
     const supportedLanguages = ["uz", "en", "ru"];
+    const subjectSlugs = [
+      "full-stack-web-development",
+      "cloud-computing",
+      "devops-platform-engineering",
+      "backend-api-engineering",
+      "mobile-app-development",
+      "ui-ux-product-design",
+      "cybersecurity",
+      "data-science-big-data",
+      "ai-engineering-machine-learning",
+      "qa-automation-testing",
+      "german-language",
+      "french-language",
+      "physical-education",
+      "fine-arts",
+      "music-culture",
+      "technology",
+      "technical-drawing",
+      "character-education",
+      "law",
+      "economics"
+    ];
+    const adminDataState = {
+      applications: [],
+      students: [],
+      teachers: []
+    };
+    let adminDataLoaded = false;
+    let adminDataLoadingPromise = null;
 
     const studentOverviewData = [];
+
+    function createEmptyAdminDataState() {
+      return {
+        applications: [],
+        students: [],
+        teachers: []
+      };
+    }
 
     if (contactPanelToggle && contactGridBody) {
       const toggleContactSection = () => {
@@ -4051,7 +4087,31 @@
       return "uz-UZ";
     }
 
-    function readStoredItems(storageKey) {
+    function cloneItems(items) {
+      return JSON.parse(JSON.stringify(Array.isArray(items) ? items : []));
+    }
+
+    function getStateKeyFromStorageKey(storageKey) {
+      if (storageKey === adminApplicationsStorageKey) {
+        return "applications";
+      }
+      if (storageKey === adminStudentsStorageKey) {
+        return "students";
+      }
+      if (storageKey === adminTeachersStorageKey) {
+        return "teachers";
+      }
+      return "";
+    }
+
+    function applyAdminDataState(payload = {}) {
+      adminDataState.applications = cloneItems(payload.applications);
+      adminDataState.students = cloneItems(payload.students);
+      adminDataState.teachers = cloneItems(payload.teachers);
+      adminDataLoaded = true;
+    }
+
+    function readLegacyStoredItems(storageKey) {
       try {
         const rawValue = localStorage.getItem(storageKey);
         if (!rawValue) {
@@ -4065,11 +4125,122 @@
       }
     }
 
+    function readStoredItems(storageKey) {
+      const stateKey = getStateKeyFromStorageKey(storageKey);
+      if (!stateKey) {
+        return [];
+      }
+
+      return cloneItems(adminDataState[stateKey]);
+    }
+
     function writeStoredItems(storageKey, items) {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(items));
-      } catch {
+      const stateKey = getStateKeyFromStorageKey(storageKey);
+      if (!stateKey) {
         return;
+      }
+
+      adminDataState[stateKey] = cloneItems(items);
+    }
+
+    async function persistAdminData() {
+      const response = await fetch("/api/admin/data", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          applications: adminDataState.applications,
+          students: adminDataState.students,
+          teachers: adminDataState.teachers
+        })
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.error || "Saqlashda xato yuz berdi.");
+      }
+
+      applyAdminDataState(payload);
+      return payload;
+    }
+
+    async function importLegacyAdminDataIfNeeded() {
+      const hasRemoteData = (
+        adminDataState.applications.length
+        || adminDataState.students.length
+        || adminDataState.teachers.length
+      );
+      if (hasRemoteData) {
+        return;
+      }
+
+      const legacyApplications = readLegacyStoredItems(adminApplicationsStorageKey);
+      const legacyStudents = readLegacyStoredItems(adminStudentsStorageKey);
+      const legacyTeachers = readLegacyStoredItems(adminTeachersStorageKey);
+
+      if (!legacyApplications.length && !legacyStudents.length && !legacyTeachers.length) {
+        return;
+      }
+
+      applyAdminDataState({
+        applications: legacyApplications,
+        students: legacyStudents,
+        teachers: legacyTeachers
+      });
+      cleanupSeededAdminData();
+      syncAcceptedApplicationsToStudents();
+      await persistAdminData();
+    }
+
+    async function loadAdminData(forceReload = false) {
+      if (adminDataLoaded && !forceReload) {
+        return adminDataState;
+      }
+
+      if (adminDataLoadingPromise && !forceReload) {
+        return adminDataLoadingPromise;
+      }
+
+      adminDataLoadingPromise = (async () => {
+        const response = await fetch("/api/admin/data", {
+          cache: "no-store"
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload?.error || "Ma'lumotlarni yuklashda xato yuz berdi.");
+        }
+
+        applyAdminDataState(payload);
+        const beforeNormalize = JSON.stringify({
+          applications: adminDataState.applications,
+          students: adminDataState.students,
+          teachers: adminDataState.teachers
+        });
+        cleanupSeededAdminData();
+        syncAcceptedApplicationsToStudents();
+        const afterNormalize = JSON.stringify({
+          applications: adminDataState.applications,
+          students: adminDataState.students,
+          teachers: adminDataState.teachers
+        });
+        if (beforeNormalize !== afterNormalize) {
+          await persistAdminData();
+        }
+        await importLegacyAdminDataIfNeeded();
+        renderApplicationsOverview();
+        renderSidebarNav();
+        renderTeacherNav();
+        renderStudentOverview();
+        renderTeacherOverview();
+        return adminDataState;
+      })();
+
+      try {
+        return await adminDataLoadingPromise;
+      } finally {
+        adminDataLoadingPromise = null;
       }
     }
 
@@ -4287,60 +4458,27 @@
       const alreadyAdded = storedStudents.some((item) => item.applicationId === application.id);
 
       if (alreadyAdded) {
-        ensureCourseStudentFromApplication(application);
         return;
       }
 
       storedStudents.unshift({
+        id: `student-${application.id}`,
         applicationId: application.id,
         name: application.name || "",
         phone: String(application.phone || "").replace(/\D/g, "").slice(-9),
         subjectIndex: resolveStudentSubjectIndex(application),
+        subjectSlug: application.courseSlug || "",
         subjectLabel: application.courseTitle || "",
+        subjectLabels: application.subjectLabels || {},
+        courseTitle: application.courseTitle || "",
+        courseSlug: application.courseSlug || "",
+        planTitle: application.planTitle || "",
         amount: Number.isFinite(Number(application.amount)) ? Number(application.amount) : 0,
-        status: "pending"
+        status: "pending",
+        acceptedAt: application.acceptedAt || new Date().toISOString()
       });
 
       writeStoredItems(adminStudentsStorageKey, storedStudents);
-      ensureCourseStudentFromApplication(application);
-    }
-
-    function ensureCourseStudentFromApplication(application) {
-      const storageKeys = getCourseStudentStorageKeys(application);
-      if (!storageKeys.length || !application?.id) {
-        return;
-      }
-
-      const acceptedAt = application.acceptedAt ? new Date(application.acceptedAt) : new Date();
-      const isValidAcceptedAt = !Number.isNaN(acceptedAt.getTime());
-      const dateParts = isValidAcceptedAt
-        ? {
-            date: `${acceptedAt.getFullYear()}-${String(acceptedAt.getMonth() + 1).padStart(2, "0")}-${String(acceptedAt.getDate()).padStart(2, "0")}`,
-            time: `${String(acceptedAt.getHours()).padStart(2, "0")}:${String(acceptedAt.getMinutes()).padStart(2, "0")}`
-          }
-        : getStorageDateParts();
-
-      storageKeys.forEach((storageKey) => {
-        const storedCourseStudents = readStoredItems(storageKey);
-        const alreadyAdded = storedCourseStudents.some((item) => item?.applicationId === application.id);
-
-        if (alreadyAdded) {
-          return;
-        }
-
-        storedCourseStudents.unshift({
-          id: `accepted-${application.id}`,
-          applicationId: application.id,
-          student: application.name || "",
-          amount: formatMoney(Number(application.amount) || 0),
-          status: "unpaid",
-          date: dateParts.date,
-          time: dateParts.time,
-          group: application.planTitle || "Arizadan qabul qilingan"
-        });
-
-        writeStoredItems(storageKey, storedCourseStudents);
-      });
     }
 
     function syncAcceptedApplicationsToStudents() {
@@ -4352,7 +4490,7 @@
       });
     }
 
-    function acceptApplication(applicationId) {
+    async function acceptApplication(applicationId) {
       const storedApplications = getStoredApplications();
       const nextApplications = storedApplications.map((item) => {
         if (item.id !== applicationId || item.status === "accepted") {
@@ -4369,13 +4507,19 @@
       });
 
       writeStoredItems(adminApplicationsStorageKey, nextApplications);
-      renderApplicationsOverview();
-      renderSidebarNav();
-      renderStudentOverview();
-      showToast(text().toasts.applicationAccepted || "");
+      try {
+        await persistAdminData();
+        renderApplicationsOverview();
+        renderSidebarNav();
+        renderStudentOverview();
+        showToast(text().toasts.applicationAccepted || "");
+      } catch (error) {
+        await loadAdminData(true).catch(() => {});
+        showToast(error?.message || "Saqlashda xato yuz berdi.");
+      }
     }
 
-    function deleteApplicationById(applicationId) {
+    async function deleteApplicationById(applicationId) {
       const normalizedApplicationId = String(applicationId || "").trim();
       if (!normalizedApplicationId) {
         return;
@@ -4385,10 +4529,16 @@
         .filter((item) => String(item?.id || "").trim() !== normalizedApplicationId);
 
       writeStoredItems(adminApplicationsStorageKey, nextApplications);
-      renderApplicationsOverview();
-      renderSidebarNav();
-      renderStudentOverview();
-      showToast(text().toasts.applicationDeleted || "");
+      try {
+        await persistAdminData();
+        renderApplicationsOverview();
+        renderSidebarNav();
+        renderStudentOverview();
+        showToast(text().toasts.applicationDeleted || "");
+      } catch (error) {
+        await loadAdminData(true).catch(() => {});
+        showToast(error?.message || "Saqlashda xato yuz berdi.");
+      }
     }
 
     function createStudentDeleteKey(item) {
@@ -4415,7 +4565,7 @@
       return createStudentDeleteKey(item) === String(studentKey || "").trim();
     }
 
-    function deleteStudentByKey(studentKey) {
+    async function deleteStudentByKey(studentKey) {
       const normalizedStudentKey = String(studentKey || "").trim();
       if (!normalizedStudentKey) {
         return;
@@ -4435,23 +4585,18 @@
         const nextApplications = getStoredApplications()
           .filter((item) => String(item?.id || "").trim() !== applicationId);
         writeStoredItems(adminApplicationsStorageKey, nextApplications);
-
-        getCourseStudentStorageKeys(studentToDelete).forEach((storageKey) => {
-          const storedCourseStudents = readStoredItems(storageKey);
-          const nextCourseStudents = storedCourseStudents.filter((item) => {
-            const courseApplicationId = String(item?.applicationId || "").trim();
-            const courseStudentId = String(item?.id || "").trim();
-
-            return courseApplicationId !== applicationId && courseStudentId !== `accepted-${applicationId}`;
-          });
-          writeStoredItems(storageKey, nextCourseStudents);
-        });
       }
 
-      renderApplicationsOverview();
-      renderSidebarNav();
-      renderStudentOverview();
-      showToast(text().toasts.studentDeleted || "");
+      try {
+        await persistAdminData();
+        renderApplicationsOverview();
+        renderSidebarNav();
+        renderStudentOverview();
+        showToast(text().toasts.studentDeleted || "");
+      } catch (error) {
+        await loadAdminData(true).catch(() => {});
+        showToast(error?.message || "Saqlashda xato yuz berdi.");
+      }
     }
 
     function getRequestedSubjectIndexFromLocation() {
@@ -4618,7 +4763,7 @@
       return `teacher-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     }
 
-    function deleteTeacherById(teacherId) {
+    async function deleteTeacherById(teacherId) {
       const normalizedTeacherId = String(teacherId || "").trim();
       if (!normalizedTeacherId) {
         return;
@@ -4626,9 +4771,15 @@
 
       const nextTeachers = getStoredTeachers().filter((item) => String(item?.id || "").trim() !== normalizedTeacherId);
       writeStoredItems(adminTeachersStorageKey, nextTeachers);
-      renderTeacherNav();
-      renderTeacherOverview();
-      showToast(text().toasts.teacherDeleted || "");
+      try {
+        await persistAdminData();
+        renderTeacherNav();
+        renderTeacherOverview();
+        showToast(text().toasts.teacherDeleted || "");
+      } catch (error) {
+        await loadAdminData(true).catch(() => {});
+        showToast(error?.message || "Saqlashda xato yuz berdi.");
+      }
     }
 
     function setTeacherFormStatus(message = "", isError = false, translationKey = "") {
@@ -4997,6 +5148,10 @@
         || teacherCertificateFile?.name
         || "";
       const teacherCertificateType = teacherCertificateFile?.type || "";
+      const subjectLabels = supportedLanguages.reduce((result, language) => {
+        result[language] = translations[language]?.courseTitles?.[subjectIndex] || "";
+        return result;
+      }, {});
 
       const storedTeachers = getStoredTeachers();
       storedTeachers.unshift({
@@ -5004,7 +5159,9 @@
         name: teacherName,
         phone: teacherPhoneDigits,
         subjectIndex,
+        subjectSlug: subjectSlugs[subjectIndex] || "",
         subjectLabel: text().courseTitles?.[subjectIndex] || "",
+        subjectLabels,
         bio: teacherBio,
         photoDataUrl: teacherPhotoDataUrl,
         certificateName: teacherCertificateName,
@@ -5014,18 +5171,24 @@
       });
 
       writeStoredItems(adminTeachersStorageKey, storedTeachers);
-      renderTeacherNav();
-      renderTeacherOverview();
-      resetTeacherForm();
-      setTeacherFormStatusByKey("teacherForm.messages.saved");
-      window.setTimeout(() => {
-        teachersListBody?.firstElementChild?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest"
-        });
-        teacherNameInput?.focus();
-      }, 0);
-      showToast(text().toasts.teacherAdded || "");
+      try {
+        await persistAdminData();
+        renderTeacherNav();
+        renderTeacherOverview();
+        resetTeacherForm();
+        setTeacherFormStatusByKey("teacherForm.messages.saved");
+        window.setTimeout(() => {
+          teachersListBody?.firstElementChild?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+          });
+          teacherNameInput?.focus();
+        }, 0);
+        showToast(text().toasts.teacherAdded || "");
+      } catch (error) {
+        await loadAdminData(true).catch(() => {});
+        setTeacherFormStatus(error?.message || "Saqlashda xato yuz berdi.", true);
+      }
     }
 
     function getAllSubjectsLabel() {
@@ -5647,36 +5810,6 @@
       applyTranslations();
     }
 
-    function readLocalAdminSession() {
-      try {
-        const raw = localStorage.getItem(adminLocalSessionKey);
-        if (!raw) {
-          return null;
-        }
-
-        const parsed = JSON.parse(raw);
-        if (!parsed || typeof parsed.username !== "string") {
-          return null;
-        }
-
-        return parsed;
-      } catch {
-        return null;
-      }
-    }
-
-    function saveLocalAdminSession(username, phone = "") {
-      localStorage.setItem(adminLocalSessionKey, JSON.stringify({
-        username,
-        phone,
-        authenticatedAt: Date.now()
-      }));
-    }
-
-    function clearLocalAdminSession() {
-      localStorage.removeItem(adminLocalSessionKey);
-    }
-
     function setAdminGateStatus(message = "", isError = false, translationKey = "") {
       if (!adminLoginStatus) {
         return;
@@ -5783,30 +5916,24 @@
         });
         setAdminLockState(!authenticated);
         setAdminGateStatus("");
+        if (authenticated) {
+          await loadAdminData();
+        }
 
         if (!authenticated && focusOnLock) {
           window.setTimeout(() => adminUsernameInput?.focus(), 0);
         }
       } catch {
-        adminAuthMode = "local";
-        const localSession = readLocalAdminSession();
-        const authenticated = Boolean(localSession);
-        const username = localSession?.username || text().adminChip.defaultName;
-
         updateAdminChip({
           enabled: true,
-          authenticated,
-          username,
+          authenticated: false,
+          username: "",
           checking: false
         });
-        setAdminLockState(!authenticated);
-        if (authenticated) {
-          setAdminGateStatus("");
-        } else {
-          setAdminGateStatusByKey("gate.messages.offlineHint");
-        }
+        setAdminLockState(true);
+        setAdminGateStatusByKey("gate.messages.offlineHint", true);
 
-        if (!authenticated && focusOnLock) {
+        if (focusOnLock) {
           window.setTimeout(() => adminUsernameInput?.focus(), 0);
         }
       }
@@ -6019,23 +6146,6 @@
 
         setAdminGateStatusByKey("gate.messages.checking");
 
-        if (adminAuthMode === "local") {
-          saveLocalAdminSession(username, `+998${phoneDigits}`);
-          updateAdminChip({
-            enabled: true,
-            authenticated: true,
-            username,
-            checking: false
-          });
-          setAdminLockState(false);
-          setAdminGateStatus("");
-          if (adminPasswordInput) {
-            adminPasswordInput.value = "";
-          }
-          showToast(text().toasts.localOpened);
-          return;
-        }
-
         try {
           const response = await fetch("/api/admin/login", {
             method: "POST",
@@ -6067,25 +6177,14 @@
           });
           setAdminLockState(false);
           setAdminGateStatus("");
+          await loadAdminData(true);
           if (adminPasswordInput) {
             adminPasswordInput.value = "";
           }
           showToast(text().toasts.loginSuccess);
-        } catch {
-          adminAuthMode = "local";
-          saveLocalAdminSession(username, `+998${phoneDigits}`);
-          updateAdminChip({
-            enabled: true,
-            authenticated: true,
-            username,
-            checking: false
-          });
-          setAdminLockState(false);
-          setAdminGateStatus("");
-          if (adminPasswordInput) {
-            adminPasswordInput.value = "";
-          }
-          showToast(text().toasts.localFallback);
+        } catch (error) {
+          setAdminLockState(true);
+          setAdminGateStatus(error?.message || text().gate.messages.loginError, true);
         }
       });
     }
@@ -6094,17 +6193,13 @@
       adminLogoutButton.addEventListener("click", async () => {
         adminLogoutButton.disabled = true;
 
-        if (adminAuthMode === "server") {
-          try {
-            await fetch("/api/admin/logout", {
-              method: "POST"
-            });
-          } catch {
-            // Sessiya tozalash imkon qadar davom etadi.
-          }
+        try {
+          await fetch("/api/admin/logout", {
+            method: "POST"
+          });
+        } catch {
+          // Sessiya tozalash imkon qadar davom etadi.
         }
-
-        clearLocalAdminSession();
 
         updateAdminChip({
           enabled: true,
@@ -6112,6 +6207,8 @@
           username: "",
           checking: false
         });
+        applyAdminDataState(createEmptyAdminDataState());
+        adminDataLoaded = false;
         setAdminLockState(true);
         setAdminGateStatusByKey("gate.messages.sessionEnded");
         if (adminPasswordInput) {
@@ -6275,26 +6372,8 @@
     });
 
     window.addEventListener("hashchange", scrollToHashTarget);
-    window.addEventListener("storage", (event) => {
-      if (
-        event.key !== adminApplicationsStorageKey
-        && event.key !== adminStudentsStorageKey
-        && event.key !== adminTeachersStorageKey
-      ) {
-        return;
-      }
-
-      renderApplicationsOverview();
-      renderSidebarNav();
-      renderTeacherNav();
-      renderStudentOverview();
-      renderTeacherOverview();
-    });
-
     const savedTheme = localStorage.getItem(themeStorageKey);
     setTheme(savedTheme || "light");
-    cleanupSeededAdminData();
-    syncAcceptedApplicationsToStudents();
     applyTranslations();
     syncAdminSession({
       focusOnLock: true

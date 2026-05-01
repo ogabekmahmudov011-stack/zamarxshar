@@ -923,10 +923,9 @@
     };
     const paymentTermMonths = 1;
 
-    const storageKey = `it-course-students:${encodeURIComponent(courseName)}`;
-    const deletedDemoStorageKey = `${storageKey}:deleted-demo`;
     const themeStorageKey = "it-course-theme";
     let activeContextStudent = null;
+    let remoteStudents = [];
 
     function addMonthsPreservingDay(date, months = 1) {
       const targetMonth = date.getMonth() + months;
@@ -1146,71 +1145,30 @@
       return sanitized;
     }
 
-    function loadSavedStudents() {
+    async function loadStudents() {
       try {
-        const raw = window.localStorage.getItem(storageKey);
-        if (!raw) {
-          return [];
-        }
-
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) {
-          return [];
-        }
-
-        const sanitized = parsed
-          .map((item) => sanitizeStudentRecord(item))
-          .filter(Boolean);
-
-        if (JSON.stringify(parsed) !== JSON.stringify(sanitized)) {
-          saveStudents(sanitized);
-        }
-
-        return sanitized;
+        const params = new URLSearchParams({
+          courseTitle: courseName
+        });
+        const response = await fetch(`/api/courses/students?${params.toString()}`, {
+          cache: "no-store"
+        });
+        const payload = await response.json().catch(() => ({}));
+        remoteStudents = Array.isArray(payload?.students)
+          ? payload.students.map((item) => sanitizeStudentRecord(item)).filter(Boolean)
+          : [];
       } catch (error) {
-        return [];
+        remoteStudents = [];
       }
-    }
 
-    function saveStudents(items) {
-      const sanitizedItems = Array.isArray(items)
-        ? items.map((item) => sanitizeStudentRecord(item)).filter(Boolean)
-        : [];
-      window.localStorage.setItem(storageKey, JSON.stringify(sanitizedItems));
-    }
-
-    function loadDeletedDemoIds() {
-      try {
-        const raw = window.localStorage.getItem(deletedDemoStorageKey);
-        if (!raw) {
-          return [];
-        }
-
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.map((item) => String(item)) : [];
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function saveDeletedDemoIds(items) {
-      window.localStorage.setItem(deletedDemoStorageKey, JSON.stringify(items));
+      renderStudents();
     }
 
     function getVisibleStudents() {
-      const deletedDemoIds = new Set(loadDeletedDemoIds());
-      const storedStudents = loadSavedStudents().map((item) => ({
+      return remoteStudents.map((item) => ({
         ...item,
-        source: "stored"
+        source: "server"
       }));
-      const visibleDemoStudents = demoStudents
-        .filter((item) => !deletedDemoIds.has(String(item.id)))
-        .map((item) => ({
-          ...item,
-          source: "demo"
-        }));
-
-      return [...storedStudents, ...visibleDemoStudents];
     }
 
     function createCell(primary, secondary, className) {
@@ -1394,28 +1352,7 @@
     }
 
     function deleteStudent(student) {
-      if (!student) {
-        return;
-      }
-
-      const studentName = student.name || student.student || "O'quvchi";
-      const confirmed = window.confirm(`${studentName}ni haqiqatan ham o'chirasizmi?`);
-      if (!confirmed) {
-        closeStudentContextMenu();
-        return;
-      }
-
-      if (student.source === "stored") {
-        const storedStudents = loadSavedStudents().filter((item) => String(item.id) !== String(student.id));
-        saveStudents(storedStudents);
-      } else {
-        const deletedDemoIds = new Set(loadDeletedDemoIds());
-        deletedDemoIds.add(String(student.id));
-        saveDeletedDemoIds(Array.from(deletedDemoIds));
-      }
-
       closeStudentContextMenu();
-      renderStudents();
     }
 
     function renderStudents() {
@@ -1463,19 +1400,7 @@
 
         const actionsCell = document.createElement("td");
         actionsCell.className = "actions-cell";
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "delete-button";
-        deleteButton.textContent = "Delete";
-        deleteButton.setAttribute("aria-label", `${item.student}ni o'chirish`);
-        deleteButton.addEventListener("click", () => {
-          deleteStudent({
-            id: item.id,
-            source: item.source,
-            name: item.student
-          });
-        });
-        actionsCell.appendChild(deleteButton);
+        actionsCell.textContent = "-";
         row.appendChild(actionsCell);
 
         courseTableBody.appendChild(row);
@@ -1495,52 +1420,11 @@
       setTheme(activeTheme === "dark" ? "light" : "dark");
     });
 
-    courseTableBody.addEventListener("contextmenu", (event) => {
-      const studentCell = event.target.closest(".student-cell");
-      const row = event.target.closest("tr");
-
-      if (!studentCell || !row?.dataset.studentId) {
-        return;
-      }
-
-      event.preventDefault();
-      openStudentContextMenu(
-        {
-          id: row.dataset.studentId,
-          source: row.dataset.studentSource,
-          name: row.dataset.studentName
-        },
-        event.clientX,
-        event.clientY
-      );
-    });
-
     studentContextDeleteButton.addEventListener("click", () => {
       deleteStudent(activeContextStudent);
     });
 
-    studentContextMenu.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-    });
-
-    document.addEventListener("click", (event) => {
-      if (studentContextMenu.hidden || studentContextMenu.contains(event.target)) {
-        return;
-      }
-
-      closeStudentContextMenu();
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeStudentContextMenu();
-      }
-    });
-
-    window.addEventListener("resize", closeStudentContextMenu);
-    window.addEventListener("scroll", closeStudentContextMenu, true);
-
-    renderStudents();
+    loadStudents();
   </script>
 </body>
 </html>

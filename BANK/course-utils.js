@@ -52,8 +52,6 @@
     return query ? `${page}?${query}` : page;
   }
 
-  const adminApplicationsStorageKey = "it-center-admin-applications";
-
   function buildAdminPanelHref(section = "applications", subject = "") {
     const adminUrl = new URL("../index.html", window.location.href);
 
@@ -75,36 +73,72 @@
     return digits ? Number.parseInt(digits, 10) : 0;
   }
 
-  function saveApplicationSubmission(course, selectedPlan, applicationState) {
+  async function requestJson(url, options = {}) {
+    const response = await fetch(url, options);
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(payload?.error || "So'rovni bajarib bo'lmadi.");
+    }
+
+    return payload;
+  }
+
+  async function saveApplicationSubmission(course, selectedPlan, applicationState) {
     const entry = {
-      id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       source: "bank-course",
       name: String(applicationState?.name || "").trim(),
       phone: extractPhoneDigits(applicationState?.phone || ""),
       courseTitle: String(applicationState?.courseTitle || course?.title || "").trim(),
+      courseSlug: String(applicationState?.courseSlug || course?.slug || "").trim(),
       planTitle: String(applicationState?.planTitle || selectedPlan?.title || "").trim(),
       studyMode: String(applicationState?.studyMode || "offline").trim(),
       studyModeLabel: String(applicationState?.studyModeLabel || "").trim(),
       startDate: String(applicationState?.startDate || "").trim(),
-      amount: parseAmount(applicationState?.amount || selectedPlan?.amount || ""),
-      submittedAt: new Date().toISOString(),
-      status: "new"
+      amount: parseAmount(applicationState?.amount || selectedPlan?.amount || "")
     };
 
-    try {
-      const rawValue = localStorage.getItem(adminApplicationsStorageKey);
-      const existingEntries = rawValue ? JSON.parse(rawValue) : [];
-      const safeEntries = Array.isArray(existingEntries) ? existingEntries : [];
+    const payload = await requestJson("/api/applications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(entry)
+    });
 
-      localStorage.setItem(
-        adminApplicationsStorageKey,
-        JSON.stringify([entry, ...safeEntries])
-      );
-    } catch {
-      // Local saqlash ishlamasa, foydalanuvchi oqimi davom etadi.
+    return payload?.application || entry;
+  }
+
+  async function fetchCourseTeacher(course) {
+    const params = new URLSearchParams();
+    if (course?.slug) {
+      params.set("courseSlug", course.slug);
+    }
+    if (course?.title) {
+      params.set("courseTitle", course.title);
     }
 
-    return entry;
+    const payload = await requestJson(`/api/courses/teacher?${params.toString()}`, {
+      cache: "no-store"
+    });
+
+    return payload?.teacher || null;
+  }
+
+  async function fetchCourseStudents(course) {
+    const params = new URLSearchParams();
+    if (course?.slug) {
+      params.set("courseSlug", course.slug);
+    }
+    if (course?.title) {
+      params.set("courseTitle", course.title);
+    }
+
+    const payload = await requestJson(`/api/courses/students?${params.toString()}`, {
+      cache: "no-store"
+    });
+
+    return Array.isArray(payload?.students) ? payload.students : [];
   }
 
   function replaceQueryParams(nextParams) {
@@ -546,6 +580,8 @@
     getPlanById,
     getQueryState,
     localizeCourse,
+    fetchCourseStudents,
+    fetchCourseTeacher,
     renderEmptyState,
     replaceQueryParams,
     saveApplicationSubmission,
