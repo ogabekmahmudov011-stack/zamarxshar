@@ -16,7 +16,6 @@ const uiTranslations = {
     bank: {
       brandTop: "",
       brandMain: "Bank",
-      apparatus: "Bning apparati",
       contactPhone: "Aloqa telefon raqami",
       hotline: "Ishonch telefoni"
     },
@@ -51,6 +50,24 @@ const uiTranslations = {
       format: "Format",
       fullPrice: "To'liq narx",
       monthly: "Oyma-oy",
+      teacher: "O'qituvchi",
+      teacherInfo: "Qisqacha ma'lumot",
+      teacherCertificate: "Sertifikati",
+      teacherCertified: "Bor",
+      teacherNotCertified: "Yo'q",
+      teacherCertificateUnknown: "Kiritilmagan",
+      teacherUploadCertificate: "Sertifikat yuklash",
+      teacherChangeCertificate: "Sertifikatni almashtirish",
+      teacherCertificateHint: "PNG, JPG yoki PDF sertifikat yuklang",
+      teacherCertificateView: "Ko'rish",
+      teacherCertificateSelected: "Yuklangan fayl",
+      teacherPhotoPlaceholder: "Rasm joyi",
+      teacherUploadPhoto: "Rasm yuklash",
+      teacherChangePhoto: "Rasmni almashtirish",
+      teacherUploadHint: "+ tugmasini bosib rasm tanlang",
+      teacherNameFallback: "O'qituvchi ismi",
+      teacherBioFallback:
+        "{course} bo'yicha o'qituvchi haqida qisqacha ma'lumot shu yerga yoziladi.",
       whatYouGet: "Fan davomida nimalarni o'rganasiz",
       result: "Natija",
       paymentOptions: "To'lov variantlari",
@@ -119,6 +136,7 @@ const uiTranslations = {
       summaryNoteText:
         "Keyinchalik shu blokka promo-kod, chegirma yoki real payment gateway javoblari ham ulanadi.",
       applicationAccepted: "Ariza qabul qilindi",
+      applicationSubmittedNote: "Sizning arizangiz yuborildi. Bir necha vaqtdan so'ng qabul qilinasiz.",
       registrationAccepted: "Ro'yxatdan o'tish qabul qilindi",
       paymentAccepted: "To'lov so'rovi yaratildi",
       successMessage:
@@ -128,7 +146,7 @@ const uiTranslations = {
       paymentSuccessMessage:
         "{course} fani uchun {plan} tarifi va {paymentMethod} usuli bo'yicha demo to'lov oynasi tayyor.",
       submitApplication: "Arizani yuborish",
-      openAdminApplications: "Ariza qabuli panelini ochish",
+      openAdminApplications: "Admin panelni ochish",
       goToPaymentPage: "To'lov sahifasiga o'tish",
       changePlan: "Tarifni o'zgartirish",
       studyModes: {
@@ -156,7 +174,6 @@ const uiTranslations = {
     bank: {
       brandTop: "",
       brandMain: "Банк",
-      apparatus: "Аппарат банка",
       contactPhone: "Контактный телефон",
       hotline: "Телефон доверия"
     },
@@ -191,6 +208,24 @@ const uiTranslations = {
       format: "Формат",
       fullPrice: "Полная стоимость",
       monthly: "Помесячно",
+      teacher: "Преподаватель",
+      teacherInfo: "Краткая информация",
+      teacherCertificate: "Сертификат",
+      teacherCertified: "Есть",
+      teacherNotCertified: "Нет",
+      teacherCertificateUnknown: "Не указано",
+      teacherUploadCertificate: "Загрузить сертификат",
+      teacherChangeCertificate: "Сменить сертификат",
+      teacherCertificateHint: "Загрузите сертификат в PNG, JPG или PDF",
+      teacherCertificateView: "Открыть",
+      teacherCertificateSelected: "Загруженный файл",
+      teacherPhotoPlaceholder: "Место для фото",
+      teacherUploadPhoto: "Загрузить фото",
+      teacherChangePhoto: "Сменить фото",
+      teacherUploadHint: "Нажмите +, чтобы выбрать фото",
+      teacherNameFallback: "Имя преподавателя",
+      teacherBioFallback:
+        "Здесь можно указать краткую информацию о преподавателе по предмету {course}.",
       whatYouGet: "Что вы изучите по предмету",
       result: "Результат",
       paymentOptions: "Варианты оплаты",
@@ -259,6 +294,7 @@ const uiTranslations = {
       summaryNoteText:
         "Позже сюда можно добавить промокоды, скидки и ответы от реального платежного сервиса.",
       applicationAccepted: "Заявка отправлена",
+      applicationSubmittedNote: "Ваша заявка отправлена. В течение некоторого времени она будет обработана.",
       registrationAccepted: "Регистрация отправлена",
       paymentAccepted: "Платежный запрос создан",
       successMessage:
@@ -268,7 +304,7 @@ const uiTranslations = {
       paymentSuccessMessage:
         "Для предмета {course} подготовлено демо-окно оплаты по тарифу {plan} и способу {paymentMethod}.",
       submitApplication: "Отправить заявку",
-      openAdminApplications: "Открыть панель заявок",
+      openAdminApplications: "Открыть админ-панель",
       goToPaymentPage: "Перейти к оплате",
       changePlan: "Изменить тариф",
       studyModes: {
@@ -296,7 +332,6 @@ const uiTranslations = {
     bank: {
       brandTop: "",
       brandMain: "Bank",
-      apparatus: "Bank office",
       contactPhone: "Contact phone number",
       hotline: "Trust hotline"
     },
@@ -331,6 +366,24 @@ const uiTranslations = {
       format: "Format",
       fullPrice: "Full price",
       monthly: "Monthly",
+      teacher: "Teacher",
+      teacherInfo: "Short info",
+      teacherCertificate: "Certificate",
+      teacherCertified: "Available",
+      teacherNotCertified: "Not available",
+      teacherCertificateUnknown: "Not specified",
+      teacherUploadCertificate: "Upload certificate",
+      teacherChangeCertificate: "Change certificate",
+      teacherCertificateHint: "Upload a PNG, JPG, or PDF certificate",
+      teacherCertificateView: "View",
+      teacherCertificateSelected: "Uploaded file",
+      teacherPhotoPlaceholder: "Photo place",
+      teacherUploadPhoto: "Upload photo",
+      teacherChangePhoto: "Change photo",
+      teacherUploadHint: "Press + to choose a photo",
+      teacherNameFallback: "Teacher name",
+      teacherBioFallback:
+        "Add a short teacher description for the {course} subject here.",
       whatYouGet: "What you will study",
       result: "Outcome",
       paymentOptions: "Payment options",
@@ -399,6 +452,7 @@ const uiTranslations = {
       summaryNoteText:
         "Later this section can also include promo codes, discounts, and responses from a real payment gateway.",
       applicationAccepted: "Application received",
+      applicationSubmittedNote: "Your application has been sent. It will be reviewed shortly.",
       registrationAccepted: "Registration received",
       paymentAccepted: "Payment request created",
       successMessage:
@@ -408,7 +462,7 @@ const uiTranslations = {
       paymentSuccessMessage:
         "A demo payment window is ready for the {course} subject with the {plan} plan and {paymentMethod} method.",
       submitApplication: "Submit application",
-      openAdminApplications: "Open applications panel",
+      openAdminApplications: "Open admin panel",
       goToPaymentPage: "Go to payment page",
       changePlan: "Change plan",
       studyModes: {

@@ -54,11 +54,17 @@
 
   const adminApplicationsStorageKey = "it-center-admin-applications";
 
-  function buildAdminPanelHref(section = "applications") {
+  function buildAdminPanelHref(section = "applications", subject = "") {
     const adminUrl = new URL("../index.html", window.location.href);
 
     if (section) {
       adminUrl.hash = section;
+    }
+
+    if (subject) {
+      adminUrl.searchParams.set("subject", subject);
+    } else {
+      adminUrl.searchParams.delete("subject");
     }
 
     return adminUrl.toString();
@@ -72,6 +78,7 @@
   function saveApplicationSubmission(course, selectedPlan, applicationState) {
     const entry = {
       id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      source: "bank-course",
       name: String(applicationState?.name || "").trim(),
       phone: extractPhoneDigits(applicationState?.phone || ""),
       courseTitle: String(applicationState?.courseTitle || course?.title || "").trim(),

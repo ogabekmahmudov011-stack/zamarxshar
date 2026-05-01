@@ -1,6 +1,10 @@
 const detailRoot = document.getElementById("courseDetail");
 const U = window.CoursePageUtils;
 let detailTopbarObserver = null;
+const teacherPhotoStorageKey = "bank-course-teacher-photos";
+const teacherCertificateStorageKey = "bank-course-teacher-certificates";
+const teacherPhotoCache = new Map();
+const teacherCertificateCache = new Map();
 
 function getSidebarBadgeMarkup(course) {
   const iconMap = {
@@ -86,6 +90,86 @@ function getSidebarBadgeMarkup(course) {
         <path d="M8.5 12h7"></path>
         <path d="M8.5 16h4.5"></path>
       </svg>
+    `,
+    "german-language": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6.5h8a4 4 0 1 1 0 8H8.5"></path>
+        <path d="M6 4.5v15"></path>
+        <path d="M8.5 10.5H14"></path>
+      </svg>
+    `,
+    "french-language": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 5h11"></path>
+        <path d="M6 12h8.5"></path>
+        <path d="M6 19h11"></path>
+        <path d="M6 5v14"></path>
+        <path d="m14.5 8.5 2-2 2 2"></path>
+      </svg>
+    `,
+    "physical-education": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 10v4"></path>
+        <path d="M7 8v8"></path>
+        <path d="M17 8v8"></path>
+        <path d="M20 10v4"></path>
+        <path d="M7 12h10"></path>
+      </svg>
+    `,
+    "fine-arts": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 4.5c4.7 0 8.5 3.2 8.5 7.4 0 3-2.4 5.6-5.5 5.6H13.8c-.9 0-1.6.7-1.6 1.6 0 .8-.7 1.4-1.6 1.4A7.1 7.1 0 0 1 3.5 13c0-4.7 3.8-8.5 8.5-8.5Z"></path>
+        <circle cx="8.2" cy="9.3" r="1"></circle>
+        <circle cx="12" cy="7.7" r="1"></circle>
+        <circle cx="15.6" cy="9.5" r="1"></circle>
+      </svg>
+    `,
+    "music-culture": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M14 5v10.5"></path>
+        <path d="M14 6.5 19 5v8.5"></path>
+        <circle cx="10" cy="17" r="2.5"></circle>
+        <circle cx="19" cy="15.5" r="2"></circle>
+      </svg>
+    `,
+    technology: `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m14.5 6.5 3-3 3 3-3 3"></path>
+        <path d="M6.5 14.5 3.5 17.5 6.5 20.5l3-3"></path>
+        <path d="M8 16l8-8"></path>
+        <path d="m11.5 4.5 8 8"></path>
+      </svg>
+    `,
+    "technical-drawing": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 18.5 12 5.5l7 13Z"></path>
+        <path d="M9 13.5h6"></path>
+        <path d="M7.2 18.5h9.6"></path>
+      </svg>
+    `,
+    "character-education": `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 20c4.2-2.4 6.5-5.1 6.5-8.8V6.5L12 4 5.5 6.5v4.7C5.5 14.9 7.8 17.6 12 20Z"></path>
+        <path d="m9.5 11.8 1.6 1.6 3.4-3.6"></path>
+      </svg>
+    `,
+    law: `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 5v14"></path>
+        <path d="M7 8h10"></path>
+        <path d="M5.5 8 3.5 12h4Z"></path>
+        <path d="M20.5 8 18.5 12h4Z"></path>
+        <path d="M8 19h8"></path>
+      </svg>
+    `,
+    economics: `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 19V9"></path>
+        <path d="M10 19V5"></path>
+        <path d="M15 19v-7"></path>
+        <path d="M20 19V8"></path>
+        <path d="M4 19h17"></path>
+      </svg>
     `
   };
 
@@ -96,6 +180,644 @@ function buildPlanPreview(course) {
   return course.plans
     .map((plan) => `<li>${U.escapeHtml(plan.title)}</li>`)
     .join("");
+}
+
+function getStoredTeacherPhoto(courseSlug) {
+  if (!courseSlug) {
+    return "";
+  }
+
+  if (teacherPhotoCache.has(courseSlug)) {
+    return teacherPhotoCache.get(courseSlug) || "";
+  }
+
+  try {
+    const rawValue = localStorage.getItem(teacherPhotoStorageKey);
+    const storedPhotos = rawValue ? JSON.parse(rawValue) : {};
+    const photo = typeof storedPhotos?.[courseSlug] === "string" ? storedPhotos[courseSlug] : "";
+
+    if (photo) {
+      teacherPhotoCache.set(courseSlug, photo);
+    }
+
+    return photo;
+  } catch {
+    return "";
+  }
+}
+
+function saveStoredTeacherPhoto(courseSlug, photoDataUrl) {
+  if (!courseSlug || !photoDataUrl) {
+    return false;
+  }
+
+  teacherPhotoCache.set(courseSlug, photoDataUrl);
+
+  try {
+    const rawValue = localStorage.getItem(teacherPhotoStorageKey);
+    const storedPhotos = rawValue ? JSON.parse(rawValue) : {};
+    const nextPhotos = typeof storedPhotos === "object" && storedPhotos ? storedPhotos : {};
+
+    nextPhotos[courseSlug] = photoDataUrl;
+    localStorage.setItem(teacherPhotoStorageKey, JSON.stringify(nextPhotos));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getTeacherPhotoInputId(courseSlug) {
+  return `teacher-photo-${courseSlug || "course"}`;
+}
+
+function getTeacherCertificateInputId(courseSlug) {
+  return `teacher-certificate-${courseSlug || "course"}`;
+}
+
+function getTeacherCertificateStatusValue(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return value;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, "status")) {
+    return value.status;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, "state")) {
+    return value.state;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, "available")) {
+    return value.available;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, "certified")) {
+    return value.certified;
+  }
+
+  return null;
+}
+
+function inferTeacherCertificateName(fileUrl) {
+  if (!fileUrl || String(fileUrl).startsWith("data:")) {
+    return "";
+  }
+
+  try {
+    const parsedUrl = new URL(fileUrl, window.location.href);
+    const segments = parsedUrl.pathname.split("/").filter(Boolean);
+    return decodeURIComponent(segments[segments.length - 1] || "");
+  } catch {
+    return "";
+  }
+}
+
+function normalizeTeacherCertificateRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const fileUrl = String(value.fileUrl || value.url || value.src || value.file || "").trim();
+
+  if (!fileUrl) {
+    return null;
+  }
+
+  const fileName =
+    String(value.fileName || value.name || value.title || inferTeacherCertificateName(fileUrl)).trim() ||
+    "teacher-certificate";
+  const mimeType = String(value.mimeType || value.type || "").trim();
+
+  return {
+    fileUrl,
+    fileName,
+    mimeType
+  };
+}
+
+function isTeacherCertificatePdf(certificateFile) {
+  if (!certificateFile || typeof certificateFile !== "object") {
+    return false;
+  }
+
+  const mimeType = String(certificateFile.mimeType || "").trim().toLowerCase();
+  const fileName = String(certificateFile.fileName || "").trim().toLowerCase();
+  const fileUrl = String(certificateFile.fileUrl || "").trim().toLowerCase();
+
+  return mimeType === "application/pdf" || fileName.endsWith(".pdf") || fileUrl.startsWith("data:application/pdf");
+}
+
+function resolveTeacherCertificate(value) {
+  if (value === true) {
+    return "yes";
+  }
+
+  if (value === false) {
+    return "no";
+  }
+
+  const normalized = String(value || "").trim().toLowerCase();
+
+  if (!normalized) {
+    return "unknown";
+  }
+
+  if (["true", "yes", "bor", "available", "certified"].includes(normalized)) {
+    return "yes";
+  }
+
+  if (["false", "no", "yoq", "yo'q", "not available", "not certified"].includes(normalized)) {
+    return "no";
+  }
+
+  return "unknown";
+}
+
+function getTeacherCertificateBadge(certificateState) {
+  const certificateMap = {
+    yes: {
+      className: "teacher-card__badge teacher-card__badge--yes",
+      label: U.t("detail.teacherCertified")
+    },
+    no: {
+      className: "teacher-card__badge teacher-card__badge--no",
+      label: U.t("detail.teacherNotCertified")
+    },
+    unknown: {
+      className: "teacher-card__badge teacher-card__badge--unknown",
+      label: U.t("detail.teacherCertificateUnknown")
+    }
+  };
+
+  return certificateMap[certificateState] || certificateMap.unknown;
+}
+
+function getStoredTeacherCertificate(courseSlug) {
+  if (!courseSlug) {
+    return null;
+  }
+
+  if (teacherCertificateCache.has(courseSlug)) {
+    return teacherCertificateCache.get(courseSlug) || null;
+  }
+
+  try {
+    const rawValue = localStorage.getItem(teacherCertificateStorageKey);
+    const storedCertificates = rawValue ? JSON.parse(rawValue) : {};
+    const certificate = normalizeTeacherCertificateRecord(storedCertificates?.[courseSlug]);
+
+    if (certificate) {
+      teacherCertificateCache.set(courseSlug, certificate);
+    }
+
+    return certificate;
+  } catch {
+    return null;
+  }
+}
+
+function saveStoredTeacherCertificate(courseSlug, certificateRecord) {
+  const normalizedRecord = normalizeTeacherCertificateRecord(certificateRecord);
+
+  if (!courseSlug || !normalizedRecord) {
+    return false;
+  }
+
+  teacherCertificateCache.set(courseSlug, normalizedRecord);
+
+  try {
+    const rawValue = localStorage.getItem(teacherCertificateStorageKey);
+    const storedCertificates = rawValue ? JSON.parse(rawValue) : {};
+    const nextCertificates =
+      typeof storedCertificates === "object" && storedCertificates ? storedCertificates : {};
+
+    nextCertificates[courseSlug] = normalizedRecord;
+    localStorage.setItem(teacherCertificateStorageKey, JSON.stringify(nextCertificates));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getTeacherProfile(course) {
+  const teacher = course && typeof course.teacher === "object" ? course.teacher : {};
+  const name = String(teacher.name || "").trim() || U.t("detail.teacherNameFallback");
+  const bio =
+    String(teacher.bio || "").trim() ||
+    U.t("detail.teacherBioFallback", { course: course.title });
+  const photo = getStoredTeacherPhoto(course.slug) || String(teacher.photo || "").trim();
+  const certificateFile =
+    getStoredTeacherCertificate(course.slug) || normalizeTeacherCertificateRecord(teacher.certificate);
+  const certificateState = certificateFile
+    ? "yes"
+    : resolveTeacherCertificate(getTeacherCertificateStatusValue(teacher.certificate));
+
+  return {
+    name,
+    bio,
+    photo,
+    certificateState,
+    certificateFile
+  };
+}
+
+function buildTeacherPhotoMarkup(course, teacher) {
+  const inputId = getTeacherPhotoInputId(course.slug);
+  const uploadLabel = teacher.photo ? U.t("detail.teacherChangePhoto") : U.t("detail.teacherUploadPhoto");
+  const hiddenInputMarkup = `
+    <input
+      class="teacher-card__file-input"
+      id="${U.escapeHtml(inputId)}"
+      type="file"
+      accept="image/*"
+      data-teacher-photo-input
+    />
+  `;
+
+  if (teacher.photo) {
+    return `
+      <img src="${U.escapeHtml(teacher.photo)}" alt="${U.escapeHtml(teacher.name)}" loading="lazy" />
+      ${hiddenInputMarkup}
+      <button
+        class="teacher-card__upload teacher-card__upload--overlay"
+        type="button"
+        data-teacher-photo-trigger
+        aria-label="${U.escapeHtml(uploadLabel)}"
+        title="${U.escapeHtml(uploadLabel)}"
+      >
+        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
+      </button>
+    `;
+  }
+
+  return `
+    <div class="teacher-card__placeholder">
+      ${hiddenInputMarkup}
+      <button
+        class="teacher-card__upload teacher-card__upload--empty"
+        type="button"
+        data-teacher-photo-trigger
+        aria-label="${U.escapeHtml(uploadLabel)}"
+        title="${U.escapeHtml(uploadLabel)}"
+      >
+        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
+      </button>
+      <span class="teacher-card__placeholder-text">${U.t("detail.teacherPhotoPlaceholder")}</span>
+      <span class="teacher-card__upload-help">${U.t("detail.teacherUploadHint")}</span>
+    </div>
+  `;
+}
+
+function refreshTeacherPhotoMedia(course) {
+  const media = detailRoot ? detailRoot.querySelector("[data-teacher-photo-media]") : null;
+
+  if (!media) {
+    return;
+  }
+
+  const teacher = getTeacherProfile(course);
+  media.classList.toggle("teacher-card__media--empty", !teacher.photo);
+  media.innerHTML = buildTeacherPhotoMarkup(course, teacher);
+  bindTeacherPhotoUpload(course);
+}
+
+function bindTeacherPhotoUpload(course) {
+  if (!detailRoot) {
+    return;
+  }
+
+  const uploadInput = detailRoot.querySelector("[data-teacher-photo-input]");
+  const uploadTrigger = detailRoot.querySelector("[data-teacher-photo-trigger]");
+
+  if (!uploadInput || !uploadTrigger) {
+    return;
+  }
+
+  if (uploadTrigger.dataset.bound !== "true") {
+    uploadTrigger.dataset.bound = "true";
+    uploadTrigger.addEventListener("click", () => {
+      uploadInput.click();
+    });
+  }
+
+  if (uploadInput.dataset.bound === "true") {
+    return;
+  }
+
+  uploadInput.dataset.bound = "true";
+  uploadInput.addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+
+    if (!file || !String(file.type || "").startsWith("image/")) {
+      uploadInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const photoDataUrl = typeof reader.result === "string" ? reader.result : "";
+
+      if (!photoDataUrl) {
+        return;
+      }
+
+      saveStoredTeacherPhoto(course.slug, photoDataUrl);
+      refreshTeacherPhotoMedia(course);
+      uploadInput.value = "";
+    });
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function buildTeacherCertificateMarkup(course, teacher) {
+  const inputId = getTeacherCertificateInputId(course.slug);
+  const uploadLabel = teacher.certificateFile
+    ? U.t("detail.teacherChangeCertificate")
+    : U.t("detail.teacherUploadCertificate");
+  const hiddenInputMarkup = `
+    <input
+      class="teacher-card__file-input"
+      id="${U.escapeHtml(inputId)}"
+      type="file"
+      accept="image/*,application/pdf"
+      data-teacher-certificate-input
+    />
+  `;
+
+  if (teacher.certificateFile) {
+    const isPdf = isTeacherCertificatePdf(teacher.certificateFile);
+    const previewMedia = isPdf
+      ? `
+        <div class="teacher-card__certificate-preview teacher-card__certificate-preview--pdf">
+          <span class="teacher-card__certificate-preview-type">PDF</span>
+          <strong class="teacher-card__certificate-preview-name">${U.escapeHtml(teacher.certificateFile.fileName)}</strong>
+        </div>
+      `
+      : `
+        <div class="teacher-card__certificate-preview">
+          <img
+            src="${U.escapeHtml(teacher.certificateFile.fileUrl)}"
+            alt="${U.escapeHtml(teacher.certificateFile.fileName)}"
+            loading="lazy"
+          />
+        </div>
+      `;
+
+    return `
+      ${hiddenInputMarkup}
+      <div class="teacher-card__certificate-file teacher-card__certificate-file--filled">
+        <button
+          class="teacher-card__certificate-preview-trigger"
+          type="button"
+          data-teacher-certificate-view-trigger
+          aria-label="${U.escapeHtml(U.t("detail.teacherCertificateView"))}"
+          title="${U.escapeHtml(U.t("detail.teacherCertificateView"))}"
+        >
+          ${previewMedia}
+        </button>
+        <div class="teacher-card__certificate-details">
+          <div class="teacher-card__certificate-copy">
+            <strong class="teacher-card__certificate-file-name">${U.escapeHtml(teacher.certificateFile.fileName)}</strong>
+            <span class="teacher-card__certificate-file-hint">${U.t("detail.teacherCertificateSelected")}</span>
+          </div>
+          <div class="teacher-card__certificate-actions">
+            <button
+              class="teacher-card__certificate-link teacher-card__certificate-link--button"
+              type="button"
+              data-teacher-certificate-view-trigger
+            >
+              ${U.t("detail.teacherCertificateView")}
+            </button>
+            <button
+              class="teacher-card__certificate-link teacher-card__certificate-link--button"
+              type="button"
+              data-teacher-certificate-trigger
+              aria-label="${U.escapeHtml(uploadLabel)}"
+              title="${U.escapeHtml(uploadLabel)}"
+            >
+              ${U.t("detail.teacherChangeCertificate")}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    ${hiddenInputMarkup}
+    <div class="teacher-card__certificate-file teacher-card__certificate-file--empty">
+      <button
+        class="teacher-card__upload teacher-card__upload--certificate"
+        type="button"
+        data-teacher-certificate-trigger
+        aria-label="${U.escapeHtml(uploadLabel)}"
+        title="${U.escapeHtml(uploadLabel)}"
+      >
+        <span class="teacher-card__upload-plus" aria-hidden="true">+</span>
+      </button>
+      <div class="teacher-card__certificate-copy">
+        <strong class="teacher-card__certificate-file-name">${U.t("detail.teacherUploadCertificate")}</strong>
+        <span class="teacher-card__certificate-file-hint">${U.t("detail.teacherCertificateHint")}</span>
+      </div>
+    </div>
+  `;
+}
+
+function buildTeacherCertificateModalMarkup(course, teacher) {
+  if (!teacher.certificateFile) {
+    return "";
+  }
+
+  const modalTitleId = `teacher-certificate-modal-title-${course.slug || "course"}`;
+  const viewerMarkup = isTeacherCertificatePdf(teacher.certificateFile)
+    ? `
+      <iframe
+        src="${U.escapeHtml(teacher.certificateFile.fileUrl)}"
+        title="${U.escapeHtml(teacher.certificateFile.fileName)}"
+        loading="lazy"
+      ></iframe>
+    `
+    : `
+      <img
+        src="${U.escapeHtml(teacher.certificateFile.fileUrl)}"
+        alt="${U.escapeHtml(teacher.certificateFile.fileName)}"
+        loading="lazy"
+      />
+    `;
+
+  return `
+    <div class="teacher-certificate-modal" data-teacher-certificate-modal hidden>
+      <button class="teacher-certificate-modal__backdrop" type="button" data-teacher-certificate-close aria-label="${U.escapeHtml(U.t("detail.closePayment"))}"></button>
+      <div class="teacher-certificate-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="${U.escapeHtml(modalTitleId)}">
+        <div class="teacher-certificate-modal__header">
+          <div>
+            <span class="teacher-card__certificate-label">${U.t("detail.teacherCertificate")}</span>
+            <h4 id="${U.escapeHtml(modalTitleId)}">${U.escapeHtml(teacher.certificateFile.fileName)}</h4>
+          </div>
+          <button class="button-secondary teacher-certificate-modal__close" type="button" data-teacher-certificate-close>
+            ${U.t("detail.closePayment")}
+          </button>
+        </div>
+        <div class="teacher-certificate-modal__viewer">
+          ${viewerMarkup}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildTeacherCertificateSectionMarkup(course, teacher) {
+  const certificate = getTeacherCertificateBadge(teacher.certificateState);
+
+  return `
+    <div class="teacher-card__certificate">
+      <span class="teacher-card__certificate-label">${U.t("detail.teacherCertificate")}</span>
+      <strong class="${certificate.className}">${U.escapeHtml(certificate.label)}</strong>
+    </div>
+    <div class="teacher-card__certificate-panel">
+      ${buildTeacherCertificateMarkup(course, teacher)}
+    </div>
+    ${buildTeacherCertificateModalMarkup(course, teacher)}
+  `;
+}
+
+function refreshTeacherCertificateSection(course) {
+  const certificateBlock = detailRoot
+    ? detailRoot.querySelector("[data-teacher-certificate-block]")
+    : null;
+
+  if (!certificateBlock) {
+    return;
+  }
+
+  const teacher = getTeacherProfile(course);
+  certificateBlock.innerHTML = buildTeacherCertificateSectionMarkup(course, teacher);
+  bindTeacherCertificateUpload(course);
+  bindTeacherCertificatePreview(course);
+}
+
+function bindTeacherCertificateUpload(course) {
+  if (!detailRoot) {
+    return;
+  }
+
+  const uploadInput = detailRoot.querySelector("[data-teacher-certificate-input]");
+  const uploadTrigger = detailRoot.querySelector("[data-teacher-certificate-trigger]");
+
+  if (!uploadInput || !uploadTrigger) {
+    return;
+  }
+
+  if (uploadTrigger.dataset.bound !== "true") {
+    uploadTrigger.dataset.bound = "true";
+    uploadTrigger.addEventListener("click", () => {
+      uploadInput.click();
+    });
+  }
+
+  if (uploadInput.dataset.bound === "true") {
+    return;
+  }
+
+  uploadInput.dataset.bound = "true";
+  uploadInput.addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    const fileType = String(file?.type || "");
+    const fileName = String(file?.name || "").trim();
+    const isImage = fileType.startsWith("image/");
+    const isPdf = fileType === "application/pdf" || fileName.toLowerCase().endsWith(".pdf");
+
+    if (!file || (!isImage && !isPdf)) {
+      uploadInput.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const fileUrl = typeof reader.result === "string" ? reader.result : "";
+
+      if (!fileUrl) {
+        return;
+      }
+
+      saveStoredTeacherCertificate(course.slug, {
+        fileUrl,
+        fileName,
+        mimeType: fileType
+      });
+      refreshTeacherCertificateSection(course);
+      uploadInput.value = "";
+    });
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function bindTeacherCertificatePreview() {
+  if (!detailRoot) {
+    return;
+  }
+
+  const modal = detailRoot.querySelector("[data-teacher-certificate-modal]");
+  const viewTriggers = Array.from(detailRoot.querySelectorAll("[data-teacher-certificate-view-trigger]"));
+  const closeTriggers = modal ? Array.from(modal.querySelectorAll("[data-teacher-certificate-close]")) : [];
+
+  if (!modal || !viewTriggers.length) {
+    document.body.classList.remove("has-certificate-preview");
+    return;
+  }
+
+  const closePreview = () => {
+    modal.hidden = true;
+    document.body.classList.remove("has-certificate-preview");
+  };
+
+  const openPreview = () => {
+    modal.hidden = false;
+    document.body.classList.add("has-certificate-preview");
+  };
+
+  viewTriggers.forEach((trigger) => {
+    if (trigger.dataset.bound === "true") {
+      return;
+    }
+
+    trigger.dataset.bound = "true";
+    trigger.addEventListener("click", openPreview);
+  });
+
+  closeTriggers.forEach((trigger) => {
+    if (trigger.dataset.bound === "true") {
+      return;
+    }
+
+    trigger.dataset.bound = "true";
+    trigger.addEventListener("click", closePreview);
+  });
+}
+
+function buildTeacherCard(course) {
+  const teacher = getTeacherProfile(course);
+
+  return `
+    <article class="detail-card teacher-card">
+      <div class="teacher-card__media${teacher.photo ? "" : " teacher-card__media--empty"}" data-teacher-photo-media>
+        ${buildTeacherPhotoMarkup(course, teacher)}
+      </div>
+      <div class="teacher-card__content">
+        <p class="mini-label">${U.t("detail.teacher")}</p>
+        <h3>${U.escapeHtml(teacher.name)}</h3>
+        <div class="teacher-card__info">
+          <span class="teacher-card__info-label">${U.t("detail.teacherInfo")}</span>
+          <p>${U.escapeHtml(teacher.bio)}</p>
+        </div>
+        <div class="teacher-card__certificate-stack" data-teacher-certificate-block>
+          ${buildTeacherCertificateSectionMarkup(course, teacher)}
+        </div>
+      </div>
+    </article>
+  `;
 }
 
 function buildRegisterSection(course, selectedPlan) {
@@ -168,22 +890,6 @@ function buildRegisterSection(course, selectedPlan) {
             </span>
           </label>
 
-          <section class="payment-section register-payment-section">
-            <div class="payment-section__header">
-              <span class="field-label">
-                <span class="field-label__icon" aria-hidden="true">${U.getFormIcon("payment")}</span>
-                ${U.t("detail.paymentMethod")}
-              </span>
-              <p class="payment-section__text">${U.t("detail.paymentsText")}</p>
-            </div>
-            ${U.buildPaymentMethodsMarkup("payme", "registerPaymentMethod")}
-
-            <button class="button button--with-icon button--block" type="button" data-register-payment-continue>
-              <span class="button__icon" aria-hidden="true">${U.getFormIcon("submit")}</span>
-              ${U.t("detail.startPayment")}
-            </button>
-          </section>
-
           <button class="button button--with-icon button--block" type="submit" aria-label="${U.t("detail.submitApplication")}">
             <span class="button__icon" aria-hidden="true">${U.getFormIcon("submit")}</span>
             ${U.t("detail.submitApplication")}
@@ -216,10 +922,6 @@ function buildRegisterSection(course, selectedPlan) {
             <span>${U.escapeHtml(selectedPlan?.note || "")}</span>
           </div>
         </div>
-
-        <div class="summary-card__actions">
-          <a class="button-secondary" href="${U.buildPageHref("payment.html", course.slug, selectedPlan?.id)}">${U.t("detail.choosePlanFirst")}</a>
-        </div>
       </aside>
     </div>
   `;
@@ -237,10 +939,10 @@ function buildDetailTopNav(course) {
       </div>
 
       <nav class="detail-topbar__links" aria-label="${U.t("index.sectionsLabel")}">
+        <a class="detail-topbar__link" href="#courseRegister" data-register-open data-register-mode="scroll">${U.t("detail.register")}</a>
         <a class="detail-topbar__link" href="#courseModules">${U.t("detail.whatYouGet")}</a>
         <a class="detail-topbar__link" href="#courseResult">${U.t("detail.result")}</a>
         <a class="detail-topbar__link" href="#courseOverview">${U.t("detail.brief")}</a>
-        <a class="detail-topbar__link" href="#courseRegister" data-register-open>${U.t("detail.register")}</a>
       </nav>
     </section>
     <div class="detail-topbar-spacer" data-detail-topbar-spacer aria-hidden="true"></div>
@@ -308,7 +1010,15 @@ function revealRegisterSection(scrollIntoView = true) {
     return;
   }
 
+  const wasHidden = registerSection.hidden;
   registerSection.hidden = false;
+  if (wasHidden) {
+    window.requestAnimationFrame(() => {
+      registerSection.classList.add("is-visible");
+    });
+  } else {
+    registerSection.classList.add("is-visible");
+  }
   syncRegisterTriggers(true);
 
   const nextUrl = new URL(window.location.href);
@@ -320,6 +1030,13 @@ function revealRegisterSection(scrollIntoView = true) {
       block: "start"
     });
   }
+
+  const firstField = registerSection.querySelector("input, select, textarea");
+  if (firstField && typeof firstField.focus === "function") {
+    window.setTimeout(() => {
+      firstField.focus({ preventScroll: true });
+    }, scrollIntoView ? 180 : 120);
+  }
 }
 
 function bindRegisterTriggers() {
@@ -330,7 +1047,8 @@ function bindRegisterTriggers() {
   triggers.forEach((trigger) => {
     trigger.addEventListener("click", (event) => {
       event.preventDefault();
-      revealRegisterSection(true);
+      const shouldScroll = trigger.dataset.registerMode === "scroll";
+      revealRegisterSection(shouldScroll);
     });
   });
 }
@@ -362,25 +1080,8 @@ function bindApplicationForm(course, selectedPlan) {
       studyMode: U.t(`detail.studyModes.${applicationState.studyMode}`)
     });
 
-    const actions = document.createElement("div");
-    actions.className = "success-banner__actions";
-
-    const paymentLink = document.createElement("a");
-    paymentLink.className = "button-secondary";
-    paymentLink.href = U.buildPageHref("payment.html", course.slug, selectedPlan.id);
-    paymentLink.textContent = U.t("detail.goToPaymentPage");
-
-    const adminLink = document.createElement("a");
-    adminLink.className = "button";
-    adminLink.href = U.buildAdminPanelHref("applications");
-    adminLink.target = "_blank";
-    adminLink.rel = "noopener";
-    adminLink.textContent = U.t("detail.openAdminApplications");
-
-    actions.append(paymentLink, adminLink);
-
     successBanner.classList.add("is-visible");
-    successBanner.append(title, message, actions);
+    successBanner.append(title, message);
   };
 
   form.addEventListener("submit", (event) => {
@@ -417,26 +1118,10 @@ function bindApplicationForm(course, selectedPlan) {
 
     U.saveApplicationSubmission(course, selectedPlan, applicationState);
     showSuccessMessage(applicationState);
-    window.open(U.buildAdminPanelHref("applications"), "_blank", "noopener");
 
     form.reset();
     phoneInput.value = U.formatPhoneNumber("", true);
     phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
-  });
-}
-
-function bindRegisterPaymentContinue(course, selectedPlan) {
-  const continueButton = detailRoot ? detailRoot.querySelector("[data-register-payment-continue]") : null;
-
-  if (!continueButton || !selectedPlan) {
-    return;
-  }
-
-  continueButton.addEventListener("click", () => {
-    const selectedMethod =
-      detailRoot.querySelector('input[name="registerPaymentMethod"]:checked')?.value || "payme";
-
-    window.location.href = U.buildPageHref("payment.html", course.slug, selectedPlan.id, selectedMethod);
   });
 }
 
@@ -445,6 +1130,20 @@ function renderCourseOverview(course, selectedPlan) {
 
   detailRoot.innerHTML = `
     ${buildDetailTopNav(course)}
+
+    <section class="detail-hero">
+      <div>
+        <span class="eyebrow">${U.escapeHtml(course.level)}</span>
+        <h1 class="detail-hero__title">${U.escapeHtml(course.title)}</h1>
+        <p class="detail-hero__lead">${U.escapeHtml(course.description)}</p>
+        <div class="detail-hero__actions">
+          <button class="button" type="button" data-register-open data-register-mode="inline">${U.t("detail.openRegistrationPage")}</button>
+          <a class="button-secondary" href="index.html">${U.t("detail.backAll")}</a>
+        </div>
+
+        ${buildRegisterSection(course, selectedPlan)}
+      </div>
+    </section>
 
     <section class="detail-section" id="courseModules">
       <div>
@@ -464,54 +1163,10 @@ function renderCourseOverview(course, selectedPlan) {
 
     <section class="detail-section" id="courseOverview">
       <div class="detail-hero__panel">
-        <p class="mini-label">${U.t("detail.brief")}</p>
-        <div class="stat-grid">
-          <article class="detail-card">
-            <p>${U.t("detail.duration")}</p>
-            <strong>${U.escapeHtml(course.duration)}</strong>
-          </article>
-          <article class="detail-card">
-            <p>${U.t("detail.format")}</p>
-            <strong>${U.escapeHtml(course.format)}</strong>
-          </article>
-          <article class="detail-card">
-            <p>${U.t("detail.fullPrice")}</p>
-            <strong>${U.escapeHtml(course.price)}</strong>
-          </article>
-          <article class="detail-card">
-            <p>${U.t("detail.monthly")}</p>
-            <strong>${U.escapeHtml(course.monthly)}</strong>
-          </article>
-        </div>
+        ${buildTeacherCard(course)}
       </div>
     </section>
 
-    <section class="detail-hero">
-      <div>
-        <span class="eyebrow">${U.escapeHtml(course.level)}</span>
-        <h1 class="detail-hero__title">${U.escapeHtml(course.title)}</h1>
-        <p class="detail-hero__lead">${U.escapeHtml(course.description)}</p>
-        <div class="detail-hero__actions">
-          <a class="button" href="#courseRegister" data-register-open>${U.t("detail.openRegistrationPage")}</a>
-          <a class="button-secondary" href="index.html">${U.t("detail.backAll")}</a>
-        </div>
-
-        ${buildRegisterSection(course, selectedPlan)}
-      </div>
-    </section>
-
-    <section class="flow-grid detail-section" id="courseNextSteps">
-      <article class="payment-card flow-card" id="coursePayment">
-        <h2>${U.t("detail.paymentPageTitle")}</h2>
-        <p>${U.t("detail.paymentPageIntro")}</p>
-        <ul class="detail-list flow-card__list">
-          ${buildPlanPreview(course)}
-        </ul>
-        <div class="flow-card__actions">
-          <a class="button" href="${U.buildPageHref("payment.html", course.slug, selectedPlan?.id)}">${U.t("detail.openPaymentsPage")}</a>
-        </div>
-      </article>
-    </section>
   `;
 }
 
@@ -527,9 +1182,11 @@ function renderPage() {
 
   const selectedPlan = U.getPlanById(course, selectedPlanId);
   renderCourseOverview(course, selectedPlan);
+  bindTeacherPhotoUpload(course);
+  bindTeacherCertificateUpload(course);
+  bindTeacherCertificatePreview(course);
   bindRegisterTriggers();
   bindApplicationForm(course, selectedPlan);
-  bindRegisterPaymentContinue(course, selectedPlan);
   if (window.location.hash === "#courseRegister") {
     revealRegisterSection(false);
   }

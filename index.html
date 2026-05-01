@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IT CENTER | Admin Panel</title>
+  <title>ZAMAXSHAR | Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -108,6 +108,11 @@
       font: inherit;
     }
 
+    textarea,
+    select {
+      font: inherit;
+    }
+
     button {
       cursor: pointer;
       border: 0;
@@ -118,6 +123,18 @@
     img {
       max-width: 100%;
       display: block;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .orb {
@@ -167,6 +184,23 @@
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .sidebar__section {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    .sidebar__section--primary {
+      flex: 1;
+    }
+
+    .sidebar__section--secondary {
+      flex: 0 0 auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
     }
 
     .sidebar__top {
@@ -208,15 +242,39 @@
 
     .sidebar__nav {
       display: grid;
-      gap: 10px;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 6px;
+      align-content: start;
+    }
+
+    .sidebar__nav--compact {
+      flex: 0 0 auto;
+      overflow: visible;
+      padding-right: 0;
+    }
+
+    .sidebar__nav::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar__nav::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(89, 106, 99, 0.28);
+    }
+
+    body[data-theme="dark"] .sidebar__nav::-webkit-scrollbar-thumb {
+      background: rgba(155, 178, 170, 0.28);
     }
 
     .nav-link {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      padding: 14px 16px;
+      padding: 12px 14px;
       border-radius: 18px;
       color: var(--muted);
       border: 1px solid transparent;
@@ -226,11 +284,31 @@
     .nav-link span:first-child {
       font-weight: 700;
       color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.35;
     }
 
     .nav-link small {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       font-size: 0.82rem;
       color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .nav-link-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(217, 111, 67, 0.14);
+      color: var(--accent-strong);
+      font-size: 0.76rem;
+      font-weight: 700;
     }
 
     .nav-link:hover,
@@ -398,6 +476,13 @@
 
     .language-switch {
       position: relative;
+      display: inline-block;
+      min-width: 210px;
+      color: #edf3ef;
+    }
+
+    .language-switch__trigger {
+      width: 100%;
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -407,17 +492,17 @@
       background: linear-gradient(135deg, #112520 0%, #18352f 100%);
       border: 1px solid rgba(168, 207, 195, 0.2);
       box-shadow: 0 16px 34px rgba(8, 19, 16, 0.24);
-      color: #edf3ef;
+      color: inherit;
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .language-switch:hover {
+    .language-switch__trigger:hover {
       transform: translateY(-1px);
       border-color: rgba(168, 207, 195, 0.34);
       box-shadow: 0 20px 38px rgba(8, 19, 16, 0.28);
     }
 
-    .language-switch:focus-within {
+    .language-switch:focus-within .language-switch__trigger {
       border-color: rgba(217, 111, 67, 0.62);
       box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.14), 0 18px 36px rgba(8, 19, 16, 0.28);
     }
@@ -445,6 +530,7 @@
       align-items: baseline;
       gap: 8px;
       min-width: 0;
+      flex: 1;
     }
 
     .language-switch__label {
@@ -456,21 +542,14 @@
       white-space: nowrap;
     }
 
-    .language-switch__select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      min-width: 110px;
-      padding-right: 0;
-      border: 0;
-      background: transparent;
+    .language-switch__value {
       color: #f5fbf8;
-      font: inherit;
       font-size: 1.02rem;
       font-weight: 800;
       line-height: 1.1;
-      outline: none;
-      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .language-switch__arrow {
@@ -489,9 +568,81 @@
       width: 16px;
       height: 16px;
       stroke: currentColor;
+      transition: transform 0.2s ease;
     }
 
-    body[data-theme="dark"] .language-switch {
+    .language-switch__menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(15, 33, 29, 0.98);
+      border: 1px solid rgba(168, 207, 195, 0.2);
+      box-shadow: 0 22px 40px rgba(8, 19, 16, 0.3);
+      backdrop-filter: blur(18px);
+      z-index: 30;
+    }
+
+    .language-switch__option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: rgba(237, 243, 239, 0.88);
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-align: left;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .language-switch__option:hover,
+    .language-switch__option:focus-visible {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      transform: translateX(2px);
+      outline: none;
+    }
+
+    .language-switch__option.is-active {
+      background: rgba(217, 111, 67, 0.16);
+      color: #ffffff;
+    }
+
+    .language-switch__option.is-active::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f19469;
+      box-shadow: 0 0 0 6px rgba(241, 148, 105, 0.14);
+      flex-shrink: 0;
+    }
+
+    .language-switch.is-open .language-switch__arrow-svg {
+      transform: rotate(180deg);
+    }
+
+    .language-switch__select {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      border: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    body[data-theme="dark"] .language-switch__trigger {
       background: linear-gradient(135deg, rgba(12, 27, 23, 0.98) 0%, rgba(21, 49, 43, 0.98) 100%);
       border-color: rgba(159, 209, 196, 0.2);
     }
@@ -837,6 +988,27 @@
       background: var(--surface-strong);
     }
 
+    .subject-applications {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .subject-applications__head {
+      display: grid;
+      gap: 6px;
+    }
+
+    .subject-applications__head strong {
+      font-size: 1.02rem;
+    }
+
+    .subject-applications__head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
     table {
       width: 100%;
       min-width: 640px;
@@ -966,9 +1138,670 @@
       border-color: transparent;
     }
 
+    .table-action--icon-danger {
+      width: 46px;
+      height: 46px;
+      padding: 0;
+      border-radius: 50%;
+      border-color: rgba(192, 84, 68, 0.14);
+      color: #b05243;
+      box-shadow: 0 10px 20px rgba(192, 84, 68, 0.1);
+      flex-shrink: 0;
+    }
+
+    .table-action--icon-danger svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .table-action--icon-danger:hover:not([disabled]) {
+      border-color: rgba(192, 84, 68, 0.26);
+      background: rgba(192, 84, 68, 0.08);
+    }
+
     .students-overview {
       display: grid;
       gap: 18px;
+    }
+
+    .teachers-placeholder {
+      display: grid;
+      gap: 10px;
+      padding: 20px;
+      border-radius: 24px;
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .teachers-placeholder__layout {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .teacher-add-card {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: max-content;
+      min-height: 0;
+      padding: 13px 20px;
+      border-radius: 16px;
+      border: 0;
+      background: linear-gradient(135deg, #28dc73 0%, #1eca65 100%);
+      color: #123b29;
+      text-align: left;
+      box-shadow: 0 16px 30px rgba(30, 160, 84, 0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .teacher-add-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(30, 160, 84, 0.28);
+      filter: saturate(1.02);
+    }
+
+    .teacher-add-card.is-active {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 34px rgba(30, 160, 84, 0.3);
+      filter: saturate(1.04);
+    }
+
+    body[data-theme="dark"] .teacher-add-card {
+      background: linear-gradient(135deg, #20c864 0%, #18b357 100%);
+      color: #effff5;
+    }
+
+    .teacher-add-card__plus {
+      color: #ffffff;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .teacher-add-card__label {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .teachers-placeholder__copy {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .teacher-form-panel {
+      display: grid;
+      gap: 22px;
+      padding: 28px;
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+    }
+
+    body[data-theme="dark"] .teacher-form-panel {
+      background: rgba(12, 24, 21, 0.86);
+    }
+
+    .teacher-form__header {
+      display: none;
+    }
+
+    .teacher-form {
+      display: grid;
+      gap: 20px;
+    }
+
+    .teacher-profile-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .teacher-profile-main {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .teacher-upload-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .teacher-photo-field {
+      display: block;
+      min-width: 0;
+    }
+
+    .teacher-photo-card {
+      position: relative;
+      display: block;
+      min-height: 480px;
+      height: 100%;
+      padding: 26px;
+      border-radius: 34px;
+      overflow: hidden;
+      border: 1px solid rgba(45, 107, 95, 0.14);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(170, 206, 195, 0.78), transparent 42%),
+        linear-gradient(180deg, rgba(230, 242, 238, 0.9), rgba(214, 222, 224, 0.92));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52), 0 18px 38px rgba(26, 43, 39, 0.08);
+      cursor: pointer;
+    }
+
+    body[data-theme="dark"] .teacher-photo-card {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(111, 150, 139, 0.34), transparent 42%),
+        linear-gradient(180deg, rgba(25, 42, 38, 0.94), rgba(19, 30, 28, 0.96));
+      border-color: rgba(159, 209, 196, 0.14);
+    }
+
+    .teacher-photo-card__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .teacher-photo-card__placeholder {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      justify-items: center;
+      gap: 22px;
+      text-align: center;
+      color: #58706a;
+    }
+
+    body[data-theme="dark"] .teacher-photo-card__placeholder {
+      color: rgba(220, 236, 230, 0.76);
+    }
+
+    .teacher-photo-card__ring {
+      width: 122px;
+      height: 122px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.38);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(6px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    .teacher-photo-card__plus {
+      font-size: 2.6rem;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .teacher-photo-card__title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .teacher-photo-card__help {
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      max-width: 17ch;
+      line-height: 1.7;
+    }
+
+    .teacher-identity {
+      display: grid;
+      gap: 12px;
+    }
+
+    .teacher-identity__input {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: var(--text);
+      font-size: clamp(2.2rem, 3.3vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      outline: none;
+    }
+
+    .teacher-identity__input::placeholder {
+      color: rgba(28, 48, 43, 0.82);
+    }
+
+    body[data-theme="dark"] .teacher-identity__input::placeholder {
+      color: rgba(228, 237, 233, 0.72);
+    }
+
+    .teacher-field__eyebrow {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #159574;
+    }
+
+    .teacher-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .teacher-field {
+      display: grid;
+      gap: 8px;
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .teacher-field input,
+    .teacher-field select,
+    .teacher-field textarea {
+      width: 100%;
+      padding: 15px 16px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .teacher-field select {
+      appearance: none;
+    }
+
+    .teacher-field textarea {
+      min-height: 122px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    body[data-theme="dark"] .teacher-field input,
+    body[data-theme="dark"] .teacher-field select,
+    body[data-theme="dark"] .teacher-field textarea {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .teacher-field input:focus,
+    .teacher-field select:focus,
+    .teacher-field textarea:focus {
+      border-color: rgba(217, 111, 67, 0.6);
+      box-shadow: 0 0 0 4px rgba(217, 111, 67, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .teacher-field--bio {
+      padding-top: 4px;
+    }
+
+    .teacher-certificate-card {
+      display: grid;
+      gap: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .teacher-certificate-card__head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .teacher-certificate-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(203, 210, 217, 0.34);
+      color: var(--text);
+      font-size: 0.98rem;
+      font-weight: 800;
+    }
+
+    body[data-theme="dark"] .teacher-certificate-badge {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .teacher-certificate-upload {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      min-height: 136px;
+      padding: 24px 26px;
+      border-radius: 32px;
+      border: 1px solid rgba(45, 107, 95, 0.14);
+      background: linear-gradient(180deg, rgba(237, 245, 243, 0.95), rgba(230, 240, 236, 0.94));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .teacher-certificate-upload:hover {
+      transform: translateY(-1px);
+      border-color: rgba(45, 107, 95, 0.24);
+      box-shadow: 0 18px 36px rgba(26, 43, 39, 0.08);
+    }
+
+    body[data-theme="dark"] .teacher-certificate-upload {
+      background: linear-gradient(180deg, rgba(20, 36, 32, 0.96), rgba(16, 27, 24, 0.96));
+      border-color: rgba(159, 209, 196, 0.14);
+    }
+
+    .teacher-certificate-upload__plus {
+      flex-shrink: 0;
+      width: 42px;
+      text-align: center;
+      font-size: 2.3rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .teacher-certificate-upload__copy {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .teacher-certificate-upload__copy strong {
+      font-size: 1.05rem;
+      line-height: 1.2;
+    }
+
+    .teacher-certificate-upload__copy small {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .teacher-certificate-upload__file {
+      font-weight: 700;
+      color: var(--text) !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .teacher-form .auth-status {
+      margin-top: 0;
+    }
+
+    .teacher-form__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .teacher-form__submit {
+      width: auto;
+      min-width: 180px;
+    }
+
+    .teachers-list {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .teacher-saved-card {
+      display: grid;
+      grid-template-columns: minmax(240px, 390px) minmax(0, 1fr);
+      gap: 30px;
+      padding: 26px;
+      border-radius: 34px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    body[data-theme="dark"] .teacher-saved-card {
+      background: rgba(12, 24, 21, 0.88);
+    }
+
+    .teacher-saved-card__media {
+      position: relative;
+      min-height: 480px;
+      border-radius: 32px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(170, 206, 195, 0.76), transparent 42%),
+        linear-gradient(180deg, rgba(230, 242, 238, 0.9), rgba(214, 222, 224, 0.92));
+      border: 1px solid rgba(45, 107, 95, 0.14);
+    }
+
+    body[data-theme="dark"] .teacher-saved-card__media {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(111, 150, 139, 0.34), transparent 42%),
+        linear-gradient(180deg, rgba(25, 42, 38, 0.94), rgba(19, 30, 28, 0.96));
+      border-color: rgba(159, 209, 196, 0.14);
+    }
+
+    .teacher-saved-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .teacher-saved-card__media-placeholder {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .teacher-saved-card__content {
+      display: grid;
+      gap: 20px;
+      min-width: 0;
+    }
+
+    .teacher-saved-card__role {
+      display: block;
+      color: #5d7770;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .teacher-saved-card__name {
+      margin: 8px 0 0;
+      font-size: clamp(2rem, 3vw, 2.9rem);
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+    }
+
+    .teacher-saved-card__label {
+      display: block;
+      margin-bottom: 8px;
+      color: #12916d;
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .teacher-saved-card__bio {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .teacher-saved-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .teacher-saved-card__certificate {
+      display: grid;
+      gap: 18px;
+      padding: 18px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .teacher-saved-card__certificate-box {
+      display: grid;
+      grid-template-columns: minmax(220px, 330px) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+      min-height: 180px;
+      padding: 24px;
+      border-radius: 32px;
+      border: 1px solid rgba(45, 107, 95, 0.14);
+      background: linear-gradient(180deg, rgba(237, 245, 243, 0.95), rgba(230, 240, 236, 0.94));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    }
+
+    body[data-theme="dark"] .teacher-saved-card__certificate-box {
+      background: linear-gradient(180deg, rgba(20, 36, 32, 0.96), rgba(16, 27, 24, 0.96));
+      border-color: rgba(159, 209, 196, 0.14);
+    }
+
+    .teacher-saved-card__certificate-preview {
+      min-height: 180px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(45, 107, 95, 0.1);
+    }
+
+    .teacher-saved-card__certificate-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .teacher-saved-card__certificate-preview--pdf {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 10px;
+      padding: 24px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .teacher-saved-card__certificate-preview--empty {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .teacher-saved-card__certificate-copy {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      align-content: start;
+    }
+
+    .teacher-saved-card__certificate-copy strong {
+      font-size: 1rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .teacher-saved-card__certificate-copy small {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .teacher-saved-card__certificate-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .teacher-saved-card__delete {
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(192, 84, 68, 0.14);
+      background: rgba(255, 255, 255, 0.84);
+      color: #b05243;
+      box-shadow: 0 10px 22px rgba(192, 84, 68, 0.12);
+      flex-shrink: 0;
+    }
+
+    .teacher-saved-card__delete svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+    }
+
+    .teacher-saved-card__delete:hover {
+      transform: translateY(-1px);
+      border-color: rgba(192, 84, 68, 0.26);
+      background: rgba(192, 84, 68, 0.08);
+    }
+
+    body[data-theme="dark"] .teacher-saved-card__delete {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(192, 84, 68, 0.2);
+    }
+
+    .teacher-saved-card__empty {
+      padding: 28px;
+      border-radius: 28px;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.28);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .teachers-placeholder strong {
+      font-size: 1.05rem;
+      line-height: 1.3;
+    }
+
+    .teachers-placeholder p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 62ch;
     }
 
     .students-summary {
@@ -1077,6 +1910,239 @@
       font-size: 0.9rem;
     }
 
+    .contact-panel {
+      margin-top: 4px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .contact-brand {
+      display: grid;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .contact-brand__top {
+      display: block;
+    }
+
+    .contact-brand__logo {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      max-width: 100%;
+      min-height: 138px;
+      padding: 26px 28px;
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #2c3190 0%, #3538a6 58%, #262b7f 100%);
+      box-shadow: 0 22px 40px rgba(30, 36, 118, 0.2);
+      color: #ffffff;
+      isolation: isolate;
+    }
+
+    .contact-brand__logo::before,
+    .contact-brand__logo::after {
+      content: "";
+      position: relative;
+    }
+
+    .contact-brand__logo::before {
+      position: absolute;
+      inset: auto auto -68px -54px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: -1;
+    }
+
+    .contact-brand__logo::after {
+      position: absolute;
+      inset: 18px 20px auto auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 72%);
+      z-index: -1;
+    }
+
+    .contact-brand__mark {
+      width: 92px;
+      height: 92px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 14px 22px rgba(16, 19, 73, 0.22));
+    }
+
+    .contact-brand__mark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .contact-brand__lockup {
+      display: grid;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-brand__name {
+      display: block;
+      color: #ffffff;
+      font-size: clamp(1rem, 1.9vw, 2.15rem);
+      font-weight: 900;
+      letter-spacing: 0.015em;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+    }
+
+    .contact-brand__subtitle {
+      display: block;
+      color: rgba(255, 255, 255, 0.94);
+      font-size: clamp(0.58rem, 0.9vw, 0.84rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+    }
+
+    .contact-column {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .contact-column h3 {
+      margin: 0;
+      font-size: 1.02rem;
+      line-height: 1.3;
+    }
+
+    .contact-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .contact-link,
+    .contact-meta {
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.7;
+      text-decoration: none;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+    }
+
+    .contact-link:hover,
+    .contact-meta:hover {
+      color: var(--accent-strong);
+    }
+
+    .contact-socials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .contact-icon-link {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      color: #465058;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .contact-icon-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(45, 107, 95, 0.24);
+      box-shadow: 0 16px 28px rgba(21, 90, 73, 0.1);
+    }
+
+    .contact-icon-link svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .contact-icon-link--twitter {
+      background: linear-gradient(135deg, #6ecbff 0%, #1d9bf0 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .contact-icon-link--instagram {
+      background: linear-gradient(135deg, #fdc468 0%, #df4996 52%, #4f5bd5 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .contact-icon-link--facebook {
+      background: linear-gradient(135deg, #1877f2 0%, #0f5fd6 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .contact-icon-link--telegram {
+      background: linear-gradient(135deg, #5ca8ff 0%, #3074ef 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .contact-icon-link--youtube {
+      background: linear-gradient(135deg, #ff2416 0%, #e50914 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 16px 28px rgba(229, 9, 20, 0.24);
+    }
+
+    .contact-panel .panel-head {
+      cursor: pointer;
+    }
+
+    .contact-panel .panel-head:focus-visible {
+      outline: 2px solid rgba(217, 111, 67, 0.9);
+      outline-offset: 4px;
+    }
+
+    .contact-panel .contact-grid[hidden] {
+      display: none;
+    }
+
+    body[data-theme="dark"] .contact-icon-link {
+      background: rgba(255, 255, 255, 0.04);
+      color: #dce8e3;
+    }
+
+    body[data-theme="dark"] .contact-icon-link--youtube {
+      background: linear-gradient(135deg, #ff2416 0%, #e50914 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
     .sidebar-overlay {
       position: fixed;
       inset: 0;
@@ -1125,6 +2191,14 @@
 
       .students-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .contact-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .contact-brand {
+        grid-column: 1 / -1;
       }
     }
 
@@ -1178,6 +2252,18 @@
         grid-template-columns: 1fr;
       }
 
+      .contact-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .teacher-profile-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .teacher-photo-card {
+        min-height: 360px;
+      }
+
       .topbar {
         flex-direction: column;
       }
@@ -1214,6 +2300,101 @@
         border-radius: 24px;
       }
 
+      .teachers-placeholder__layout {
+        grid-template-columns: 1fr;
+      }
+
+      .teacher-add-card {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .teacher-form-panel {
+        padding: 22px;
+        border-radius: 28px;
+      }
+
+      .teacher-profile-layout {
+        gap: 22px;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .contact-brand {
+        grid-column: auto;
+      }
+
+      .contact-brand__logo {
+        min-height: 104px;
+        padding: 18px 16px;
+        border-radius: 28px;
+        gap: 12px;
+      }
+
+      .contact-brand__mark {
+        width: 58px;
+        height: 58px;
+      }
+
+      .contact-brand__name {
+        font-size: 1rem;
+      }
+
+      .contact-brand__subtitle {
+        font-size: 0.58rem;
+        letter-spacing: 0.1em;
+      }
+
+      .teacher-photo-card {
+        min-height: 300px;
+        border-radius: 28px;
+      }
+
+      .teacher-saved-card {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 22px;
+        border-radius: 28px;
+      }
+
+      .teacher-saved-card__media {
+        min-height: 320px;
+        border-radius: 28px;
+      }
+
+      .teacher-saved-card__certificate-box {
+        grid-template-columns: 1fr;
+        min-height: 0;
+        padding: 20px;
+        border-radius: 26px;
+      }
+
+      .teacher-saved-card__certificate-preview {
+        min-height: 160px;
+      }
+
+      .teacher-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .teacher-certificate-upload {
+        min-height: 116px;
+        padding: 20px;
+        border-radius: 26px;
+      }
+
+      .teacher-form__actions {
+        flex-direction: column-reverse;
+      }
+
+      .teacher-form__actions .table-action,
+      .teacher-form__submit {
+        width: 100%;
+      }
+
       .students-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1238,27 +2419,35 @@
   <div class="auth-gate" id="admin-gate" role="dialog" aria-modal="true" aria-labelledby="admin-gate-title">
     <section class="auth-card">
       <div class="auth-card__controls">
-        <label class="language-switch">
-          <span class="language-switch__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
-              <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <span class="language-switch__copy">
-            <span class="language-switch__label" data-language-label>Til</span>
-            <select class="language-switch__select" data-language-select>
-              <option value="uz">O'zbekcha</option>
-              <option value="en">English</option>
-              <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
-            </select>
-          </span>
-          <span class="language-switch__arrow" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </label>
+        <div class="language-switch" data-language-switch>
+          <button class="language-switch__trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false">
+            <span class="language-switch__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
+                <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="language-switch__copy">
+              <span class="language-switch__label" data-language-label>Til</span>
+              <span class="language-switch__value" data-language-value>O'zbekcha</span>
+            </span>
+            <span class="language-switch__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          <div class="language-switch__menu" data-language-menu role="listbox" hidden>
+            <button class="language-switch__option is-active" type="button" data-language-option="uz" aria-selected="true">O'zbekcha</button>
+            <button class="language-switch__option" type="button" data-language-option="en" aria-selected="false">English</button>
+            <button class="language-switch__option" type="button" data-language-option="ru" aria-selected="false">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+          </div>
+          <select class="language-switch__select" data-language-select tabindex="-1" aria-hidden="true">
+            <option value="uz">O'zbekcha</option>
+            <option value="en">English</option>
+            <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
+          </select>
+        </div>
       </div>
       <span class="eyebrow" id="admin-gate-eyebrow">Tizimga kirish</span>
       <h2 id="admin-gate-title">Tizimga kirish</h2>
@@ -1290,7 +2479,7 @@
       <div class="sidebar__top">
         <div class="brand">
           <div>
-            <span class="brand__eyebrow">IT CENTER</span>
+            <span class="brand__eyebrow">ZAMAXSHAR</span>
             <strong class="brand__title" id="brand-title">Admin Console</strong>
           </div>
         </div>
@@ -1301,9 +2490,14 @@
         </button>
       </div>
 
-      <section>
+      <section class="sidebar__section sidebar__section--primary">
         <p class="sidebar__section-title" id="sidebar-section-title">Bo'limlar</p>
         <nav class="sidebar__nav" id="sidebar-nav" aria-label="Admin navigatsiyasi"></nav>
+      </section>
+
+      <section class="sidebar__section sidebar__section--secondary">
+        <p class="sidebar__section-title" id="sidebar-teacher-section-title">Ustozlar boshqaruvi</p>
+        <nav class="sidebar__nav sidebar__nav--compact" id="sidebar-teacher-nav" aria-label="Ustozlar navigatsiyasi"></nav>
       </section>
 
     </aside>
@@ -1324,27 +2518,35 @@
         </div>
 
         <div class="topbar__actions">
-          <label class="language-switch">
-            <span class="language-switch__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
-                <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="language-switch__copy">
-              <span class="language-switch__label" data-language-label>Til</span>
-              <select class="language-switch__select" data-language-select>
-                <option value="uz">O'zbekcha</option>
-                <option value="en">English</option>
-                <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
-              </select>
-            </span>
-            <span class="language-switch__arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </label>
+          <div class="language-switch" data-language-switch>
+            <button class="language-switch__trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false">
+              <span class="language-switch__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="language-switch__svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke-width="1.7"/>
+                  <path d="M3.6 9H20.4M3.6 15H20.4M12 3C14.2513 5.46356 15.5305 8.66154 15.6 12C15.5305 15.3385 14.2513 18.5364 12 21C9.74872 18.5364 8.46948 15.3385 8.4 12C8.46948 8.66154 9.74872 5.46356 12 3Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="language-switch__copy">
+                <span class="language-switch__label" data-language-label>Til</span>
+                <span class="language-switch__value" data-language-value>O'zbekcha</span>
+              </span>
+              <span class="language-switch__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="language-switch__arrow-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 10L12 15L17 10" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+            <div class="language-switch__menu" data-language-menu role="listbox" hidden>
+              <button class="language-switch__option is-active" type="button" data-language-option="uz" aria-selected="true">O'zbekcha</button>
+              <button class="language-switch__option" type="button" data-language-option="en" aria-selected="false">English</button>
+              <button class="language-switch__option" type="button" data-language-option="ru" aria-selected="false">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</button>
+            </div>
+            <select class="language-switch__select" data-language-select tabindex="-1" aria-hidden="true">
+              <option value="uz">O'zbekcha</option>
+              <option value="en">English</option>
+              <option value="ru">&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;</option>
+            </select>
+          </div>
           <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Rang rejimini almashtirish">
             <span class="theme-toggle__icon" aria-hidden="true">
               <svg class="theme-toggle__svg" id="theme-toggle-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1364,7 +2566,7 @@
       </header>
 
       <section class="content-grid">
-        <article class="panel" id="applications">
+        <article class="panel" id="applications" hidden>
           <div class="panel-head">
             <div>
               <span class="eyebrow" id="applications-eyebrow">Arizalar</span>
@@ -1407,7 +2609,7 @@
           </div>
         </article>
 
-        <article class="panel" id="students">
+        <article class="panel" id="students" hidden>
           <div class="panel-head">
             <div>
               <span class="eyebrow" id="courses-eyebrow">O'quvchilar</span>
@@ -1436,6 +2638,29 @@
               </article>
             </div>
 
+            <section class="subject-applications" id="subject-applications" hidden>
+              <div class="subject-applications__head">
+                <strong id="subject-applications-title">Fan bo'yicha yangi arizalar</strong>
+                <p id="subject-applications-description">Tanlangan fan uchun yuborilgan arizalar shu yerda ko'rinadi va shu joyning o'zidan qabul qilinadi.</p>
+              </div>
+
+              <div class="table-wrap">
+                <table class="students-table">
+                  <thead>
+                    <tr>
+                      <th id="subject-applications-column-index">No</th>
+                      <th id="subject-applications-column-applicant">Ariza</th>
+                      <th id="subject-applications-column-phone">Telefon</th>
+                      <th id="subject-applications-column-plan">Tarif</th>
+                      <th id="subject-applications-column-status">Holat</th>
+                      <th id="subject-applications-column-action">Amal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subject-applications-body"></tbody>
+                </table>
+              </div>
+            </section>
+
             <div class="table-wrap">
               <table class="students-table">
                 <thead>
@@ -1446,6 +2671,7 @@
                     <th id="students-column-subject">Fan</th>
                     <th id="students-column-amount">To'lov</th>
                     <th id="students-column-status">Holat</th>
+                    <th id="students-column-action">Amal</th>
                   </tr>
                 </thead>
                 <tbody id="students-table-body"></tbody>
@@ -1453,10 +2679,162 @@
             </div>
           </div>
         </article>
+
+        <article class="panel" id="teachers" hidden>
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow" id="teachers-eyebrow">Ustozlar</span>
+              <h2 id="teachers-title">Ustozlar boshqaruvi</h2>
+              <p id="teachers-description">Bu bo'lim fanlar ro'yxatidan alohida turadi va ustozlar bilan bog'liq boshqaruv uchun ajratilgan.</p>
+            </div>
+          </div>
+
+          <div class="teachers-placeholder">
+            <div class="teachers-placeholder__layout">
+              <button class="teacher-add-card" id="teachers-add-button" type="button">
+                <span class="teacher-add-card__plus" aria-hidden="true">+</span>
+                <span class="teacher-add-card__label" id="teachers-add-label">Yangi ustoz</span>
+              </button>
+              <div class="teachers-placeholder__copy">
+                <strong id="teachers-card-title">Alohida ustozlar paneli</strong>
+                <p id="teachers-card-description">Ustozlar ro'yxati, biriktirish va boshqa amallar shu bo'lim ichida alohida ko'rinadi.</p>
+              </div>
+            </div>
+
+            <section class="teacher-form-panel" id="teacher-form-panel" hidden>
+              <div class="teacher-form__header sr-only">
+                <strong id="teacher-form-title">Yangi ustoz qo'shish</strong>
+                <p id="teacher-form-description">Ustoz ma'lumotlarini kiriting va saqlang.</p>
+              </div>
+
+              <form class="teacher-form" id="teacher-form">
+                <div class="teacher-profile-layout">
+                  <label class="teacher-photo-field" for="teacher-photo-input">
+                    <input class="teacher-upload-input" id="teacher-photo-input" name="photo" type="file" accept="image/*">
+                    <span class="teacher-photo-card" id="teacher-photo-card">
+                      <img class="teacher-photo-card__image" id="teacher-photo-preview" alt="" hidden>
+                      <span class="teacher-photo-card__placeholder" id="teacher-photo-empty">
+                        <span class="teacher-photo-card__ring">
+                          <span class="teacher-photo-card__plus" aria-hidden="true">+</span>
+                        </span>
+                        <strong class="teacher-photo-card__title" id="teacher-photo-title">Rasm joyi</strong>
+                        <small class="teacher-photo-card__help" id="teacher-photo-help">+ tugmasini bosib rasm tanlang</small>
+                      </span>
+                    </span>
+                  </label>
+
+                  <div class="teacher-profile-main">
+                    <label class="teacher-identity" for="teacher-name">
+                      <span class="teacher-field__eyebrow" id="teacher-role-label">O'qituvchi</span>
+                      <span class="sr-only" id="teacher-name-label">Ustoz F.I.SH</span>
+                      <input class="teacher-identity__input" id="teacher-name" name="name" type="text" placeholder="O'qituvchi ismi" autocomplete="name" required>
+                    </label>
+
+                    <div class="teacher-form-grid">
+                      <label class="teacher-field" for="teacher-subject">
+                        <span id="teacher-subject-label">Fan yo'nalishi</span>
+                        <select id="teacher-subject" name="subject" required></select>
+                      </label>
+
+                      <label class="teacher-field" for="teacher-phone">
+                        <span id="teacher-phone-label">Telefon raqam</span>
+                        <span class="auth-phone">
+                          <span class="auth-phone__prefix">+998</span>
+                          <input id="teacher-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="90 123 45 67" required>
+                        </span>
+                      </label>
+                    </div>
+
+                    <label class="teacher-field teacher-field--bio" for="teacher-bio">
+                      <span class="teacher-field__eyebrow" id="teacher-bio-label">Qisqacha ma'lumot</span>
+                      <textarea id="teacher-bio" name="bio" rows="4" placeholder="O'qituvchi haqida qisqacha ma'lumot yozing"></textarea>
+                    </label>
+
+                    <section class="teacher-certificate-card">
+                      <div class="teacher-certificate-card__head">
+                        <span class="teacher-field__eyebrow" id="teacher-certificate-label">Sertifikati</span>
+                        <span class="teacher-certificate-badge" id="teacher-certificate-status">Kiritilmagan</span>
+                      </div>
+
+                      <label class="teacher-certificate-upload" for="teacher-certificate-input">
+                        <input class="teacher-upload-input" id="teacher-certificate-input" name="certificate" type="file" accept=".png,.jpg,.jpeg,.pdf,application/pdf">
+                        <span class="teacher-certificate-upload__plus" aria-hidden="true">+</span>
+                        <span class="teacher-certificate-upload__copy">
+                          <strong id="teacher-certificate-upload-title">Sertifikat yuklash</strong>
+                          <small id="teacher-certificate-upload-hint">PNG, JPG yoki PDF sertifikat yuklang</small>
+                          <small class="teacher-certificate-upload__file" id="teacher-certificate-file" hidden></small>
+                        </span>
+                      </label>
+                    </section>
+
+                    <p class="auth-status" id="teacher-form-status" aria-live="polite"></p>
+
+                    <div class="teacher-form__actions">
+                      <button class="table-action" id="teacher-form-cancel" type="button">Bekor qilish</button>
+                      <button class="auth-submit teacher-form__submit" id="teacher-form-submit" type="submit">Saqlash</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </section>
+          </div>
+
+          <div class="teachers-list" id="teachers-list-body"></div>
+        </article>
       </section>
 
+      <article class="panel contact-panel" id="contact-info">
+        <div class="panel-head" id="contact-panel-toggle" role="button" tabindex="0" aria-expanded="true" aria-controls="contact-grid-body">
+          <div>
+            <span class="eyebrow" id="contact-eyebrow">Aloqa ma'lumoti</span>
+            <h2 id="contact-title">Aloqa ma'lumoti</h2>
+            <p id="contact-description">Aloqa ma'lumotlari va foydali havolalar shu yerda ko'rsatiladi.</p>
+          </div>
+        </div>
+
+        <div class="contact-grid" id="contact-grid-body">
+          <section class="contact-brand" aria-labelledby="contact-brand-name">
+            <div class="contact-brand__top">
+              <div class="contact-brand__logo">
+                <span class="contact-brand__mark" aria-hidden="true">
+                  <svg viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <circle cx="44" cy="44" r="40" fill="#FFFFFF"/>
+                    <circle cx="35" cy="24" r="5.5" fill="#2F3498"/>
+                    <path d="M29 64.5L46.4 43.8C49.8 39.75 50.63 34.16 48.55 29.3C47.95 27.91 46.91 26.72 45.59 25.95L42.44 24.12L39.46 29.33L41.31 30.4C42.06 30.84 42.64 31.52 42.95 32.34C43.84 34.69 43.39 37.35 41.76 39.32L23.86 60.84L29 64.5Z" fill="#2F3498"/>
+                  </svg>
+                </span>
+                <div class="contact-brand__lockup">
+                  <strong class="contact-brand__name" id="contact-brand-name">ZAMAXSHAR</strong>
+                  <span class="contact-brand__subtitle">O'QUV MARKAZI</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="contact-column" aria-labelledby="contact-links-title">
+            <h3 id="contact-links-title">Tezkor havolalar</h3>
+            <div class="contact-list" id="contact-links-list"></div>
+          </section>
+
+          <section class="contact-column" aria-labelledby="contact-direct-title">
+            <h3 id="contact-direct-title">Aloqa</h3>
+            <div class="contact-list" id="contact-direct-list"></div>
+          </section>
+
+          <section class="contact-column" aria-labelledby="contact-social-title">
+            <h3 id="contact-social-title">Ijtimoiy tarmoqlar</h3>
+            <div class="contact-socials" id="contact-social-list"></div>
+          </section>
+
+          <section class="contact-column" aria-labelledby="contact-developer-title">
+            <h3 id="contact-developer-title">ZAMAXSHAR bilan aloqa</h3>
+            <div class="contact-socials" id="contact-developer-list"></div>
+          </section>
+        </div>
+      </article>
+
       <footer class="footer" id="footer-text">
-        IT CENTER admin paneli - o'quvchilar va to'lovlar nazorati.
+        ZAMAXSHAR admin paneli - o'quvchilar va to'lovlar nazorati.
       </footer>
     </main>
   </div>
@@ -1473,6 +2851,7 @@
     const sidebarOverlay = document.getElementById("sidebar-overlay");
     const toast = document.getElementById("toast");
     const toastButtons = document.querySelectorAll("[data-toast]");
+    const languageSwitches = Array.from(document.querySelectorAll("[data-language-switch]"));
     const languageSelects = document.querySelectorAll("[data-language-select]");
     const languageLabels = document.querySelectorAll("[data-language-label]");
     const adminGate = document.getElementById("admin-gate");
@@ -1490,7 +2869,9 @@
     const adminLoginStatus = document.getElementById("admin-login-status");
     const brandTitle = document.getElementById("brand-title");
     const sidebarSectionTitle = document.getElementById("sidebar-section-title");
+    const sidebarTeacherSectionTitle = document.getElementById("sidebar-teacher-section-title");
     const sidebarNav = document.getElementById("sidebar-nav");
+    const sidebarTeacherNav = document.getElementById("sidebar-teacher-nav");
     const topbarEyebrow = document.getElementById("topbar-eyebrow");
     const topbarTitle = document.getElementById("topbar-title");
     const topbarDescription = document.getElementById("topbar-description");
@@ -1513,6 +2894,7 @@
     const applicationsColumnStatus = document.getElementById("applications-column-status");
     const applicationsColumnAction = document.getElementById("applications-column-action");
     const applicationsTableBody = document.getElementById("applications-table-body");
+    const studentsPanel = document.getElementById("students");
     const coursesEyebrow = document.getElementById("courses-eyebrow");
     const coursesTitle = document.getElementById("courses-title");
     const coursesDescription = document.getElementById("courses-description");
@@ -1530,27 +2912,125 @@
     const studentsColumnSubject = document.getElementById("students-column-subject");
     const studentsColumnAmount = document.getElementById("students-column-amount");
     const studentsColumnStatus = document.getElementById("students-column-status");
+    const studentsColumnAction = document.getElementById("students-column-action");
     const studentsTableBody = document.getElementById("students-table-body");
+    const subjectApplicationsPanel = document.getElementById("subject-applications");
+    const subjectApplicationsTitle = document.getElementById("subject-applications-title");
+    const subjectApplicationsDescription = document.getElementById("subject-applications-description");
+    const subjectApplicationsColumnIndex = document.getElementById("subject-applications-column-index");
+    const subjectApplicationsColumnApplicant = document.getElementById("subject-applications-column-applicant");
+    const subjectApplicationsColumnPhone = document.getElementById("subject-applications-column-phone");
+    const subjectApplicationsColumnPlan = document.getElementById("subject-applications-column-plan");
+    const subjectApplicationsColumnStatus = document.getElementById("subject-applications-column-status");
+    const subjectApplicationsColumnAction = document.getElementById("subject-applications-column-action");
+    const subjectApplicationsBody = document.getElementById("subject-applications-body");
+    const teachersPanel = document.getElementById("teachers");
+    const teachersEyebrow = document.getElementById("teachers-eyebrow");
+    const teachersTitle = document.getElementById("teachers-title");
+    const teachersDescription = document.getElementById("teachers-description");
+    const teachersAddButton = document.getElementById("teachers-add-button");
+    const teachersAddLabel = document.getElementById("teachers-add-label");
+    const teachersCardTitle = document.getElementById("teachers-card-title");
+    const teachersCardDescription = document.getElementById("teachers-card-description");
+    const teacherFormPanel = document.getElementById("teacher-form-panel");
+    const teacherForm = document.getElementById("teacher-form");
+    const teacherFormTitle = document.getElementById("teacher-form-title");
+    const teacherFormDescription = document.getElementById("teacher-form-description");
+    const teacherRoleLabel = document.getElementById("teacher-role-label");
+    const teacherNameLabel = document.getElementById("teacher-name-label");
+    const teacherSubjectLabel = document.getElementById("teacher-subject-label");
+    const teacherPhoneLabel = document.getElementById("teacher-phone-label");
+    const teacherBioLabel = document.getElementById("teacher-bio-label");
+    const teacherNameInput = document.getElementById("teacher-name");
+    const teacherSubjectInput = document.getElementById("teacher-subject");
+    const teacherPhoneInput = document.getElementById("teacher-phone");
+    const teacherBioInput = document.getElementById("teacher-bio");
+    const teacherPhotoInput = document.getElementById("teacher-photo-input");
+    const teacherPhotoPreview = document.getElementById("teacher-photo-preview");
+    const teacherPhotoEmpty = document.getElementById("teacher-photo-empty");
+    const teacherPhotoTitle = document.getElementById("teacher-photo-title");
+    const teacherPhotoHelp = document.getElementById("teacher-photo-help");
+    const teacherCertificateLabel = document.getElementById("teacher-certificate-label");
+    const teacherCertificateInput = document.getElementById("teacher-certificate-input");
+    const teacherCertificateStatus = document.getElementById("teacher-certificate-status");
+    const teacherCertificateUploadTitle = document.getElementById("teacher-certificate-upload-title");
+    const teacherCertificateUploadHint = document.getElementById("teacher-certificate-upload-hint");
+    const teacherCertificateFile = document.getElementById("teacher-certificate-file");
+    const teacherFormStatus = document.getElementById("teacher-form-status");
+    const teacherFormCancel = document.getElementById("teacher-form-cancel");
+    const teacherFormSubmit = document.getElementById("teacher-form-submit");
+    const teachersListBody = document.getElementById("teachers-list-body");
+    const contactEyebrow = document.getElementById("contact-eyebrow");
+    const contactTitle = document.getElementById("contact-title");
+    const contactDescription = document.getElementById("contact-description");
+    const contactBrandName = document.getElementById("contact-brand-name");
+    const contactBrandCopy = document.getElementById("contact-brand-copy");
+    const contactLinksTitle = document.getElementById("contact-links-title");
+    const contactLinksList = document.getElementById("contact-links-list");
+    const contactDirectTitle = document.getElementById("contact-direct-title");
+    const contactDirectList = document.getElementById("contact-direct-list");
+    const contactSocialTitle = document.getElementById("contact-social-title");
+    const contactSocialList = document.getElementById("contact-social-list");
+    const contactDeveloperTitle = document.getElementById("contact-developer-title");
+    const contactDeveloperList = document.getElementById("contact-developer-list");
+    const contactPanelToggle = document.getElementById("contact-panel-toggle");
+    const contactGridBody = document.getElementById("contact-grid-body");
     const footerText = document.getElementById("footer-text");
     const themeStorageKey = "it-center-admin-theme";
     const adminLocalSessionKey = "it-center-admin-local-session";
     const adminApplicationsStorageKey = "it-center-admin-applications";
     const adminStudentsStorageKey = "it-center-admin-students";
+    const adminTeachersStorageKey = "it-center-admin-teachers";
     const languageStorageKey = "it-center-admin-language";
     const supportedLanguages = ["uz", "en", "ru"];
 
-    const studentOverviewData = [
-      { name: "Azizbek Karimov", phone: "901234567", subjectIndex: 0, amount: 350000, status: "paid" },
-      { name: "Madina Ergasheva", phone: "931112233", subjectIndex: 4, amount: 350000, status: "pending" },
-      { name: "Jahongir To'raev", phone: "997654321", subjectIndex: 2, amount: 350000, status: "late" },
-      { name: "Sevinch Qodirova", phone: "901987654", subjectIndex: 3, amount: 350000, status: "paid" },
-      { name: "Maftuna Jo'rayeva", phone: "945551122", subjectIndex: 8, amount: 350000, status: "pending" },
-      { name: "Behruz Qodirov", phone: "998221144", subjectIndex: 6, amount: 350000, status: "paid" },
-      { name: "Umida Rasulova", phone: "909761245", subjectIndex: 1, amount: 350000, status: "late" },
-      { name: "Diyorbek Xasanov", phone: "934005577", subjectIndex: 5, amount: 350000, status: "paid" },
-      { name: "Nilufar Sattorova", phone: "974449988", subjectIndex: 7, amount: 350000, status: "pending" },
-      { name: "Shaxzod Mamatov", phone: "998880011", subjectIndex: 9, amount: 350000, status: "paid" }
-    ];
+    const studentOverviewData = [];
+
+    if (contactPanelToggle && contactGridBody) {
+      const toggleContactSection = () => {
+        const isOpen = !contactGridBody.hidden;
+        contactGridBody.hidden = isOpen;
+        contactPanelToggle.setAttribute("aria-expanded", String(!isOpen));
+      };
+
+      contactPanelToggle.addEventListener("click", toggleContactSection);
+      contactPanelToggle.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggleContactSection();
+        }
+      });
+    }
+    const removableSeedStudentNames = new Set([
+      "ogabek mahmudov",
+      "zxasxas xasxasx",
+      "laziz norbutayev",
+      "azizbek karimov",
+      "madina ergasheva",
+      "jahongir toraev",
+      "sevinch qodirova",
+      "maftuna jorayeva",
+      "behruz qodirov",
+      "umida rasulova",
+      "diyorbek xasanov",
+      "nilufar sattorova",
+      "shaxzod mamatov"
+    ]);
+    const removableSeedStudentPhones = new Set([
+      "972233755",
+      "123432322",
+      "556458446",
+      "901234567",
+      "931112233",
+      "997654321",
+      "901987654",
+      "945551122",
+      "998221144",
+      "909761245",
+      "934005577",
+      "974449988",
+      "998880011"
+    ]);
 
     const moonIcon = `
       <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.8 6.8 0 0 0 20 14.5Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1564,14 +3044,14 @@
     const translations = {
       uz: {
         meta: {
-          title: "IT CENTER | Admin Panel"
+          title: "ZAMAXSHAR | Admin Panel"
         },
         language: {
           label: "Til",
           options: {
             uz: "O'zbekcha",
             en: "English",
-            ru: "Р СѓСЃСЃРєРёР№"
+            ru: "Русский"
           }
         },
         actions: {
@@ -1610,6 +3090,9 @@
         sidebar: {
           sectionTitle: "Bo'limlar",
           navAria: "Admin navigatsiyasi",
+          teacherSectionTitle: "Ustozlar boshqaruvi",
+          teacherNavAria: "Ustozlar navigatsiyasi",
+          teacherNavLabel: "Barcha ustozlar",
           items: [
             {
               title: "O'quvchilar",
@@ -1643,6 +3126,146 @@
           title: "Ariza qabuli",
           description: "Saytdan yuborilgan arizalar shu yerda ko'rinadi va qabul qilinadi."
         },
+        teachersSection: {
+          eyebrow: "Ustozlar",
+          title: "Ustozlar boshqaruvi",
+          description: "Bu bo'lim fanlar ro'yxatidan alohida turadi va ustozlar bilan bog'liq boshqaruv uchun ajratilgan.",
+          addLabel: "Yangi ustoz",
+          cardTitle: "Alohida ustozlar paneli",
+          cardDescription: "Ustozlar ro'yxati, biriktirish va boshqa amallar shu bo'lim ichida alohida ko'rinadi."
+        },
+        contactSection: {
+          eyebrow: "Aloqa ma'lumoti",
+          title: "Aloqa ma'lumoti",
+          description: "Aloqa ma'lumotlari va foydali havolalar shu yerda ko'rsatiladi.",
+          brandName: "ZAMAXSHAR",
+          brandCopy: "Zamonaviy ta'lim markazi. Kelajakka biz bilan qadam qo'ying.",
+          quickLinksTitle: "Tezkor havolalar",
+          quickLinks: [
+            {
+              label: "Arizalar",
+              section: "applications",
+              href: "#applications"
+            },
+            {
+              label: "O'quvchilar",
+              section: "students",
+              href: "#students"
+            },
+            {
+              label: "Ustozlar",
+              section: "teachers",
+              href: "#teachers"
+            }
+          ],
+          directTitle: "Aloqa",
+          direct: [
+            {
+              label: "Qashqadaryo viloyati, Qamashi tumani",
+              type: "text"
+            },
+            {
+              label: "@zamaxshar_tm",
+              type: "link",
+              href: "https://t.me/zamaxshar_tm"
+            },
+            {
+              label: "@zamaxshar_admin",
+              type: "link",
+              href: "https://t.me/zamaxshar_admin"
+            },
+            {
+              label: "+998 90 893 00 02",
+              type: "tel",
+              href: "tel:+998908930002"
+            }
+          ],
+          socialTitle: "Ijtimoiy tarmoqlar",
+          socials: [
+            {
+              label: "Twitter",
+              icon: "twitter",
+              href: "https://x.com/"
+            },
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Facebook",
+              icon: "facebook",
+              href: "https://www.facebook.com/"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ],
+          developerTitle: "ZAMAXSHAR bilan aloqa",
+          developers: [
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Telegram",
+              icon: "telegram",
+              href: "https://t.me/Zamaxshar_TM"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ]
+        },
+        teacherForm: {
+          title: "Yangi ustoz qo'shish",
+          description: "Ustoz ma'lumotlarini kiriting va saqlang.",
+          fields: {
+            role: "O'qituvchi",
+            name: "Ustoz F.I.SH",
+            subject: "Fan yo'nalishi",
+            phone: "Telefon raqam",
+            bio: "Qisqacha ma'lumot",
+            certificate: "Sertifikati"
+          },
+          placeholders: {
+            name: "O'qituvchi ismi",
+            subject: "Fanni tanlang",
+            phone: "90 123 45 67",
+            bio: "O'qituvchi haqida qisqacha ma'lumot shu yerga yoziladi."
+          },
+          photo: {
+            title: "Rasm joyi",
+            hint: "+ tugmasini bosib rasm tanlang"
+          },
+          certificate: {
+            emptyStatus: "Kiritilmagan",
+            uploadedStatus: "Yuklangan",
+            uploadTitle: "Sertifikat yuklash",
+            uploadHint: "PNG, JPG yoki PDF sertifikat yuklang"
+          },
+          submit: "Saqlash",
+          cancel: "Bekor qilish",
+          messages: {
+            missing: "Ustoz ismi, fani va telefon raqamini kiriting.",
+            incompletePhone: "Telefon raqamni to'liq kiriting.",
+            saved: "Ustoz saqlandi va shu bo'limda ko'rsatildi."
+          }
+        },
+        teacherTable: {
+          empty: "Hozircha ustozlar yo'q.",
+          certificateAvailable: "Bor",
+          certificateMissing: "Kiritilmagan",
+          uploadedFile: "Yuklangan fayl",
+          noCertificate: "Sertifikat yuklanmagan.",
+          viewCertificate: "Ko'rish",
+          deleteTeacher: "O'chirish"
+        },
         courseTitles: [
           "Matematika va Geometriya",
           "Fizika",
@@ -1653,7 +3276,17 @@
           "Kimyo",
           "Geografiya",
           "Informatika",
-          "Rus Tili"
+          "Rus Tili",
+          "Nemis Tili",
+          "Fransuz Tili",
+          "Jismoniy Tarbiya",
+          "Tasviriy San'at",
+          "Musiqa Madaniyati",
+          "Texnologiya",
+          "Chizmachilik",
+          "Tarbiya",
+          "Huquq",
+          "Iqtisodiyot"
         ],
         studentTable: {
           summary: {
@@ -1668,7 +3301,8 @@
             phone: "Telefon",
             subject: "Fan",
             amount: "To'lov",
-            status: "Holat"
+            status: "Holat",
+            action: "Amal"
           },
           statuses: {
             paid: "To'langan",
@@ -1679,6 +3313,9 @@
             paid: "To'lov qabul qilingan",
             pending: "Tasdiq kutilmoqda",
             late: "To'lov kechikkan"
+          },
+          buttons: {
+            delete: "O'chirish"
           },
           empty: "Hozircha o'quvchi yo'q."
         },
@@ -1706,22 +3343,27 @@
           },
           buttons: {
             accept: "Qabul qilish",
-            accepted: "Qabul qilindi"
+            accepted: "Qabul qilindi",
+            delete: "O'chirish"
           },
           empty: "Hozircha ariza yo'q."
         },
-        footer: "IT CENTER admin paneli - o'quvchilar va to'lovlar nazorati.",
+        footer: "ZAMAXSHAR admin paneli - o'quvchilar va to'lovlar nazorati.",
         toasts: {
           localOpened: "Tizim lokal rejimda ochildi.",
           loginSuccess: "Tizimga kirildi.",
           localFallback: "Server ulanmaganligi uchun tizim lokal rejimda ochildi.",
           logout: "Tizimdan chiqildi.",
-          applicationAccepted: "Ariza qabul qilinib, o'quvchilar ro'yxatiga qo'shildi."
+          applicationAccepted: "Ariza qabul qilinib, o'quvchilar ro'yxatiga qo'shildi.",
+          applicationDeleted: "Ariza o'chirildi.",
+          studentDeleted: "O'quvchi o'chirildi.",
+          teacherAdded: "Ustoz ro'yxatga qo'shildi.",
+          teacherDeleted: "Ustoz o'chirildi."
         }
       },
       en: {
         meta: {
-          title: "IT CENTER | Admin Panel"
+          title: "ZAMAXSHAR | Admin Panel"
         },
         language: {
           label: "Lang",
@@ -1767,6 +3409,9 @@
         sidebar: {
           sectionTitle: "Sections",
           navAria: "Admin navigation",
+          teacherSectionTitle: "Teacher management",
+          teacherNavAria: "Teacher navigation",
+          teacherNavLabel: "All teachers",
           items: [
             {
               title: "Students",
@@ -1800,6 +3445,146 @@
           title: "Application intake",
           description: "Applications sent from the site appear here and can be accepted."
         },
+        teachersSection: {
+          eyebrow: "Teachers",
+          title: "Teacher management",
+          description: "This section stays separate from the subject list and is reserved for teacher-related management.",
+          addLabel: "New teacher",
+          cardTitle: "Dedicated teacher panel",
+          cardDescription: "Teacher lists, assignments, and related actions can stay here as a separate block."
+        },
+        contactSection: {
+          eyebrow: "Contact details",
+          title: "Contact details",
+          description: "Contact details and useful links are shown here.",
+          brandName: "ZAMAXSHAR",
+          brandCopy: "A modern learning center. Take the next step with us.",
+          quickLinksTitle: "Quick links",
+          quickLinks: [
+            {
+              label: "Applications",
+              section: "applications",
+              href: "#applications"
+            },
+            {
+              label: "Students",
+              section: "students",
+              href: "#students"
+            },
+            {
+              label: "Teachers",
+              section: "teachers",
+              href: "#teachers"
+            }
+          ],
+          directTitle: "Contact",
+          direct: [
+            {
+              label: "Qamashi district, Kashkadarya region",
+              type: "text"
+            },
+            {
+              label: "@zamaxshar_tm",
+              type: "link",
+              href: "https://t.me/zamaxshar_tm"
+            },
+            {
+              label: "@zamaxshar_admin",
+              type: "link",
+              href: "https://t.me/zamaxshar_admin"
+            },
+            {
+              label: "+998 90 893 00 02",
+              type: "tel",
+              href: "tel:+998908930002"
+            }
+          ],
+          socialTitle: "Social media",
+          socials: [
+            {
+              label: "Twitter",
+              icon: "twitter",
+              href: "https://x.com/"
+            },
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Facebook",
+              icon: "facebook",
+              href: "https://www.facebook.com/"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ],
+          developerTitle: "Contact ZAMAXSHAR",
+          developers: [
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Telegram",
+              icon: "telegram",
+              href: "https://t.me/Zamaxshar_TM"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ]
+        },
+        teacherForm: {
+          title: "Add a new teacher",
+          description: "Enter the teacher details and save them.",
+          fields: {
+            role: "Teacher",
+            name: "Teacher full name",
+            subject: "Subject",
+            phone: "Phone number",
+            bio: "Short info",
+            certificate: "Certificate"
+          },
+          placeholders: {
+            name: "Enter the teacher name",
+            subject: "Select a subject",
+            phone: "90 123 45 67",
+            bio: "Write a short teacher description"
+          },
+          photo: {
+            title: "Photo area",
+            hint: "Press + to choose a photo"
+          },
+          certificate: {
+            emptyStatus: "Not set",
+            uploadedStatus: "Uploaded",
+            uploadTitle: "Upload certificate",
+            uploadHint: "Upload a PNG, JPG, or PDF certificate"
+          },
+          submit: "Save",
+          cancel: "Cancel",
+          messages: {
+            missing: "Enter the teacher name, subject, and phone number.",
+            incompletePhone: "Enter the full phone number.",
+            saved: "The teacher was saved and shown in this section."
+          }
+        },
+        teacherTable: {
+          empty: "No teachers yet.",
+          certificateAvailable: "Available",
+          certificateMissing: "Not set",
+          uploadedFile: "Uploaded file",
+          noCertificate: "No certificate uploaded.",
+          viewCertificate: "View",
+          deleteTeacher: "Delete"
+        },
         courseTitles: [
           "Mathematics & Geometry",
           "Physics",
@@ -1810,7 +3595,17 @@
           "Chemistry",
           "Geography",
           "Computer Science",
-          "Russian Language"
+          "Russian Language",
+          "German Language",
+          "French Language",
+          "Physical Education",
+          "Fine Arts",
+          "Music Culture",
+          "Technology",
+          "Technical Drawing",
+          "Character Education",
+          "Law",
+          "Economics"
         ],
         studentTable: {
           summary: {
@@ -1825,7 +3620,8 @@
             phone: "Phone",
             subject: "Subject",
             amount: "Payment",
-            status: "Status"
+            status: "Status",
+            action: "Action"
           },
           statuses: {
             paid: "Paid",
@@ -1836,6 +3632,9 @@
             paid: "Payment received",
             pending: "Waiting for confirmation",
             late: "Payment is overdue"
+          },
+          buttons: {
+            delete: "Delete"
           },
           empty: "No students found yet."
         },
@@ -1863,176 +3662,343 @@
           },
           buttons: {
             accept: "Accept",
-            accepted: "Accepted"
+            accepted: "Accepted",
+            delete: "Delete"
           },
           empty: "No applications yet."
         },
-        footer: "IT CENTER admin panel for student and payment tracking.",
+        footer: "ZAMAXSHAR admin panel for student and payment tracking.",
         toasts: {
           localOpened: "The panel opened in local mode.",
           loginSuccess: "Signed in.",
           localFallback: "The panel opened in local mode because the server is unavailable.",
           logout: "Signed out.",
-          applicationAccepted: "The application was accepted and added to the student list."
+          applicationAccepted: "The application was accepted and added to the student list.",
+          applicationDeleted: "The application was deleted.",
+          studentDeleted: "The student was deleted.",
+          teacherAdded: "The teacher was added.",
+          teacherDeleted: "The teacher was deleted."
         }
       },
       ru: {
         meta: {
-          title: "IT CENTER | РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°"
+          title: "ZAMAXSHAR | Панель администратора"
         },
         language: {
-          label: "РЇР·С‹Рє",
+          label: "Язык",
           options: {
-            uz: "РЈР·Р±РµРєСЃРєРёР№",
-            en: "РђРЅРіР»РёР№СЃРєРёР№",
-            ru: "Р СѓСЃСЃРєРёР№"
+            uz: "Узбекский",
+            en: "Английский",
+            ru: "Русский"
           }
         },
         actions: {
-          openMenu: "РћС‚РєСЂС‹С‚СЊ РјРµРЅСЋ",
-          closeMenu: "Р—Р°РєСЂС‹С‚СЊ РјРµРЅСЋ",
-          themeDark: "РџРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° С‚С‘РјРЅСѓСЋ С‚РµРјСѓ",
-          themeLight: "РџРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° СЃРІРµС‚Р»СѓСЋ С‚РµРјСѓ"
+          openMenu: "Открыть меню",
+          closeMenu: "Закрыть меню",
+          themeDark: "Переключить на тёмную тему",
+          themeLight: "Переключить на светлую тему"
         },
         gate: {
-          eyebrow: "Р’С…РѕРґ РІ СЃРёСЃС‚РµРјСѓ",
-          title: "Р’РѕР№С‚Рё",
-          description: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ, С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ. РџРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ РІС…РѕРґР° СЃРµСЃСЃРёСЏ СЃРѕС…СЂР°РЅРёС‚СЃСЏ РІ СЌС‚РѕРј Р±СЂР°СѓР·РµСЂРµ.",
+          eyebrow: "Вход в систему",
+          title: "Войти",
+          description: "Введите логин и пароль, чтобы продолжить. После успешного входа сессия сохранится в этом браузере.",
           fields: {
-            username: "Р›РѕРіРёРЅ",
-            phone: "РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°",
-            password: "РџР°СЂРѕР»СЊ"
+            username: "Логин",
+            phone: "Номер телефона",
+            password: "Пароль"
           },
           placeholders: {
-            username: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ",
+            username: "Введите логин",
             phone: "90 123 45 67",
-            password: "Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ"
+            password: "Введите пароль"
           },
-          submit: "Р’РѕР№С‚Рё",
+          submit: "Войти",
           messages: {
-            missing: "Р’РІРµРґРёС‚Рµ Р»РѕРіРёРЅ, РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° Рё РїР°СЂРѕР»СЊ.",
-            incompletePhone: "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РїРѕР»РЅРѕСЃС‚СЊСЋ.",
-            checking: "РџСЂРѕРІРµСЂСЏРµРј...",
-            loginError: "РќРµ СѓРґР°Р»РѕСЃСЊ РІРѕР№С‚Рё РІ СЃРёСЃС‚РµРјСѓ.",
-            offlineHint: "РЎРµСЂРІРµСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ. РќР°Р¶РјРёС‚Рµ РєРЅРѕРїРєСѓ, С‡С‚РѕР±С‹ РѕС‚РєСЂС‹С‚СЊ РїР°РЅРµР»СЊ РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ.",
-            sessionEnded: "РЎРµСЃСЃРёСЏ Р·Р°РІРµСЂС€РµРЅР°. Р’РѕР№РґРёС‚Рµ СЃРЅРѕРІР°, РёСЃРїРѕР»СЊР·СѓСЏ Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ."
+            missing: "Введите логин, номер телефона и пароль.",
+            incompletePhone: "Введите номер телефона полностью.",
+            checking: "Проверяем...",
+            loginError: "Не удалось войти в систему.",
+            offlineHint: "Сервер недоступен. Нажмите кнопку, чтобы открыть панель в локальном режиме.",
+            sessionEnded: "Сессия завершена. Войдите снова, используя логин и пароль."
           }
         },
         brand: {
-          title: "РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°"
+          title: "Панель администратора"
         },
         sidebar: {
-          sectionTitle: "Р Р°Р·РґРµР»С‹",
-          navAria: "РќР°РІРёРіР°С†РёСЏ Р°РґРјРёРЅ-РїР°РЅРµР»Рё",
+          sectionTitle: "Разделы",
+          navAria: "Навигация админ-панели",
+          teacherSectionTitle: "Управление преподавателями",
+          teacherNavAria: "Навигация по преподавателям",
+          teacherNavLabel: "Все преподаватели",
           items: [
             {
-              title: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u044b",
-              subtitle: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d \u0438 \u043e\u043f\u043b\u0430\u0442\u0430"
+              title: "Студенты",
+              subtitle: "Телефон и оплата"
             }
           ]
         },
         topbar: {
-          eyebrow: "РђРґРјРёРЅ-РїР°РЅРµР»СЊ",
-          title: "РЈРїСЂР°РІР»РµРЅРёРµ С†РµРЅС‚СЂРѕРј",
-          description: "\u0417\u0434\u0435\u0441\u044c \u043f\u043e\u043a\u0430\u0437\u0430\u043d\u044b \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432, \u0438\u0445 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u044b \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b.",
-          searchPlaceholder: "РС‰РёС‚Рµ РїРѕ СЃС‚СѓРґРµРЅС‚Сѓ, РєСѓСЂСЃСѓ РёР»Рё ID"
+          eyebrow: "Админ-панель",
+          title: "Управление центром",
+          description: "Здесь показаны студенты, их телефоны и статус оплаты.",
+          searchPlaceholder: "Ищите по студенту, курсу или ID"
         },
         adminChip: {
-          demoMode: "Р”РµРјРѕ-СЂРµР¶РёРј",
-          passwordUnset: "РџР°СЂРѕР»СЊ РЅРµ Р·Р°РґР°РЅ",
-          localSession: "Р›РѕРєР°Р»СЊРЅР°СЏ СЃРµСЃСЃРёСЏ",
-          systemSession: "РЎРёСЃС‚РµРјРЅР°СЏ СЃРµСЃСЃРёСЏ",
-          loginRequired: "РўСЂРµР±СѓРµС‚СЃСЏ РІС…РѕРґ",
-          loginPrompt: "Р’РѕР№РґРёС‚Рµ РІ СЃРёСЃС‚РµРјСѓ",
-          checking: "РџСЂРѕРІРµСЂСЏРµРј...",
-          logout: "Р’С‹Р№С‚Рё",
-          defaultName: "РђРґРјРёРЅ"
+          demoMode: "Демо-режим",
+          passwordUnset: "Пароль не задан",
+          localSession: "Локальная сессия",
+          systemSession: "Системная сессия",
+          loginRequired: "Требуется вход",
+          loginPrompt: "Войдите в систему",
+          checking: "Проверяем...",
+          logout: "Выйти",
+          defaultName: "Админ"
         },
         coursesSection: {
-          eyebrow: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u044b",
-          title: "\u0421\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b",
-          description: "\u0417\u0434\u0435\u0441\u044c \u0432\u0438\u0434\u043d\u044b \u0438\u043c\u0435\u043d\u0430 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432, \u0438\u0445 \u043d\u043e\u043c\u0435\u0440\u0430, \u043f\u0440\u0435\u0434\u043c\u0435\u0442 \u0438 \u0442\u0435\u043a\u0443\u0449\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441 \u043e\u043f\u043b\u0430\u0442\u044b."
+          eyebrow: "Студенты",
+          title: "Список студентов и статус оплаты",
+          description: "Здесь видны имена студентов, их номера, предмет и текущий статус оплаты."
         },
         applicationsSection: {
-          eyebrow: "\u0417\u0430\u044f\u0432\u043a\u0438",
-          title: "\u041f\u0440\u0438\u0451\u043c \u0437\u0430\u044f\u0432\u043e\u043a",
-          description: "\u0417\u0434\u0435\u0441\u044c \u043f\u043e\u044f\u0432\u043b\u044f\u044e\u0442\u0441\u044f \u0437\u0430\u044f\u0432\u043a\u0438 \u0441 \u0441\u0430\u0439\u0442\u0430, \u0438 \u0438\u0445 \u043c\u043e\u0436\u043d\u043e \u043f\u0440\u0438\u043d\u044f\u0442\u044c."
+          eyebrow: "Заявки",
+          title: "Приём заявок",
+          description: "Здесь появляются заявки с сайта, и их можно принять."
+        },
+        teachersSection: {
+          eyebrow: "Преподаватели",
+          title: "Управление преподавателями",
+          description: "Этот раздел расположен отдельно от списка предметов и выделен для управления преподавателями.",
+          addLabel: "Новый преподаватель",
+          cardTitle: "Отдельная панель преподавателей",
+          cardDescription: "Список преподавателей, привязки и другие действия можно держать здесь отдельным блоком."
+        },
+        contactSection: {
+          eyebrow: "Контактная информация",
+          title: "Контактная информация",
+          description: "Здесь показаны контакты и полезные ссылки.",
+          brandName: "ZAMAXSHAR",
+          brandCopy: "Современный учебный центр. Делайте шаг в будущее вместе с нами.",
+          quickLinksTitle: "Быстрые ссылки",
+          quickLinks: [
+            {
+              label: "Заявки",
+              section: "applications",
+              href: "#applications"
+            },
+            {
+              label: "Студенты",
+              section: "students",
+              href: "#students"
+            },
+            {
+              label: "Преподаватели",
+              section: "teachers",
+              href: "#teachers"
+            }
+          ],
+          directTitle: "Связь",
+          direct: [
+            {
+              label: "Кашкадарьинская область, Камашинский район",
+              type: "text"
+            },
+            {
+              label: "@zamaxshar_tm",
+              type: "link",
+              href: "https://t.me/zamaxshar_tm"
+            },
+            {
+              label: "@zamaxshar_admin",
+              type: "link",
+              href: "https://t.me/zamaxshar_admin"
+            },
+            {
+              label: "+998 90 893 00 02",
+              type: "tel",
+              href: "tel:+998908930002"
+            }
+          ],
+          socialTitle: "Социальные сети",
+          socials: [
+            {
+              label: "Twitter",
+              icon: "twitter",
+              href: "https://x.com/"
+            },
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Facebook",
+              icon: "facebook",
+              href: "https://www.facebook.com/"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ],
+          developerTitle: "Связь с ZAMAXSHAR",
+          developers: [
+            {
+              label: "Instagram",
+              icon: "instagram",
+              href: "https://www.instagram.com/zamaxshar_tm/"
+            },
+            {
+              label: "Telegram",
+              icon: "telegram",
+              href: "https://t.me/Zamaxshar_TM"
+            },
+            {
+              label: "YouTube",
+              icon: "youtube",
+              href: "https://www.youtube.com/@Zamaxshar"
+            }
+          ]
+        },
+        teacherForm: {
+          title: "Добавить нового преподавателя",
+          description: "Введите данные преподавателя и сохраните их.",
+          fields: {
+            role: "Преподаватель",
+            name: "Ф.И.О. преподавателя",
+            subject: "Предмет",
+            phone: "Номер телефона",
+            bio: "Краткая информация",
+            certificate: "Сертификат"
+          },
+          placeholders: {
+            name: "Введите имя преподавателя",
+            subject: "Выберите предмет",
+            phone: "90 123 45 67",
+            bio: "Добавьте краткое описание преподавателя"
+          },
+          photo: {
+            title: "Место для фото",
+            hint: "Нажмите +, чтобы выбрать фото"
+          },
+          certificate: {
+            emptyStatus: "Не указано",
+            uploadedStatus: "Загружен",
+            uploadTitle: "Загрузить сертификат",
+            uploadHint: "Загрузите сертификат в PNG, JPG или PDF"
+          },
+          submit: "Сохранить",
+          cancel: "Отмена",
+          messages: {
+            missing: "Введите имя преподавателя, предмет и номер телефона.",
+            incompletePhone: "Введите номер телефона полностью.",
+            saved: "Преподаватель сохранен и показан в этом разделе."
+          }
+        },
+        teacherTable: {
+          empty: "Преподавателей пока нет.",
+          certificateAvailable: "Есть",
+          certificateMissing: "Не указано",
+          uploadedFile: "Загруженный файл",
+          noCertificate: "Сертификат не загружен.",
+          viewCertificate: "Открыть",
+          deleteTeacher: "Удалить"
         },
         courseTitles: [
-          "\u041c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430 \u0438 \u0433\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u044f",
-          "\u0424\u0438\u0437\u0438\u043a\u0430",
-          "\u0420\u043e\u0434\u043d\u043e\u0439 \u044f\u0437\u044b\u043a \u0438 \u043b\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u0430",
-          "\u0418\u0441\u0442\u043e\u0440\u0438\u044f",
-          "\u0410\u043d\u0433\u043b\u0438\u0439\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a",
-          "\u0411\u0438\u043e\u043b\u043e\u0433\u0438\u044f",
-          "\u0425\u0438\u043c\u0438\u044f",
-          "\u0413\u0435\u043e\u0433\u0440\u0430\u0444\u0438\u044f",
-          "\u0418\u043d\u0444\u043e\u0440\u043c\u0430\u0442\u0438\u043a\u0430",
-          "\u0420\u0443\u0441\u0441\u043a\u0438\u0439 \u044f\u0437\u044b\u043a"
+          "Математика и геометрия",
+          "Физика",
+          "Родной язык и литература",
+          "История",
+          "Английский язык",
+          "Биология",
+          "Химия",
+          "География",
+          "Информатика",
+          "Русский язык",
+          "Немецкий язык",
+          "Французский язык",
+          "Физическая культура",
+          "Изобразительное искусство",
+          "Музыкальная культура",
+          "Технология",
+          "Черчение",
+          "Воспитание",
+          "Право",
+          "Экономика"
         ],
         studentTable: {
           summary: {
-            total: "\u0412\u0441\u0435\u0433\u043e \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432",
-            paid: "\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e",
-            pending: "\u041e\u0436\u0438\u0434\u0430\u0435\u0442\u0441\u044f",
-            late: "\u041f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u043e"
+            total: "Всего студентов",
+            paid: "Оплачено",
+            pending: "Ожидается",
+            late: "Просрочено"
           },
           columns: {
             index: "No",
-            student: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442",
-            phone: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d",
-            subject: "\u041f\u0440\u0435\u0434\u043c\u0435\u0442",
-            amount: "\u041e\u043f\u043b\u0430\u0442\u0430",
-            status: "\u0421\u0442\u0430\u0442\u0443\u0441"
+            student: "Студент",
+            phone: "Телефон",
+            subject: "Предмет",
+            amount: "Оплата",
+            status: "Статус",
+            action: "Действие"
           },
           statuses: {
-            paid: "\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e",
-            pending: "\u041e\u0436\u0438\u0434\u0430\u0435\u0442\u0441\u044f",
-            late: "\u041f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u043e"
+            paid: "Оплачено",
+            pending: "Ожидается",
+            late: "Просрочено"
           },
           details: {
-            paid: "\u041f\u043b\u0430\u0442\u0435\u0436 \u043f\u0440\u0438\u043d\u044f\u0442",
-            pending: "\u0416\u0434\u0451\u043c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f",
-            late: "\u041e\u043f\u043b\u0430\u0442\u0430 \u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u0430"
+            paid: "Платёж принят",
+            pending: "Ждём подтверждения",
+            late: "Оплата просрочена"
           },
-          empty: "\u0421\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442."
+          buttons: {
+            delete: "Удалить"
+          },
+          empty: "Студентов пока нет."
         },
         applicationTable: {
           summary: {
-            total: "\u0412\u0441\u0435\u0433\u043e \u0437\u0430\u044f\u0432\u043e\u043a",
-            fresh: "\u041d\u043e\u0432\u044b\u0435",
-            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u044b"
+            total: "Всего заявок",
+            fresh: "Новые",
+            accepted: "Приняты"
           },
           columns: {
             index: "No",
-            applicant: "\u0417\u0430\u044f\u0432\u043a\u0430",
-            phone: "\u0422\u0435\u043b\u0435\u0444\u043e\u043d",
-            course: "\u041a\u0443\u0440\u0441",
-            status: "\u0421\u0442\u0430\u0442\u0443\u0441",
-            action: "\u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435"
+            applicant: "Заявка",
+            phone: "Телефон",
+            course: "Курс",
+            status: "Статус",
+            action: "Действие"
           },
           statuses: {
-            new: "\u041d\u043e\u0432\u0430\u044f",
-            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u0430"
+            new: "Новая",
+            accepted: "Принята"
           },
           details: {
-            new: "\u0416\u0434\u0451\u043c \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f",
-            accepted: "\u0414\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0430 \u0432 \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432"
+            new: "Ждём подтверждения",
+            accepted: "Добавлена в список студентов"
           },
           buttons: {
-            accept: "\u041f\u0440\u0438\u043d\u044f\u0442\u044c",
-            accepted: "\u041f\u0440\u0438\u043d\u044f\u0442\u043e"
+            accept: "Принять",
+            accepted: "Принято",
+            delete: "Удалить"
           },
-          empty: "\u0417\u0430\u044f\u0432\u043e\u043a \u043f\u043e\u043a\u0430 \u043d\u0435\u0442."
+          empty: "Заявок пока нет."
         },
-        footer: "\u0410\u0434\u043c\u0438\u043d-\u043f\u0430\u043d\u0435\u043b\u044c IT CENTER \u0434\u043b\u044f \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044f \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432 \u0438 \u043e\u043f\u043b\u0430\u0442.",
+        footer: "Админ-панель ZAMAXSHAR для контроля студентов и оплат.",
         toasts: {
-          localOpened: "РџР°РЅРµР»СЊ РѕС‚РєСЂС‹С‚Р° РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ.",
-          loginSuccess: "Р’С…РѕРґ РІС‹РїРѕР»РЅРµРЅ.",
-          localFallback: "РџР°РЅРµР»СЊ РѕС‚РєСЂС‹С‚Р° РІ Р»РѕРєР°Р»СЊРЅРѕРј СЂРµР¶РёРјРµ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЃРµСЂРІРµСЂ РЅРµРґРѕСЃС‚СѓРїРµРЅ.",
-          logout: "Р’С‹ РІС‹С€Р»Рё РёР· СЃРёСЃС‚РµРјС‹.",
-          applicationAccepted: "\u0417\u0430\u044f\u0432\u043a\u0430 \u043f\u0440\u0438\u043d\u044f\u0442\u0430 \u0438 \u0434\u043e\u0431\u0430\u0432\u043b\u0435\u043d\u0430 \u0432 \u0441\u043f\u0438\u0441\u043e\u043a \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043e\u0432.",
-          focusUpdated: "Р¤РѕРєСѓСЃ РЅР° СЃРµРіРѕРґРЅСЏ РѕР±РЅРѕРІР»С‘РЅ."
+          localOpened: "Панель открыта в локальном режиме.",
+          loginSuccess: "Вход выполнен.",
+          localFallback: "Панель открыта в локальном режиме, потому что сервер недоступен.",
+          logout: "Вы вышли из системы.",
+          applicationAccepted: "Заявка принята и добавлена в список студентов.",
+          applicationDeleted: "Заявка удалена.",
+          studentDeleted: "Студент удалён.",
+          teacherAdded: "Преподаватель добавлен.",
+          teacherDeleted: "Преподаватель удалён.",
+          focusUpdated: "Фокус на сегодня обновлён."
         }
       }
     };
@@ -2047,6 +4013,9 @@
       checking: true
     };
     let activeSubjectIndex = null;
+    let isStudentsPanelVisible = false;
+    let activeAdminSection = "applications";
+    let isTeacherFormVisible = false;
 
     function text() {
       return translations[currentLanguage] || translations.uz;
@@ -2106,13 +4075,13 @@
 
     function getStoredApplications() {
       return readStoredItems(adminApplicationsStorageKey)
-        .filter((item) => item && typeof item === "object" && item.id)
+        .filter((item) => item && typeof item === "object" && item.id && !shouldRemoveSeedStudent(item))
         .sort((left, right) => new Date(right.submittedAt || 0).getTime() - new Date(left.submittedAt || 0).getTime());
     }
 
     function getStoredStudents() {
       return readStoredItems(adminStudentsStorageKey)
-        .filter((item) => item && typeof item === "object" && item.name);
+        .filter((item) => item && typeof item === "object" && item.name && !shouldRemoveSeedStudent(item));
     }
 
     function getAllStudentEntries() {
@@ -2125,6 +4094,35 @@
         fresh: items.filter((item) => item.status !== "accepted").length,
         accepted: items.filter((item) => item.status === "accepted").length
       };
+    }
+
+    function getFreshApplications(items = getStoredApplications()) {
+      return (items || []).filter((item) => item?.status !== "accepted");
+    }
+
+    function getSubjectApplications(subjectIndex) {
+      if (!Number.isInteger(subjectIndex)) {
+        return [];
+      }
+
+      return getFreshApplications()
+        .filter((item) => resolveStudentSubjectIndex(item) === subjectIndex);
+    }
+
+    function getStandaloneApplications(items = getStoredApplications()) {
+      return (items || []).filter((item) => !Number.isInteger(resolveStudentSubjectIndex(item)));
+    }
+
+    function getSubjectEntryCount(subjectIndex = null) {
+      const allStudents = getAllStudentEntries();
+      const freshApplications = getFreshApplications();
+
+      if (!Number.isInteger(subjectIndex)) {
+        return allStudents.length + freshApplications.length;
+      }
+
+      return allStudents.filter((item) => resolveStudentSubjectIndex(item) === subjectIndex).length
+        + freshApplications.filter((item) => resolveStudentSubjectIndex(item) === subjectIndex).length;
     }
 
     function formatDateTime(value) {
@@ -2142,13 +4140,139 @@
       });
     }
 
-    function resolveStudentSubject(item, ui) {
-      if (item?.subjectLabel) {
-        return item.subjectLabel;
+    function normalizeSubjectTitle(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/['"`‘’]+/g, "")
+        .replace(/[^\p{L}\p{N}]+/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizeStudentPhone(value) {
+      return String(value || "").replace(/\D/g, "").slice(-9);
+    }
+
+    function buildCourseStudentsStorageKey(courseTitle) {
+      const normalizedCourseTitle = String(courseTitle || "").trim();
+      if (!normalizedCourseTitle) {
+        return "";
       }
 
+      return `it-course-students:${encodeURIComponent(normalizedCourseTitle)}`;
+    }
+
+    function getCourseStudentStorageKeys(application) {
+      const storageKeys = new Set();
+      const rawCourseKey = buildCourseStudentsStorageKey(application?.courseTitle);
+      if (rawCourseKey) {
+        storageKeys.add(rawCourseKey);
+      }
+
+      const subjectIndex = resolveStudentSubjectIndex(application);
+      if (!Number.isInteger(subjectIndex)) {
+        return [...storageKeys];
+      }
+
+      supportedLanguages.forEach((language) => {
+        const courseTitle = translations[language]?.courseTitles?.[subjectIndex];
+        const storageKey = buildCourseStudentsStorageKey(courseTitle);
+        if (storageKey) {
+          storageKeys.add(storageKey);
+        }
+      });
+
+      return [...storageKeys];
+    }
+
+    function getStorageDateParts() {
+      const now = new Date();
+      const year = String(now.getFullYear());
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+
+      return {
+        date: `${year}-${month}-${day}`,
+        time: `${hours}:${minutes}`
+      };
+    }
+
+    function shouldRemoveSeedStudent(item) {
+      const normalizedName = normalizeSubjectTitle(item?.name || item?.student || "");
+      const normalizedPhone = normalizeStudentPhone(item?.phone);
+
+      return removableSeedStudentNames.has(normalizedName)
+        || (normalizedPhone && removableSeedStudentPhones.has(normalizedPhone));
+    }
+
+    function cleanupSeededAdminData() {
+      const storedApplications = readStoredItems(adminApplicationsStorageKey);
+      const filteredApplications = storedApplications.filter((item) => !shouldRemoveSeedStudent(item));
+
+      if (filteredApplications.length !== storedApplications.length) {
+        writeStoredItems(adminApplicationsStorageKey, filteredApplications);
+      }
+
+      const storedStudents = readStoredItems(adminStudentsStorageKey);
+      const filteredStudents = storedStudents.filter((item) => !shouldRemoveSeedStudent(item));
+
+      if (filteredStudents.length !== storedStudents.length) {
+        writeStoredItems(adminStudentsStorageKey, filteredStudents);
+      }
+    }
+
+    function resolveSubjectIndexByTitle(value) {
+      const normalizedValue = normalizeSubjectTitle(value);
+      if (!normalizedValue) {
+        return null;
+      }
+
+      for (const language of supportedLanguages) {
+        const courseTitles = translations[language]?.courseTitles;
+        if (!Array.isArray(courseTitles)) {
+          continue;
+        }
+
+        for (let index = 0; index < courseTitles.length; index += 1) {
+          const normalizedCourseTitle = normalizeSubjectTitle(courseTitles[index]);
+
+          if (!normalizedCourseTitle) {
+            continue;
+          }
+
+          if (
+            normalizedCourseTitle === normalizedValue ||
+            normalizedCourseTitle.includes(normalizedValue) ||
+            normalizedValue.includes(normalizedCourseTitle)
+          ) {
+            return index;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function resolveStudentSubjectIndex(item) {
       if (Number.isInteger(item?.subjectIndex)) {
-        return ui.courseTitles[item.subjectIndex] || ui.courseTitles[0];
+        return item.subjectIndex;
+      }
+
+      return resolveSubjectIndexByTitle(item?.subjectLabel || item?.courseTitle || "");
+    }
+
+    function resolveStudentSubject(item, ui) {
+      const subjectIndex = resolveStudentSubjectIndex(item);
+      if (Number.isInteger(subjectIndex)) {
+        return ui.courseTitles[subjectIndex] || item?.subjectLabel || item?.courseTitle || ui.courseTitles[0];
+      }
+
+      if (item?.subjectLabel) {
+        return item.subjectLabel;
       }
 
       return item?.courseTitle || getAllSubjectsLabel();
@@ -2163,6 +4287,7 @@
       const alreadyAdded = storedStudents.some((item) => item.applicationId === application.id);
 
       if (alreadyAdded) {
+        ensureCourseStudentFromApplication(application);
         return;
       }
 
@@ -2170,13 +4295,61 @@
         applicationId: application.id,
         name: application.name || "",
         phone: String(application.phone || "").replace(/\D/g, "").slice(-9),
-        subjectIndex: null,
+        subjectIndex: resolveStudentSubjectIndex(application),
         subjectLabel: application.courseTitle || "",
         amount: Number.isFinite(Number(application.amount)) ? Number(application.amount) : 0,
         status: "pending"
       });
 
       writeStoredItems(adminStudentsStorageKey, storedStudents);
+      ensureCourseStudentFromApplication(application);
+    }
+
+    function ensureCourseStudentFromApplication(application) {
+      const storageKeys = getCourseStudentStorageKeys(application);
+      if (!storageKeys.length || !application?.id) {
+        return;
+      }
+
+      const acceptedAt = application.acceptedAt ? new Date(application.acceptedAt) : new Date();
+      const isValidAcceptedAt = !Number.isNaN(acceptedAt.getTime());
+      const dateParts = isValidAcceptedAt
+        ? {
+            date: `${acceptedAt.getFullYear()}-${String(acceptedAt.getMonth() + 1).padStart(2, "0")}-${String(acceptedAt.getDate()).padStart(2, "0")}`,
+            time: `${String(acceptedAt.getHours()).padStart(2, "0")}:${String(acceptedAt.getMinutes()).padStart(2, "0")}`
+          }
+        : getStorageDateParts();
+
+      storageKeys.forEach((storageKey) => {
+        const storedCourseStudents = readStoredItems(storageKey);
+        const alreadyAdded = storedCourseStudents.some((item) => item?.applicationId === application.id);
+
+        if (alreadyAdded) {
+          return;
+        }
+
+        storedCourseStudents.unshift({
+          id: `accepted-${application.id}`,
+          applicationId: application.id,
+          student: application.name || "",
+          amount: formatMoney(Number(application.amount) || 0),
+          status: "unpaid",
+          date: dateParts.date,
+          time: dateParts.time,
+          group: application.planTitle || "Arizadan qabul qilingan"
+        });
+
+        writeStoredItems(storageKey, storedCourseStudents);
+      });
+    }
+
+    function syncAcceptedApplicationsToStudents() {
+      const storedApplications = readStoredItems(adminApplicationsStorageKey)
+        .filter((item) => item && typeof item === "object" && item.id && item.status === "accepted");
+
+      storedApplications.forEach((application) => {
+        ensureStudentFromApplication(application);
+      });
     }
 
     function acceptApplication(applicationId) {
@@ -2202,9 +4375,121 @@
       showToast(text().toasts.applicationAccepted || "");
     }
 
+    function deleteApplicationById(applicationId) {
+      const normalizedApplicationId = String(applicationId || "").trim();
+      if (!normalizedApplicationId) {
+        return;
+      }
+
+      const nextApplications = getStoredApplications()
+        .filter((item) => String(item?.id || "").trim() !== normalizedApplicationId);
+
+      writeStoredItems(adminApplicationsStorageKey, nextApplications);
+      renderApplicationsOverview();
+      renderSidebarNav();
+      renderStudentOverview();
+      showToast(text().toasts.applicationDeleted || "");
+    }
+
+    function createStudentDeleteKey(item) {
+      const applicationId = String(item?.applicationId || "").trim();
+      if (applicationId) {
+        return `application:${applicationId}`;
+      }
+
+      const studentId = String(item?.id || "").trim();
+      if (studentId) {
+        return `id:${studentId}`;
+      }
+
+      const normalizedName = normalizeSubjectTitle(item?.name || item?.student || "");
+      const normalizedPhone = normalizeStudentPhone(item?.phone);
+      const subjectIndex = resolveStudentSubjectIndex(item);
+      const amount = Number(item?.amount) || 0;
+      const status = String(item?.status || "").trim().toLowerCase();
+
+      return `fallback:${normalizedName}|${normalizedPhone}|${subjectIndex}|${amount}|${status}`;
+    }
+
+    function isStudentDeleteMatch(item, studentKey) {
+      return createStudentDeleteKey(item) === String(studentKey || "").trim();
+    }
+
+    function deleteStudentByKey(studentKey) {
+      const normalizedStudentKey = String(studentKey || "").trim();
+      if (!normalizedStudentKey) {
+        return;
+      }
+
+      const storedStudents = getStoredStudents();
+      const studentToDelete = storedStudents.find((item) => isStudentDeleteMatch(item, normalizedStudentKey));
+      if (!studentToDelete) {
+        return;
+      }
+
+      const nextStudents = storedStudents.filter((item) => !isStudentDeleteMatch(item, normalizedStudentKey));
+      writeStoredItems(adminStudentsStorageKey, nextStudents);
+
+      const applicationId = String(studentToDelete.applicationId || "").trim();
+      if (applicationId) {
+        const nextApplications = getStoredApplications()
+          .filter((item) => String(item?.id || "").trim() !== applicationId);
+        writeStoredItems(adminApplicationsStorageKey, nextApplications);
+
+        getCourseStudentStorageKeys(studentToDelete).forEach((storageKey) => {
+          const storedCourseStudents = readStoredItems(storageKey);
+          const nextCourseStudents = storedCourseStudents.filter((item) => {
+            const courseApplicationId = String(item?.applicationId || "").trim();
+            const courseStudentId = String(item?.id || "").trim();
+
+            return courseApplicationId !== applicationId && courseStudentId !== `accepted-${applicationId}`;
+          });
+          writeStoredItems(storageKey, nextCourseStudents);
+        });
+      }
+
+      renderApplicationsOverview();
+      renderSidebarNav();
+      renderStudentOverview();
+      showToast(text().toasts.studentDeleted || "");
+    }
+
+    function getRequestedSubjectIndexFromLocation() {
+      const params = new URLSearchParams(window.location.search);
+      const requestedSubject = params.get("subject");
+
+      if (!requestedSubject) {
+        return null;
+      }
+
+      return resolveSubjectIndexByTitle(requestedSubject);
+    }
+
     function scrollToHashTarget() {
       if (body.classList.contains("admin-locked") || !window.location.hash) {
         return;
+      }
+
+      const normalizedHash = String(window.location.hash || "").toLowerCase();
+      const requestedSubjectIndex = getRequestedSubjectIndexFromLocation();
+
+      if (normalizedHash === "#students") {
+        openAdminSection("students", {
+          subjectIndex: requestedSubjectIndex,
+          shouldScroll: false
+        });
+      } else if (normalizedHash === "#teachers") {
+        openAdminSection("teachers", {
+          shouldScroll: false
+        });
+      } else if (normalizedHash === "#contact-info") {
+        openAdminSection("contact", {
+          shouldScroll: false
+        });
+      } else if (normalizedHash === "#applications") {
+        openAdminSection("applications", {
+          shouldScroll: false
+        });
       }
 
       const target = document.querySelector(window.location.hash);
@@ -2218,6 +4503,529 @@
           block: "start"
         });
       }, 80);
+    }
+
+    function scrollToSection(sectionSelector) {
+      if (body.classList.contains("admin-locked") || !sectionSelector) {
+        return;
+      }
+
+      const target = document.querySelector(sectionSelector);
+      if (!target) {
+        return;
+      }
+
+      window.setTimeout(() => {
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }, 80);
+    }
+
+    function setStudentsPanelVisibility(isVisible, { resetSubject = false } = {}) {
+      isStudentsPanelVisible = Boolean(isVisible);
+
+      if (resetSubject) {
+        activeSubjectIndex = null;
+      }
+
+      if (studentsPanel) {
+        studentsPanel.hidden = !isStudentsPanelVisible;
+      }
+    }
+
+    function setTeachersPanelVisibility(isVisible) {
+      if (teachersPanel) {
+        teachersPanel.hidden = !Boolean(isVisible);
+      }
+
+      if (!isVisible) {
+        toggleTeacherForm(false);
+      }
+    }
+
+    function openAdminSection(section, { subjectIndex = null, shouldScroll = true } = {}) {
+      const nextSection = ["applications", "students", "teachers", "contact"].includes(section)
+        ? section
+        : "applications";
+
+      activeAdminSection = nextSection;
+
+      if (nextSection === "students") {
+        activeSubjectIndex = Number.isInteger(subjectIndex) ? subjectIndex : null;
+        setStudentsPanelVisibility(true);
+        setTeachersPanelVisibility(false);
+        renderSidebarNav();
+        renderTeacherNav();
+        renderStudentOverview();
+        if (shouldScroll) {
+          scrollToSection("#students");
+        }
+        return;
+      }
+
+      setStudentsPanelVisibility(false);
+
+      if (nextSection === "teachers") {
+        setTeachersPanelVisibility(true);
+        renderSidebarNav();
+        renderTeacherNav();
+        renderTeacherOverview();
+        if (shouldScroll) {
+          scrollToSection("#teachers");
+        }
+        return;
+      }
+
+      setTeachersPanelVisibility(false);
+      renderSidebarNav();
+      renderTeacherNav();
+      if (shouldScroll) {
+        scrollToSection(nextSection === "contact" ? "#contact-info" : "#applications");
+      }
+    }
+
+    function getStoredTeachers() {
+      return readStoredItems(adminTeachersStorageKey)
+        .filter((item) => item && typeof item === "object" && String(item.name || "").trim())
+        .sort((left, right) => new Date(right.createdAt || 0).getTime() - new Date(left.createdAt || 0).getTime());
+    }
+
+    function getTeacherSubjectIndex(item) {
+      if (Number.isInteger(item?.subjectIndex)) {
+        return item.subjectIndex;
+      }
+
+      const parsedSubjectIndex = Number(item?.subjectIndex);
+      if (Number.isInteger(parsedSubjectIndex)) {
+        return parsedSubjectIndex;
+      }
+
+      return resolveSubjectIndexByTitle(item?.subjectLabel || "");
+    }
+
+    function resolveTeacherSubject(item, ui) {
+      const subjectIndex = getTeacherSubjectIndex(item);
+      if (Number.isInteger(subjectIndex)) {
+        return ui.courseTitles[subjectIndex] || item?.subjectLabel || getAllSubjectsLabel();
+      }
+
+      return item?.subjectLabel || getAllSubjectsLabel();
+    }
+
+    function createTeacherId() {
+      return `teacher-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function deleteTeacherById(teacherId) {
+      const normalizedTeacherId = String(teacherId || "").trim();
+      if (!normalizedTeacherId) {
+        return;
+      }
+
+      const nextTeachers = getStoredTeachers().filter((item) => String(item?.id || "").trim() !== normalizedTeacherId);
+      writeStoredItems(adminTeachersStorageKey, nextTeachers);
+      renderTeacherNav();
+      renderTeacherOverview();
+      showToast(text().toasts.teacherDeleted || "");
+    }
+
+    function setTeacherFormStatus(message = "", isError = false, translationKey = "") {
+      if (!teacherFormStatus) {
+        return;
+      }
+
+      teacherFormStatus.textContent = message;
+      teacherFormStatus.dataset.i18nKey = translationKey;
+      teacherFormStatus.classList.toggle("error", Boolean(isError));
+    }
+
+    function setTeacherFormStatusByKey(key, isError = false) {
+      setTeacherFormStatus(getTextValue(key) || "", isError, key);
+    }
+
+    function refreshTeacherFormStatus() {
+      if (!teacherFormStatus) {
+        return;
+      }
+
+      const key = teacherFormStatus.dataset.i18nKey;
+      if (key) {
+        teacherFormStatus.textContent = getTextValue(key) || teacherFormStatus.textContent;
+      }
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) {
+          resolve("");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+        reader.onerror = () => reject(new Error("Unable to read file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function setTeacherPhotoPreview(photoDataUrl = "", altText = "") {
+      if (!teacherPhotoPreview || !teacherPhotoEmpty || !teacherPhotoInput) {
+        return;
+      }
+
+      const normalizedUrl = String(photoDataUrl || "").trim();
+      teacherPhotoInput.dataset.preview = normalizedUrl;
+
+      if (!normalizedUrl) {
+        teacherPhotoPreview.hidden = true;
+        teacherPhotoPreview.removeAttribute("src");
+        teacherPhotoPreview.alt = "";
+        teacherPhotoEmpty.hidden = false;
+        return;
+      }
+
+      teacherPhotoPreview.src = normalizedUrl;
+      teacherPhotoPreview.alt = altText || teacherNameInput?.value.trim() || text().teacherForm.placeholders.name;
+      teacherPhotoPreview.hidden = false;
+      teacherPhotoEmpty.hidden = true;
+    }
+
+    function setTeacherCertificateState(fileName = "") {
+      const ui = text();
+      const normalizedFileName = String(fileName || "").trim();
+
+      if (teacherCertificateInput) {
+        teacherCertificateInput.dataset.fileName = normalizedFileName;
+      }
+
+      if (teacherCertificateStatus) {
+        teacherCertificateStatus.textContent = normalizedFileName
+          ? ui.teacherForm.certificate.uploadedStatus
+          : ui.teacherForm.certificate.emptyStatus;
+      }
+
+      if (teacherCertificateFile) {
+        teacherCertificateFile.hidden = !normalizedFileName;
+        teacherCertificateFile.textContent = normalizedFileName;
+      }
+    }
+
+    function resolveTeacherCertificateType(item) {
+      const explicitType = String(item?.certificateType || "").trim().toLowerCase();
+      if (explicitType.includes("pdf")) {
+        return "pdf";
+      }
+      if (explicitType.startsWith("image/")) {
+        return "image";
+      }
+
+      const fileName = String(item?.certificateName || "").trim().toLowerCase();
+      if (fileName.endsWith(".pdf")) {
+        return "pdf";
+      }
+      if (/\.(png|jpe?g|gif|webp|bmp|svg)$/.test(fileName)) {
+        return "image";
+      }
+
+      const fileUrl = String(item?.certificateDataUrl || "").trim().toLowerCase();
+      if (fileUrl.startsWith("data:application/pdf")) {
+        return "pdf";
+      }
+      if (fileUrl.startsWith("data:image/")) {
+        return "image";
+      }
+
+      return "";
+    }
+
+    function buildTeacherCertificatePreview(item, ui) {
+      const certificateType = resolveTeacherCertificateType(item);
+      const certificateFileName = String(item?.certificateName || "").trim();
+      const certificateDataUrl = String(item?.certificateDataUrl || "").trim();
+
+      if (certificateType === "image" && certificateDataUrl) {
+        return {
+          markup: `<img src="${certificateDataUrl}" alt="${escapeHtml(certificateFileName || ui.teacherForm.fields.certificate)}">`,
+          hasFile: true
+        };
+      }
+
+      if (certificateType === "pdf") {
+        return {
+          markup: `
+            <div class="teacher-saved-card__certificate-preview--pdf">
+              <strong>PDF</strong>
+              <small>${escapeHtml(certificateFileName || ui.teacherForm.fields.certificate)}</small>
+            </div>
+          `,
+          hasFile: true
+        };
+      }
+
+      return {
+        markup: `<div class="teacher-saved-card__certificate-preview--empty">${ui.teacherTable.noCertificate}</div>`,
+        hasFile: false
+      };
+    }
+
+    function populateTeacherSubjectOptions(selectedValue = teacherSubjectInput?.value || "") {
+      const ui = text();
+      if (!teacherSubjectInput || !ui.teacherForm || !Array.isArray(ui.courseTitles)) {
+        return;
+      }
+
+      const placeholderOption = `<option value="">${ui.teacherForm.placeholders.subject}</option>`;
+      const subjectOptions = ui.courseTitles.map((subject, index) => `<option value="${index}">${subject}</option>`);
+      teacherSubjectInput.innerHTML = [placeholderOption, ...subjectOptions].join("");
+
+      const nextValue = selectedValue !== "" && Number.isInteger(Number(selectedValue))
+        ? String(selectedValue)
+        : "";
+      teacherSubjectInput.value = nextValue;
+      if (teacherSubjectInput.value !== nextValue) {
+        teacherSubjectInput.value = "";
+      }
+    }
+
+    function resetTeacherForm() {
+      teacherForm?.reset();
+      if (teacherPhoneInput) {
+        teacherPhoneInput.value = "";
+      }
+      if (teacherBioInput) {
+        teacherBioInput.value = "";
+      }
+      populateTeacherSubjectOptions("");
+      setTeacherPhotoPreview("");
+      setTeacherCertificateState("");
+      setTeacherFormStatus("");
+    }
+
+    function toggleTeacherForm(forceOpen) {
+      if (!teacherFormPanel) {
+        return;
+      }
+
+      const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : teacherFormPanel.hidden;
+      isTeacherFormVisible = Boolean(shouldOpen);
+      teacherFormPanel.hidden = !isTeacherFormVisible;
+      teachersAddButton?.classList.toggle("is-active", isTeacherFormVisible);
+
+      if (isTeacherFormVisible) {
+        populateTeacherSubjectOptions();
+        setTeacherFormStatus("");
+        window.setTimeout(() => teacherNameInput?.focus(), 0);
+        return;
+      }
+
+      resetTeacherForm();
+    }
+
+    function renderTeacherOverview() {
+      const ui = text();
+      if (!teachersListBody || !ui.teacherForm || !ui.teacherTable) {
+        return;
+      }
+
+      if (teacherFormTitle) teacherFormTitle.textContent = ui.teacherForm.title;
+      if (teacherFormDescription) teacherFormDescription.textContent = ui.teacherForm.description;
+      if (teacherRoleLabel) teacherRoleLabel.textContent = ui.teacherForm.fields.role;
+      if (teacherNameLabel) teacherNameLabel.textContent = ui.teacherForm.fields.name;
+      if (teacherSubjectLabel) teacherSubjectLabel.textContent = ui.teacherForm.fields.subject;
+      if (teacherPhoneLabel) teacherPhoneLabel.textContent = ui.teacherForm.fields.phone;
+      if (teacherBioLabel) teacherBioLabel.textContent = ui.teacherForm.fields.bio;
+      if (teacherCertificateLabel) teacherCertificateLabel.textContent = ui.teacherForm.fields.certificate;
+      if (teacherNameInput) teacherNameInput.placeholder = ui.teacherForm.placeholders.name;
+      if (teacherPhoneInput) teacherPhoneInput.placeholder = ui.teacherForm.placeholders.phone;
+      if (teacherBioInput) teacherBioInput.placeholder = ui.teacherForm.placeholders.bio;
+      if (teacherPhotoTitle) teacherPhotoTitle.textContent = ui.teacherForm.photo.title;
+      if (teacherPhotoHelp) teacherPhotoHelp.textContent = ui.teacherForm.photo.hint;
+      if (teacherCertificateUploadTitle) teacherCertificateUploadTitle.textContent = ui.teacherForm.certificate.uploadTitle;
+      if (teacherCertificateUploadHint) teacherCertificateUploadHint.textContent = ui.teacherForm.certificate.uploadHint;
+      if (teacherFormCancel) teacherFormCancel.textContent = ui.teacherForm.cancel;
+      if (teacherFormSubmit) teacherFormSubmit.textContent = ui.teacherForm.submit;
+
+      populateTeacherSubjectOptions(teacherSubjectInput?.value || "");
+      setTeacherPhotoPreview(teacherPhotoInput?.dataset.preview || "", teacherNameInput?.value.trim() || "");
+      setTeacherCertificateState(teacherCertificateInput?.dataset.fileName || "");
+
+      const teachers = getStoredTeachers();
+      teachersListBody.innerHTML = "";
+
+      if (!teachers.length) {
+        teachersListBody.innerHTML = `<div class="teacher-saved-card__empty">${ui.teacherTable.empty}</div>`;
+        return;
+      }
+
+      const teacherCards = teachers.map((item) => {
+        const teacherPhoto = String(item.photoDataUrl || "").trim();
+        const teacherName = escapeHtml(item.name || "-");
+        const teacherBio = escapeHtml(item.bio || ui.teacherForm.placeholders.bio);
+        const teacherPhone = formatPhone(item.phone);
+        const teacherPhoneHref = `tel:+998${String(item.phone || "").replace(/\D/g, "").slice(-9)}`;
+        const teacherSubject = escapeHtml(resolveTeacherSubject(item, ui));
+        const certificateName = escapeHtml(item.certificateName || ui.teacherForm.certificate.uploadTitle);
+        const createdAt = escapeHtml(formatDateTime(item.createdAt) || "-");
+        const teacherPhotoMarkup = teacherPhoto
+          ? `<img src="${teacherPhoto}" alt="${teacherName}">`
+          : `<div class="teacher-saved-card__media-placeholder">${escapeHtml(ui.teacherForm.photo.hint)}</div>`;
+        const certificatePreview = buildTeacherCertificatePreview(item, ui);
+        const certificateStatus = certificatePreview.hasFile
+          ? ui.teacherTable.certificateAvailable
+          : ui.teacherTable.certificateMissing;
+        const certificateAction = certificatePreview.hasFile && item.certificateDataUrl
+          ? `
+            <div class="teacher-saved-card__certificate-actions">
+              <a class="table-action" href="${item.certificateDataUrl}" target="_blank" rel="noopener noreferrer">${ui.teacherTable.viewCertificate}</a>
+              <button class="table-action teacher-saved-card__delete" type="button" data-delete-teacher="${escapeHtml(item.id || "")}" aria-label="${escapeHtml(ui.teacherTable.deleteTeacher)}" title="${escapeHtml(ui.teacherTable.deleteTeacher)}">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 7H20M9 7V5.6C9 4.71634 9.71634 4 10.6 4H13.4C14.2837 4 15 4.71634 15 5.6V7M8.2 10.2V17.2M12 10.2V17.2M15.8 10.2V17.2M6.8 7H17.2L16.4 19.4C16.3449 20.2548 15.6356 20.92 14.779 20.92H9.22096C8.36444 20.92 7.65508 20.2548 7.60001 19.4L6.8 7Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          `
+          : `
+            <div class="teacher-saved-card__certificate-actions">
+              <button class="table-action teacher-saved-card__delete" type="button" data-delete-teacher="${escapeHtml(item.id || "")}" aria-label="${escapeHtml(ui.teacherTable.deleteTeacher)}" title="${escapeHtml(ui.teacherTable.deleteTeacher)}">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 7H20M9 7V5.6C9 4.71634 9.71634 4 10.6 4H13.4C14.2837 4 15 4.71634 15 5.6V7M8.2 10.2V17.2M12 10.2V17.2M15.8 10.2V17.2M6.8 7H17.2L16.4 19.4C16.3449 20.2548 15.6356 20.92 14.779 20.92H9.22096C8.36444 20.92 7.65508 20.2548 7.60001 19.4L6.8 7Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          `;
+
+        return `
+          <article class="teacher-saved-card">
+            <div class="teacher-saved-card__media">
+              ${teacherPhotoMarkup}
+            </div>
+            <div class="teacher-saved-card__content">
+              <div>
+                <span class="teacher-saved-card__role">${escapeHtml(ui.teacherForm.fields.role)}</span>
+                <h3 class="teacher-saved-card__name">${teacherName}</h3>
+              </div>
+              <div>
+                <span class="teacher-saved-card__label">${escapeHtml(ui.teacherForm.fields.bio)}</span>
+                <p class="teacher-saved-card__bio">${teacherBio}</p>
+              </div>
+              <div class="teacher-saved-card__meta">
+                <span class="teacher-saved-card__label">${escapeHtml(ui.teacherForm.fields.certificate)}</span>
+                <span class="teacher-certificate-badge">${escapeHtml(certificateStatus)}</span>
+                <span class="subject-pill">${teacherSubject}</span>
+                <a class="phone-link" href="${teacherPhoneHref}">${escapeHtml(teacherPhone)}</a>
+              </div>
+              <div class="teacher-saved-card__certificate">
+                <div class="teacher-saved-card__certificate-box">
+                  <div class="teacher-saved-card__certificate-preview">
+                    ${certificatePreview.markup}
+                  </div>
+                  <div class="teacher-saved-card__certificate-copy">
+                    <strong>${certificateName}</strong>
+                    <small>${escapeHtml(certificatePreview.hasFile ? ui.teacherTable.uploadedFile : ui.teacherTable.noCertificate)}</small>
+                    <small>${createdAt}</small>
+                    ${certificateAction}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      teachersListBody.innerHTML = teacherCards;
+    }
+
+    async function handleTeacherFormSubmit(event) {
+      event.preventDefault();
+
+      const teacherName = teacherNameInput?.value.trim() || "";
+      const teacherPhoneDigits = normalizeAdminPhone(teacherPhoneInput?.value || "");
+      const subjectValue = teacherSubjectInput?.value || "";
+      const subjectIndex = Number(subjectValue);
+      const teacherBio = teacherBioInput?.value.trim() || "";
+
+      if (!teacherName || !teacherPhoneDigits || subjectValue === "" || Number.isNaN(subjectIndex)) {
+        setTeacherFormStatusByKey("teacherForm.messages.missing", true);
+        if (!teacherName) {
+          teacherNameInput?.focus();
+        } else if (subjectValue === "" || Number.isNaN(subjectIndex)) {
+          teacherSubjectInput?.focus();
+        } else {
+          teacherPhoneInput?.focus();
+        }
+        return;
+      }
+
+      if (teacherPhoneDigits.length !== 9) {
+        setTeacherFormStatusByKey("teacherForm.messages.incompletePhone", true);
+        teacherPhoneInput?.focus();
+        return;
+      }
+
+      let teacherPhotoDataUrl = teacherPhotoInput?.dataset.preview || "";
+      const teacherPhotoFile = teacherPhotoInput?.files?.[0];
+      if (!teacherPhotoDataUrl && teacherPhotoFile) {
+        try {
+          teacherPhotoDataUrl = await readFileAsDataUrl(teacherPhotoFile);
+        } catch {
+          teacherPhotoDataUrl = "";
+        }
+      }
+
+      let teacherCertificateDataUrl = "";
+      const teacherCertificateFile = teacherCertificateInput?.files?.[0];
+      if (teacherCertificateFile) {
+        try {
+          teacherCertificateDataUrl = await readFileAsDataUrl(teacherCertificateFile);
+        } catch {
+          teacherCertificateDataUrl = "";
+        }
+      }
+
+      const teacherCertificateName = teacherCertificateInput?.dataset.fileName
+        || teacherCertificateFile?.name
+        || "";
+      const teacherCertificateType = teacherCertificateFile?.type || "";
+
+      const storedTeachers = getStoredTeachers();
+      storedTeachers.unshift({
+        id: createTeacherId(),
+        name: teacherName,
+        phone: teacherPhoneDigits,
+        subjectIndex,
+        subjectLabel: text().courseTitles?.[subjectIndex] || "",
+        bio: teacherBio,
+        photoDataUrl: teacherPhotoDataUrl,
+        certificateName: teacherCertificateName,
+        certificateType: teacherCertificateType,
+        certificateDataUrl: teacherCertificateDataUrl,
+        createdAt: new Date().toISOString()
+      });
+
+      writeStoredItems(adminTeachersStorageKey, storedTeachers);
+      renderTeacherNav();
+      renderTeacherOverview();
+      resetTeacherForm();
+      setTeacherFormStatusByKey("teacherForm.messages.saved");
+      window.setTimeout(() => {
+        teachersListBody?.firstElementChild?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
+        teacherNameInput?.focus();
+      }, 0);
+      showToast(text().toasts.teacherAdded || "");
     }
 
     function getAllSubjectsLabel() {
@@ -2252,6 +5060,31 @@
       };
     }
 
+    function getSubjectApplicationsCopy(subject) {
+      if (currentLanguage === "en") {
+        return {
+          title: `New applications for ${subject}`,
+          description: `Applications submitted for ${subject} appear here and can be accepted directly inside this subject section.`,
+          plan: "Plan",
+          empty: `No new applications for ${subject} yet.`
+        };
+      }
+      if (currentLanguage === "ru") {
+        return {
+          title: `Новые заявки: ${subject}`,
+          description: `Здесь показываются заявки по предмету ${subject}; их можно принять прямо внутри этого раздела.`,
+          plan: "Тариф",
+          empty: `По предмету ${subject} новых заявок пока нет.`
+        };
+      }
+      return {
+        title: `${subject} bo'yicha yangi arizalar`,
+        description: `${subject} uchun yuborilgan arizalar shu yerda ko'rinadi va shu bo'limning o'zidan qabul qilinadi.`,
+        plan: "Tarif",
+        empty: `${subject} bo'yicha yangi ariza yo'q.`
+      };
+    }
+
     function getVisibleStudents() {
       const allStudents = getAllStudentEntries();
 
@@ -2259,7 +5092,7 @@
         return allStudents;
       }
 
-      return allStudents.filter((item) => item.subjectIndex === activeSubjectIndex);
+      return allStudents.filter((item) => resolveStudentSubjectIndex(item) === activeSubjectIndex);
     }
 
     function getStudentCounts(items) {
@@ -2277,27 +5110,267 @@
         return;
       }
 
-      const allStudents = getAllStudentEntries();
-      const allStudentsCount = String(allStudents.length).padStart(2, "0");
+      const isStudentsSectionActive = activeAdminSection === "students";
+      const allStudentsCount = String(getSubjectEntryCount()).padStart(2, "0");
       const courseLinks = ui.courseTitles.map((subject, index) => {
-        const count = allStudents.filter((item) => item.subjectIndex === index).length;
-        const isActive = activeSubjectIndex === index;
+        const count = getSubjectEntryCount(index);
+        const freshCount = getSubjectApplications(index).length;
+        const isActive = isStudentsSectionActive && activeSubjectIndex === index;
 
         return `
           <a class="nav-link${isActive ? " is-active" : ""}" href="#students" data-subject-index="${index}"${isActive ? ' aria-current="page"' : ""}>
             <span>${subject}</span>
-            <small>${String(count).padStart(2, "0")}</small>
+            <small>
+              ${String(count).padStart(2, "0")}
+              ${freshCount ? `<span class="nav-link-badge">${freshCount}</span>` : ""}
+            </small>
           </a>
         `;
       }).join("");
 
       sidebarNav.innerHTML = `
-        <a class="nav-link${activeSubjectIndex === null ? " is-active" : ""}" href="#students" data-subject-index=""${activeSubjectIndex === null ? ' aria-current="page"' : ""}>
+        <a class="nav-link${isStudentsSectionActive && activeSubjectIndex === null ? " is-active" : ""}" href="#students" data-subject-index=""${isStudentsSectionActive && activeSubjectIndex === null ? ' aria-current="page"' : ""}>
           <span>${getAllSubjectsLabel()}</span>
           <small>${allStudentsCount}</small>
         </a>
         ${courseLinks}
       `;
+    }
+
+    function renderSubjectApplicationsPanel() {
+      const ui = text();
+      if (!subjectApplicationsPanel || !subjectApplicationsBody || !ui.applicationTable || !Array.isArray(ui.courseTitles)) {
+        return;
+      }
+
+      if (!Number.isInteger(activeSubjectIndex)) {
+        subjectApplicationsPanel.hidden = true;
+        subjectApplicationsBody.innerHTML = "";
+        return;
+      }
+
+      const activeSubject = ui.courseTitles[activeSubjectIndex] || "";
+      const sectionCopy = getSubjectApplicationsCopy(activeSubject);
+      const items = getSubjectApplications(activeSubjectIndex);
+
+      subjectApplicationsPanel.hidden = false;
+
+      if (subjectApplicationsTitle) subjectApplicationsTitle.textContent = sectionCopy.title;
+      if (subjectApplicationsDescription) subjectApplicationsDescription.textContent = sectionCopy.description;
+      if (subjectApplicationsColumnIndex) subjectApplicationsColumnIndex.textContent = ui.applicationTable.columns.index;
+      if (subjectApplicationsColumnApplicant) subjectApplicationsColumnApplicant.textContent = ui.applicationTable.columns.applicant;
+      if (subjectApplicationsColumnPhone) subjectApplicationsColumnPhone.textContent = ui.applicationTable.columns.phone;
+      if (subjectApplicationsColumnPlan) subjectApplicationsColumnPlan.textContent = sectionCopy.plan;
+      if (subjectApplicationsColumnStatus) subjectApplicationsColumnStatus.textContent = ui.applicationTable.columns.status;
+      if (subjectApplicationsColumnAction) subjectApplicationsColumnAction.textContent = ui.applicationTable.columns.action;
+
+      subjectApplicationsBody.innerHTML = "";
+
+      if (!items.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 6;
+        cell.textContent = sectionCopy.empty;
+        row.appendChild(cell);
+        subjectApplicationsBody.appendChild(row);
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const row = document.createElement("tr");
+
+        const indexCell = document.createElement("td");
+        indexCell.className = "table-index";
+        indexCell.textContent = String(index + 1).padStart(2, "0");
+        row.appendChild(indexCell);
+
+        const applicantCell = document.createElement("td");
+        applicantCell.className = "person-cell";
+        const applicantName = document.createElement("strong");
+        applicantName.textContent = item.name || "-";
+        const applicantMeta = document.createElement("small");
+        const metaParts = [];
+        if (item.studyModeLabel) metaParts.push(item.studyModeLabel);
+        if (item.startDate) metaParts.push(item.startDate);
+        if (item.submittedAt) metaParts.push(formatDateTime(item.submittedAt));
+        applicantMeta.textContent = metaParts.join(" · ");
+        applicantCell.append(applicantName, applicantMeta);
+        row.appendChild(applicantCell);
+
+        const phoneCell = document.createElement("td");
+        phoneCell.className = "phone-cell";
+        const phoneLink = document.createElement("a");
+        phoneLink.className = "phone-link";
+        phoneLink.href = `tel:+998${String(item.phone || "").replace(/\D/g, "").slice(-9)}`;
+        phoneLink.textContent = formatPhone(item.phone);
+        phoneCell.appendChild(phoneLink);
+        row.appendChild(phoneCell);
+
+        const planCell = document.createElement("td");
+        planCell.className = "course-cell";
+        const planTitle = document.createElement("strong");
+        planTitle.textContent = item.planTitle || "-";
+        const planMeta = document.createElement("small");
+        planMeta.textContent = item.amount ? formatMoney(Number(item.amount) || 0) : "";
+        planCell.append(planTitle, planMeta);
+        row.appendChild(planCell);
+
+        const statusCell = document.createElement("td");
+        const statusBadge = document.createElement("span");
+        statusBadge.className = "status-badge status-badge--new";
+        statusBadge.textContent = ui.applicationTable.statuses.new;
+        statusCell.appendChild(statusBadge);
+        row.appendChild(statusCell);
+
+        const actionCell = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "table-actions";
+
+        const acceptButton = document.createElement("button");
+        acceptButton.type = "button";
+        acceptButton.className = "table-action table-action--primary";
+        acceptButton.textContent = ui.applicationTable.buttons.accept;
+        acceptButton.addEventListener("click", () => {
+          acceptApplication(item.id);
+        });
+        actions.appendChild(acceptButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "table-action table-action--icon-danger";
+        deleteButton.setAttribute("aria-label", ui.applicationTable.buttons.delete);
+        deleteButton.setAttribute("title", ui.applicationTable.buttons.delete);
+        deleteButton.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 7H20M9 7V5.6C9 4.71634 9.71634 4 10.6 4H13.4C14.2837 4 15 4.71634 15 5.6V7M8.2 10.2V17.2M12 10.2V17.2M15.8 10.2V17.2M6.8 7H17.2L16.4 19.4C16.3449 20.2548 15.6356 20.92 14.779 20.92H9.22096C8.36444 20.92 7.65508 20.2548 7.60001 19.4L6.8 7Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+        deleteButton.addEventListener("click", () => {
+          deleteApplicationById(item.id);
+        });
+        actions.appendChild(deleteButton);
+
+        actionCell.appendChild(actions);
+        row.appendChild(actionCell);
+
+        subjectApplicationsBody.appendChild(row);
+      });
+    }
+
+    function renderTeacherNav() {
+      const ui = text();
+      if (!sidebarTeacherNav || !ui.sidebar?.teacherNavLabel) {
+        return;
+      }
+
+      const isActive = activeAdminSection === "teachers";
+      const totalTeachers = String(getStoredTeachers().length).padStart(2, "0");
+      sidebarTeacherNav.innerHTML = `
+        <a class="nav-link${isActive ? " is-active" : ""}" href="#teachers"${isActive ? ' aria-current="page"' : ""}>
+          <span>${ui.sidebar.teacherNavLabel}</span>
+          <small>${totalTeachers}</small>
+        </a>
+      `;
+    }
+
+    function getContactIconMarkup(iconName) {
+      switch (iconName) {
+        case "instagram":
+          return `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="4" y="4" width="16" height="16" rx="5" stroke-width="1.7"/>
+              <circle cx="12" cy="12" r="3.25" stroke-width="1.7"/>
+              <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>
+            </svg>
+          `;
+        case "facebook":
+          return `
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M13.35 20V12.73H15.8L16.17 9.9H13.35V8.09C13.35 7.27 13.58 6.7 14.76 6.7H16.27V4.17C15.53 4.09 14.79 4.05 14.05 4.05C11.85 4.05 10.35 5.39 10.35 7.84V9.9H8V12.73H10.35V20H13.35Z" fill="currentColor" stroke="none"/>
+            </svg>
+          `;
+        case "telegram":
+          return `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20.7 5.1L17.8 18.8C17.6 19.8 17 20.1 16.1 19.6L11.7 16.4L9.58 18.44C9.35 18.67 9.16 18.86 8.71 18.86L9.02 14.34L17.2 6.95C17.56 6.64 17.12 6.46 16.65 6.76L6.55 13.13L2.2 11.77C1.26 11.48 1.24 10.83 2.4 10.38L19.37 3.83C20.16 3.54 20.84 4.01 20.7 5.1Z" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+          `;
+        case "youtube":
+          return `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9.2 7.9V16.1L16.35 12L9.2 7.9Z" fill="currentColor" stroke="none"/>
+            </svg>
+          `;
+        case "twitter":
+          return `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M19.45 7.38C18.8 7.68 18.11 7.88 17.39 7.96C18.13 7.53 18.69 6.84 18.96 6.02C18.26 6.43 17.49 6.71 16.67 6.87C16.01 6.17 15.08 5.75 14.06 5.75C12.04 5.75 10.42 7.44 10.42 9.48C10.42 9.77 10.45 10.05 10.52 10.31C7.5 10.16 4.84 8.72 3.05 6.53C2.72 7.1 2.53 7.77 2.53 8.49C2.53 9.84 3.21 11.03 4.24 11.73C3.64 11.72 3.08 11.56 2.58 11.29V11.34C2.58 13.23 3.89 14.81 5.62 15.17C5.32 15.25 5 15.29 4.67 15.29C4.44 15.29 4.21 15.27 4 15.23C4.45 16.68 5.82 17.75 7.44 17.78C6.18 18.79 4.58 19.39 2.85 19.39C2.56 19.39 2.28 19.37 2 19.33C3.64 20.4 5.6 21 7.69 21C14.05 21 17.53 15.57 17.53 10.86C17.53 10.71 17.53 10.56 17.52 10.42C18.2 9.92 18.79 9.29 19.25 8.58L19.45 7.38Z" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `;
+        default:
+          return `
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="7" stroke-width="1.7"/>
+            </svg>
+          `;
+      }
+    }
+
+    function renderContactPanel() {
+      const ui = text();
+      const contactUi = ui.contactSection;
+      if (!contactUi) {
+        return;
+      }
+
+      if (contactEyebrow) contactEyebrow.textContent = contactUi.eyebrow;
+      if (contactTitle) contactTitle.textContent = contactUi.title;
+      if (contactDescription) contactDescription.textContent = contactUi.description;
+      if (contactBrandName) contactBrandName.textContent = contactUi.brandName;
+      if (contactBrandCopy) contactBrandCopy.textContent = contactUi.brandCopy;
+      if (contactLinksTitle) contactLinksTitle.textContent = contactUi.quickLinksTitle;
+      if (contactDirectTitle) contactDirectTitle.textContent = contactUi.directTitle;
+      if (contactSocialTitle) contactSocialTitle.textContent = contactUi.socialTitle;
+      if (contactDeveloperTitle) contactDeveloperTitle.textContent = contactUi.developerTitle;
+
+      if (contactLinksList) {
+        contactLinksList.innerHTML = (contactUi.quickLinks || []).map((item) => `
+          <a class="contact-link" href="${escapeHtml(item.href || "#contact-info")}" data-contact-nav="${escapeHtml(item.section || "contact")}">
+            ${escapeHtml(item.label || "")}
+          </a>
+        `).join("");
+      }
+
+      if (contactDirectList) {
+        contactDirectList.innerHTML = (contactUi.direct || []).map((item) => {
+          if (item.href) {
+            const isExternal = /^https?:\/\//i.test(String(item.href || ""));
+            return `
+              <a class="contact-meta" href="${escapeHtml(item.href || "#")}"${isExternal ? ' target="_blank" rel="noreferrer noopener"' : ""}>
+                ${escapeHtml(item.label || "")}
+              </a>
+            `;
+          }
+
+          return `
+            <span class="contact-meta">${escapeHtml(item.label || "")}</span>
+          `;
+        }).join("");
+      }
+
+      const buildIconLinks = (items) => (items || []).map((item) => `
+        <a class="contact-icon-link contact-icon-link--${escapeHtml(item.icon || "default")}" href="${escapeHtml(item.href || "#")}" target="_blank" rel="noreferrer noopener" aria-label="${escapeHtml(item.label || "")}" title="${escapeHtml(item.label || "")}">
+          ${getContactIconMarkup(item.icon)}
+        </a>
+      `).join("");
+
+      if (contactSocialList) {
+        contactSocialList.innerHTML = buildIconLinks(contactUi.socials);
+      }
+
+      if (contactDeveloperList) {
+        contactDeveloperList.innerHTML = buildIconLinks(contactUi.developers);
+      }
     }
 
     function renderApplicationsOverview() {
@@ -2306,7 +5379,7 @@
         return;
       }
 
-      const applications = getStoredApplications();
+      const applications = getStandaloneApplications();
       const counts = getApplicationCounts(applications);
 
       if (applicationsEyebrow) applicationsEyebrow.textContent = ui.applicationsSection.eyebrow;
@@ -2401,6 +5474,22 @@
           acceptApplication(item.id);
         });
         actions.appendChild(acceptButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "table-action table-action--icon-danger";
+        deleteButton.setAttribute("aria-label", ui.applicationTable.buttons.delete);
+        deleteButton.setAttribute("title", ui.applicationTable.buttons.delete);
+        deleteButton.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 7H20M9 7V5.6C9 4.71634 9.71634 4 10.6 4H13.4C14.2837 4 15 4.71634 15 5.6V7M8.2 10.2V17.2M12 10.2V17.2M15.8 10.2V17.2M6.8 7H17.2L16.4 19.4C16.3449 20.2548 15.6356 20.92 14.779 20.92H9.22096C8.36444 20.92 7.65508 20.2548 7.60001 19.4L6.8 7Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+        deleteButton.addEventListener("click", () => {
+          deleteApplicationById(item.id);
+        });
+        actions.appendChild(deleteButton);
+
         actionCell.appendChild(actions);
         row.appendChild(actionCell);
 
@@ -2413,6 +5502,8 @@
       if (!studentsTableBody || !ui.studentTable) {
         return;
       }
+
+      renderSubjectApplicationsPanel();
 
       const visibleStudents = getVisibleStudents();
       const counts = getStudentCounts(visibleStudents);
@@ -2438,13 +5529,14 @@
       if (studentsColumnSubject) studentsColumnSubject.textContent = ui.studentTable.columns.subject;
       if (studentsColumnAmount) studentsColumnAmount.textContent = ui.studentTable.columns.amount;
       if (studentsColumnStatus) studentsColumnStatus.textContent = ui.studentTable.columns.status;
+      if (studentsColumnAction) studentsColumnAction.textContent = ui.studentTable.columns.action;
 
       studentsTableBody.innerHTML = "";
 
       if (!visibleStudents.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 6;
+        cell.colSpan = 7;
         cell.textContent = ui.studentTable.empty;
         row.appendChild(cell);
         studentsTableBody.appendChild(row);
@@ -2498,6 +5590,27 @@
         statusBadge.textContent = ui.studentTable.statuses[item.status];
         statusCell.appendChild(statusBadge);
         row.appendChild(statusCell);
+
+        const actionCell = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "table-actions";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "table-action table-action--icon-danger";
+        deleteButton.setAttribute("aria-label", ui.studentTable.buttons.delete);
+        deleteButton.setAttribute("title", ui.studentTable.buttons.delete);
+        deleteButton.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 7H20M9 7V5.6C9 4.71634 9.71634 4 10.6 4H13.4C14.2837 4 15 4.71634 15 5.6V7M8.2 10.2V17.2M12 10.2V17.2M15.8 10.2V17.2M6.8 7H17.2L16.4 19.4C16.3449 20.2548 15.6356 20.92 14.779 20.92H9.22096C8.36444 20.92 7.65508 20.2548 7.60001 19.4L6.8 7Z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+        deleteButton.addEventListener("click", () => {
+          deleteStudentByKey(createStudentDeleteKey(item));
+        });
+        actions.appendChild(deleteButton);
+        actionCell.appendChild(actions);
+        row.appendChild(actionCell);
 
         studentsTableBody.appendChild(row);
       });
@@ -2597,6 +5710,10 @@
       }
 
       if (isLocked) {
+        setStudentsPanelVisibility(false, {
+          resetSubject: true
+        });
+        renderSidebarNav();
         toggleSidebar(false);
         return;
       }
@@ -2732,6 +5849,34 @@
       body.classList.toggle("sidebar-open", shouldOpen);
     }
 
+    function setLanguageMenuState(languageSwitch, isOpen) {
+      if (!languageSwitch) {
+        return;
+      }
+
+      const trigger = languageSwitch.querySelector("[data-language-trigger]");
+      const menu = languageSwitch.querySelector("[data-language-menu]");
+      languageSwitch.classList.toggle("is-open", Boolean(isOpen));
+
+      if (trigger) {
+        trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+
+      if (menu) {
+        menu.hidden = !isOpen;
+      }
+    }
+
+    function closeLanguageMenus(exceptSwitch = null) {
+      languageSwitches.forEach((languageSwitch) => {
+        if (languageSwitch === exceptSwitch) {
+          return;
+        }
+
+        setLanguageMenuState(languageSwitch, false);
+      });
+    }
+
     function showToast(message) {
       toast.textContent = message;
       toast.classList.add("is-visible");
@@ -2762,6 +5907,23 @@
         });
       });
 
+      languageSwitches.forEach((languageSwitch) => {
+        const value = languageSwitch.querySelector("[data-language-value]");
+        if (value) {
+          value.textContent = ui.language.options[currentLanguage] || currentLanguage;
+        }
+
+        languageSwitch.querySelectorAll("[data-language-option]").forEach((optionButton) => {
+          const optionLanguage = optionButton.dataset.languageOption;
+          const optionText = ui.language.options[optionLanguage] || optionButton.textContent;
+          const isActive = optionLanguage === currentLanguage;
+
+          optionButton.textContent = optionText;
+          optionButton.classList.toggle("is-active", isActive);
+          optionButton.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+      });
+
       if (brandTitle) {
         brandTitle.textContent = ui.brand.title;
       }
@@ -2780,10 +5942,17 @@
       if (sidebarSectionTitle) {
         sidebarSectionTitle.textContent = ui.sidebar.sectionTitle;
       }
+      if (sidebarTeacherSectionTitle) {
+        sidebarTeacherSectionTitle.textContent = ui.sidebar.teacherSectionTitle;
+      }
       if (sidebarNav) {
         sidebarNav.setAttribute("aria-label", ui.sidebar.navAria);
       }
+      if (sidebarTeacherNav) {
+        sidebarTeacherNav.setAttribute("aria-label", ui.sidebar.teacherNavAria);
+      }
       renderSidebarNav();
+      renderTeacherNav();
 
       if (sidebarOpen) {
         sidebarOpen.setAttribute("aria-label", ui.actions.openMenu);
@@ -2796,8 +5965,17 @@
       if (topbarTitle) topbarTitle.textContent = ui.topbar.title;
       if (topbarDescription) topbarDescription.textContent = ui.topbar.description;
 
+      if (teachersEyebrow) teachersEyebrow.textContent = ui.teachersSection.eyebrow;
+      if (teachersTitle) teachersTitle.textContent = ui.teachersSection.title;
+      if (teachersDescription) teachersDescription.textContent = ui.teachersSection.description;
+      if (teachersAddLabel) teachersAddLabel.textContent = ui.teachersSection.addLabel;
+      if (teachersCardTitle) teachersCardTitle.textContent = ui.teachersSection.cardTitle;
+      if (teachersCardDescription) teachersCardDescription.textContent = ui.teachersSection.cardDescription;
+
       renderApplicationsOverview();
       renderStudentOverview();
+      renderTeacherOverview();
+      renderContactPanel();
 
       if (footerText) footerText.textContent = ui.footer;
       if (adminLogoutButton) {
@@ -2805,6 +5983,7 @@
       }
 
       refreshAdminGateStatus();
+      refreshTeacherFormStatus();
       renderAdminChip();
       updateThemeButton();
     }
@@ -2944,6 +6123,48 @@
       });
     }
 
+    teachersAddButton?.addEventListener("click", () => {
+      toggleTeacherForm();
+    });
+
+    teacherPhoneInput?.addEventListener("input", () => {
+      teacherPhoneInput.value = formatAdminPhone(teacherPhoneInput.value);
+    });
+
+    teacherPhotoInput?.addEventListener("change", async () => {
+      const photoFile = teacherPhotoInput.files?.[0];
+      if (!photoFile || !String(photoFile.type || "").startsWith("image/")) {
+        setTeacherPhotoPreview("");
+        return;
+      }
+
+      try {
+        const photoDataUrl = await readFileAsDataUrl(photoFile);
+        setTeacherPhotoPreview(photoDataUrl, teacherNameInput?.value.trim() || photoFile.name);
+      } catch {
+        setTeacherPhotoPreview("");
+      }
+    });
+
+    teacherCertificateInput?.addEventListener("change", () => {
+      const certificateFileName = teacherCertificateInput.files?.[0]?.name || "";
+      setTeacherCertificateState(certificateFileName);
+    });
+
+    teacherForm?.addEventListener("submit", handleTeacherFormSubmit);
+    teacherFormCancel?.addEventListener("click", () => {
+      toggleTeacherForm(false);
+    });
+
+    teachersListBody?.addEventListener("click", (event) => {
+      const deleteButton = event.target.closest("[data-delete-teacher]");
+      if (!deleteButton) {
+        return;
+      }
+
+      deleteTeacherById(deleteButton.getAttribute("data-delete-teacher"));
+    });
+
     if (sidebarNav) {
       sidebarNav.addEventListener("click", (event) => {
         const link = event.target.closest(".nav-link");
@@ -2954,9 +6175,35 @@
         event.preventDefault();
         const nextSubjectIndex = link.dataset.subjectIndex;
         const parsedSubjectIndex = Number(nextSubjectIndex);
-        activeSubjectIndex = nextSubjectIndex === "" || Number.isNaN(parsedSubjectIndex) ? null : parsedSubjectIndex;
-        renderSidebarNav();
-        renderStudentOverview();
+        openAdminSection("students", {
+          subjectIndex: nextSubjectIndex === "" || Number.isNaN(parsedSubjectIndex) ? null : parsedSubjectIndex
+        });
+        toggleSidebar(false);
+      });
+    }
+
+    if (sidebarTeacherNav) {
+      sidebarTeacherNav.addEventListener("click", (event) => {
+        const link = event.target.closest(".nav-link");
+        if (!link) {
+          return;
+        }
+
+        event.preventDefault();
+        openAdminSection("teachers");
+        toggleSidebar(false);
+      });
+    }
+
+    if (contactLinksList) {
+      contactLinksList.addEventListener("click", (event) => {
+        const link = event.target.closest("[data-contact-nav]");
+        if (!link) {
+          return;
+        }
+
+        event.preventDefault();
+        openAdminSection(link.getAttribute("data-contact-nav"));
         toggleSidebar(false);
       });
     }
@@ -2964,6 +6211,30 @@
     toastButtons.forEach((button) => {
       button.addEventListener("click", () => {
         showToast(button.dataset.toast);
+      });
+    });
+
+    languageSwitches.forEach((languageSwitch) => {
+      const trigger = languageSwitch.querySelector("[data-language-trigger]");
+      const optionButtons = languageSwitch.querySelectorAll("[data-language-option]");
+
+      trigger?.addEventListener("click", () => {
+        const shouldOpen = !languageSwitch.classList.contains("is-open");
+        closeLanguageMenus(shouldOpen ? languageSwitch : null);
+        setLanguageMenuState(languageSwitch, shouldOpen);
+      });
+
+      optionButtons.forEach((optionButton) => {
+        optionButton.addEventListener("click", () => {
+          const nextLanguage = optionButton.dataset.languageOption;
+          if (!nextLanguage) {
+            return;
+          }
+
+          setLanguage(nextLanguage);
+          closeLanguageMenus();
+          trigger?.focus();
+        });
       });
     });
 
@@ -2988,25 +6259,42 @@
 
     sidebarOverlay.addEventListener("click", () => toggleSidebar(false));
 
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-language-switch]")) {
+        return;
+      }
+
+      closeLanguageMenus();
+    });
+
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
+        closeLanguageMenus();
         toggleSidebar(false);
       }
     });
 
     window.addEventListener("hashchange", scrollToHashTarget);
     window.addEventListener("storage", (event) => {
-      if (event.key !== adminApplicationsStorageKey && event.key !== adminStudentsStorageKey) {
+      if (
+        event.key !== adminApplicationsStorageKey
+        && event.key !== adminStudentsStorageKey
+        && event.key !== adminTeachersStorageKey
+      ) {
         return;
       }
 
       renderApplicationsOverview();
       renderSidebarNav();
+      renderTeacherNav();
       renderStudentOverview();
+      renderTeacherOverview();
     });
 
     const savedTheme = localStorage.getItem(themeStorageKey);
     setTheme(savedTheme || "light");
+    cleanupSeededAdminData();
+    syncAcceptedApplicationsToStudents();
     applyTranslations();
     syncAdminSession({
       focusOnLock: true
@@ -3014,4 +6302,3 @@
   </script>
 </body>
 </html>
-

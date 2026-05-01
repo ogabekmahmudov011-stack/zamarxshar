@@ -13,6 +13,26 @@ const buildPlans = (full, monthly) => [
   }
 ];
 
+const buildTeacher = (name = "", bio = "", certificate = null, photo = "") => ({
+  name,
+  bio,
+  certificate,
+  photo
+});
+
+const withTeacher = (course) => ({
+  ...course,
+  teacher: {
+    ...buildTeacher(),
+    ...(course.teacher || {})
+  }
+});
+
+// Agar kerak bo'lsa, istalgan kurs ichiga quyidagicha teacher qo'shing:
+// teacher: buildTeacher("Dilnoza Aliyeva", "5 yillik tajribaga ega ustoz.", true, "assets/dilnoza.jpg"),
+// Yoki sertifikat fayli bilan:
+// teacher: buildTeacher("Dilnoza Aliyeva", "5 yillik tajribaga ega ustoz.", { status: true, fileUrl: "assets/sertifikat.pdf", fileName: "dilnoza-sertifikat.pdf" }, "assets/dilnoza.jpg"),
+
 window.COURSES = [
   {
     slug: "full-stack-web-development",
@@ -90,6 +110,15 @@ window.COURSES = [
       "Adabiyot nazariyasi va mualliflar",
       "Test va bayon mashqlari"
     ],
+    teacher: buildTeacher(
+      "Saodat Xolmatova",
+      "12 yillik tajribaga ega ona tili va adabiyot fani o'qituvchisi. Imlo, matn tahlili va insho yozish bo'yicha o'quvchilarni bosqichma-bosqich tayyorlaydi.",
+      {
+        status: true,
+        fileUrl: "assets/ona-tili-sertifikat.svg",
+        fileName: "saodat-xolmatova-sertifikat.svg"
+      }
+    ),
     plans: buildPlans("4 800 000 so'm", "600 000 so'm", "1 600 000 so'm")
   },
   {
@@ -273,5 +302,265 @@ window.COURSES = [
       "Diktant va testlar"
     ],
     plans: buildPlans("4 800 000 so'm", "600 000 so'm", "1 600 000 so'm")
+  },
+  {
+    slug: "german-language",
+    short: "DE",
+    title: "Nemis Tili",
+    level: "Boshlang'ichdan o'rta bosqichgacha",
+    duration: "8 oy",
+    format: "Grammar + speaking",
+    price: "4 800 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Nemis tilining asosiy grammatikasi, lug'ati va kundalik muloqotini bosqichma-bosqich o'rganasiz.",
+    outcomes: [
+      "Oddiy suhbatlarda fikr bildirish ko'nikmasi",
+      "Asosiy grammatik mavzularni to'g'ri qo'llash",
+      "Maktab nazorati va boshlang'ich sertifikatga tayyorlanish"
+    ],
+    modules: [
+      "Alifbo va talaffuz",
+      "Asosiy grammatika",
+      "Kundalik lug'at boyitish",
+      "O'qish va tinglab tushunish",
+      "Dialog va speaking mashqlari",
+      "Test va takrorlash"
+    ],
+    plans: buildPlans("4 800 000 so'm", "600 000 so'm", "1 600 000 so'm")
+  },
+  {
+    slug: "french-language",
+    short: "FR",
+    title: "Fransuz Tili",
+    level: "Boshlang'ichdan o'rta bosqichgacha",
+    duration: "8 oy",
+    format: "Grammar + speaking",
+    price: "4 800 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Fransuz tilida o'qish, yozish va oddiy muloqot qilish uchun kerakli bazani amaliy mashqlar bilan shakllantirasiz.",
+    outcomes: [
+      "Asosiy ibora va gaplarni erkinroq ishlatish",
+      "Boshlang'ich darajadagi matnlarni tushunish",
+      "Nazorat va og'zaki savollarga tayyorlik"
+    ],
+    modules: [
+      "Talaffuz va alifbo",
+      "Boshlang'ich grammatika",
+      "Mavzuli lug'atlar",
+      "O'qish va listening",
+      "Suhbat mashqlari",
+      "Nazorat va testlar"
+    ],
+    plans: buildPlans("4 800 000 so'm", "600 000 so'm", "1 600 000 so'm")
+  },
+  {
+    slug: "physical-education",
+    short: "JT",
+    title: "Jismoniy Tarbiya",
+    level: "5-11-sinflar uchun",
+    duration: "6 oy",
+    format: "Amaliy mashg'ulot",
+    price: "3 600 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Jismoniy tayyorgarlik, harakat koordinatsiyasi va sog'lom turmush ko'nikmalarini mashg'ulotlar orqali rivojlantirasiz.",
+    outcomes: [
+      "Jismoniy faollik va chidamlilikni oshirish",
+      "Mashqlarni to'g'ri bajarish odatini shakllantirish",
+      "Sport normativlariga yaxshiroq tayyorlanish"
+    ],
+    modules: [
+      "Umumiy jismoniy tayyorgarlik",
+      "Yengil atletika asoslari",
+      "Harakatli o'yinlar",
+      "Moslashuvchanlik va kuch mashqlari",
+      "Sog'lom turmush qoidalari",
+      "Nazorat normativlari"
+    ],
+    plans: buildPlans("3 600 000 so'm", "600 000 so'm", "1 200 000 so'm")
+  },
+  {
+    slug: "fine-arts",
+    short: "TS",
+    title: "Tasviriy San'at",
+    level: "5-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Nazariya + amaliy rasm",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Rasm, rang va kompozitsiya asoslarini bosqichma-bosqich o'rganib, ijodiy fikrlashni rivojlantirasiz.",
+    outcomes: [
+      "Rang va shakl bilan ishlash ko'nikmasi",
+      "Oddiy kompozitsiya va eskizlar chizish",
+      "Nazariy va amaliy topshiriqlarda erkinlik"
+    ],
+    modules: [
+      "Rangtasvir asoslari",
+      "Qalam bilan chizish",
+      "Kompozitsiya va proporsiya",
+      "Tabiat va predmetlardan rasm",
+      "Ijodiy ishlar",
+      "Portfolio va ko'rgazma tayyorlash"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
+  },
+  {
+    slug: "music-culture",
+    short: "MM",
+    title: "Musiqa Madaniyati",
+    level: "5-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Nazariya + tinglash",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Musiqa savodi, ritm va turli asarlarni tushunish bo'yicha nazariy hamda amaliy ko'nikmalarni olasiz.",
+    outcomes: [
+      "Ritm va kuylarni farqlash",
+      "Musiqa janrlari va asboblarini tanish",
+      "Maktab topshiriqlarini yaxshiroq bajarish"
+    ],
+    modules: [
+      "Musiqa savodi asoslari",
+      "Ritm va temp",
+      "Musiqa janrlari",
+      "Musiqa asboblari",
+      "Tinglash va tahlil",
+      "Nazorat va ijodiy topshiriqlar"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
+  },
+  {
+    slug: "technology",
+    short: "TX",
+    title: "Texnologiya",
+    level: "5-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Nazariya + loyiha",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Texnologiya fanida kundalik amaliy ko'nikmalar, buyum tayyorlash va oddiy loyiha ishlari bilan shug'ullanasiz.",
+    outcomes: [
+      "Asbob-uskunalardan xavfsiz foydalanish",
+      "Oddiy buyum va loyiha tayyorlash",
+      "Amaliy topshiriqlarni mustaqil bajarish"
+    ],
+    modules: [
+      "Texnika xavfsizligi",
+      "Materiallar bilan ishlash",
+      "Oddiy loyiha tuzish",
+      "Uy-ro'zg'or amaliyoti",
+      "Hunarmandchilik elementlari",
+      "Yakuniy amaliy ish"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
+  },
+  {
+    slug: "technical-drawing",
+    short: "CH",
+    title: "Chizmachilik",
+    level: "7-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Qoidalar + chizma",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Texnik chizma qoidalari, proyeksiya va buyumlarni aniq tasvirlash ko'nikmalarini amalda o'rganasiz.",
+    outcomes: [
+      "Texnik chizmalarni o'qish va tushunish",
+      "Asosiy proyeksiyalarni to'g'ri chizish",
+      "Nazorat ishlarida aniq va toza ishlash"
+    ],
+    modules: [
+      "Chizmachilik asboblari",
+      "Chiziq va belgilar",
+      "Proyeksiya asoslari",
+      "Kesim va ko'rinishlar",
+      "Detallar chizmasi",
+      "Amaliy chizma ishlari"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
+  },
+  {
+    slug: "character-education",
+    short: "TB",
+    title: "Tarbiya",
+    level: "5-11-sinflar uchun",
+    duration: "6 oy",
+    format: "Suhbat + tahlil",
+    price: "3 600 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Tarbiya fanida ijtimoiy xulq, qadriyatlar va shaxsiy mas'uliyat mavzulari misollar bilan tushuntiriladi.",
+    outcomes: [
+      "Hayotiy vaziyatlarga ongli yondashish",
+      "Muloqot va hurmat madaniyatini shakllantirish",
+      "Maktabdagi tarbiyaviy topshiriqlarga tayyorlik"
+    ],
+    modules: [
+      "Qadriyat va odob",
+      "Muloqot madaniyati",
+      "Mas'uliyat va intizom",
+      "Jamiyat va oila",
+      "Shaxsiy rivojlanish",
+      "Suhbat va tahliliy topshiriqlar"
+    ],
+    plans: buildPlans("3 600 000 so'm", "600 000 so'm", "1 200 000 so'm")
+  },
+  {
+    slug: "law",
+    short: "HQ",
+    title: "Huquq",
+    level: "8-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Nazariya + keys",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Huquqiy tushunchalar, fuqaro huquqlari va jamiyatdagi qonuniy munosabatlarni sodda misollar bilan o'rganasiz.",
+    outcomes: [
+      "Asosiy huquqiy tushunchalarni bilish",
+      "Fuqaro huquq va majburiyatlarini anglash",
+      "Test va mavzu savollariga aniq javob bera olish"
+    ],
+    modules: [
+      "Davlat va huquq asoslari",
+      "Konstitutsion huquq",
+      "Fuqaro huquqlari",
+      "Huquqiy mas'uliyat",
+      "Hayotiy huquqiy vaziyatlar",
+      "Test va muhokamalar"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
+  },
+  {
+    slug: "economics",
+    short: "IQ",
+    title: "Iqtisodiyot",
+    level: "8-11-sinflar uchun",
+    duration: "7 oy",
+    format: "Nazariya + hisob-kitob",
+    price: "4 200 000 so'm",
+    monthly: "600 000 so'm / oy",
+    description:
+      "Iqtisodiy tushunchalar, bozor, budjet va kundalik moliyaviy savodxonlik mavzularini amaliy misollar bilan tushunasiz.",
+    outcomes: [
+      "Asosiy iqtisodiy atamalarni anglash",
+      "Oddiy budjet va hisob-kitob qilish",
+      "Iqtisodiy mavzudagi savollarga mantiqiy javob berish"
+    ],
+    modules: [
+      "Iqtisodiyotga kirish",
+      "Bozor va talab-taklif",
+      "Oila budjeti",
+      "Daromad va xarajat",
+      "Tadbirkorlik asoslari",
+      "Amaliy masalalar va testlar"
+    ],
+    plans: buildPlans("4 200 000 so'm", "600 000 so'm", "1 400 000 so'm")
   }
-];
+].map(withTeacher);

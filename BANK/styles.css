@@ -399,11 +399,8 @@ select {
 }
 .bank-banner {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.95fr);
-  gap: 28px;
-  align-items: center;
-  padding: 30px 28px;
+  display: block;
+  padding: 28px 28px;
   margin-bottom: 18px;
   overflow: hidden;
   border-radius: 30px;
@@ -453,123 +450,124 @@ select {
 .bank-brand {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
+  width: 100%;
+  align-self: stretch;
 }
 
 .bank-logo {
   position: relative;
-  flex: 0 0 146px;
-  width: 146px;
-  height: 146px;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 34px;
+  box-shadow: 0 20px 44px rgba(41, 47, 138, 0.22);
+  isolation: isolate;
+}
+
+.bank-logo__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  object-fit: cover;
+}
+
+.bank-logo__phone-block {
+  position: absolute;
+  right: 34px;
+  bottom: 26px;
+  z-index: 2;
   display: grid;
-  place-items: center;
-  color: #d59a1f;
+  gap: 8px;
+  justify-items: start;
 }
 
-.bank-logo::before {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border-radius: 50%;
-  border: 3px solid currentColor;
-  opacity: 0.8;
+.bank-logo__phone-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-.bank-logo__mark {
-  position: relative;
-  z-index: 1;
-  font-size: 3.4rem;
-  font-weight: 800;
-  letter-spacing: -0.08em;
-  line-height: 0.9;
-}
-
-.bank-logo__orbit {
-  position: absolute;
-  inset: 0;
-  display: flex;
+.bank-logo__phone {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.82rem;
-  letter-spacing: 0.12em;
-  transform: rotate(-28deg);
-  color: #d59a1f;
-  text-align: center;
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 14px 30px rgba(12, 18, 76, 0.24);
+  color: #ffffff;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(8px);
 }
 
-.bank-brand__text h1 {
+.bank-contact-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 2;
+  width: min(calc(100% - 88px), 860px);
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.8rem, 4.6vw, 4.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  transform: translateX(-50%);
 }
 
+.bank-brand__text,
 .bank-brand__eyebrow {
-  margin: 0 0 6px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.8rem, 3vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  display: none !important;
 }
 
 .bank-contact {
   display: grid;
-  gap: 18px;
-  justify-items: end;
-}
-
-.bank-contact__select {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  font-size: 0.95rem;
-}
-
-.bank-contact__chevron {
-  font-size: 1.3rem;
-  line-height: 1;
+  width: 100%;
+  gap: 0;
+  justify-items: stretch;
 }
 
 .bank-contact__row {
   display: grid;
-  grid-template-columns: auto repeat(2, minmax(0, auto));
-  gap: 18px;
-  align-items: center;
-}
-
-.bank-contact__icon {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  color: #1d1d1d;
-}
-
-.bank-contact__icon svg {
-  width: 30px;
-  height: 30px;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 248, 255, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 18px 34px rgba(17, 22, 86, 0.26);
+  backdrop-filter: blur(14px);
 }
 
 .bank-contact__item {
   display: grid;
   gap: 4px;
+  align-content: center;
+  min-height: 58px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.56);
 }
 
 .bank-contact__label {
-  color: #5d6a7d;
-  font-size: 0.92rem;
+  color: #111111;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .bank-contact__value {
-  color: #0e0e0e;
+  color: #111111;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.55rem, 2vw, 2.2rem);
+  font-size: clamp(0.95rem, 1.45vw, 1.35rem);
   line-height: 1.1;
 }
 
@@ -914,6 +912,106 @@ select {
   --course-arrow-accent: rgba(214, 239, 129, 0.72);
 }
 
+.course-card--german-language {
+  --course-glow: radial-gradient(circle at top left, rgba(121, 190, 255, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(121, 190, 255, 0.3), rgba(121, 190, 255, 0.02) 72%);
+  --course-icon-border: rgba(148, 205, 255, 0.42);
+  --course-icon-shadow:
+    0 16px 28px rgba(41, 89, 155, 0.2),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(170, 214, 255, 0.72);
+}
+
+.course-card--french-language {
+  --course-glow: radial-gradient(circle at top left, rgba(128, 173, 255, 0.17), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(128, 173, 255, 0.28), rgba(128, 173, 255, 0.02) 72%);
+  --course-icon-border: rgba(154, 190, 255, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(44, 79, 149, 0.2),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(177, 204, 255, 0.72);
+}
+
+.course-card--physical-education {
+  --course-glow: radial-gradient(circle at top left, rgba(136, 224, 255, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(136, 224, 255, 0.3), rgba(136, 224, 255, 0.02) 72%);
+  --course-icon-border: rgba(166, 231, 255, 0.42);
+  --course-icon-shadow:
+    0 16px 28px rgba(39, 113, 141, 0.2),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(181, 237, 255, 0.74);
+}
+
+.course-card--fine-arts {
+  --course-glow: radial-gradient(circle at top left, rgba(255, 183, 214, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(255, 183, 214, 0.28), rgba(255, 183, 214, 0.02) 72%);
+  --course-icon-border: rgba(255, 199, 223, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(145, 75, 107, 0.18),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(255, 210, 231, 0.72);
+}
+
+.course-card--music-culture {
+  --course-glow: radial-gradient(circle at top left, rgba(197, 171, 255, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(197, 171, 255, 0.3), rgba(197, 171, 255, 0.02) 72%);
+  --course-icon-border: rgba(209, 188, 255, 0.42);
+  --course-icon-shadow:
+    0 16px 28px rgba(101, 75, 149, 0.2),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(220, 201, 255, 0.74);
+}
+
+.course-card--technology {
+  --course-glow: radial-gradient(circle at top left, rgba(255, 210, 122, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(255, 210, 122, 0.28), rgba(255, 210, 122, 0.02) 72%);
+  --course-icon-border: rgba(255, 220, 145, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(156, 110, 30, 0.2),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(255, 226, 162, 0.72);
+}
+
+.course-card--technical-drawing {
+  --course-glow: radial-gradient(circle at top left, rgba(151, 199, 255, 0.17), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(151, 199, 255, 0.28), rgba(151, 199, 255, 0.02) 72%);
+  --course-icon-border: rgba(176, 214, 255, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(60, 99, 151, 0.18),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(195, 224, 255, 0.72);
+}
+
+.course-card--character-education {
+  --course-glow: radial-gradient(circle at top left, rgba(149, 231, 184, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(149, 231, 184, 0.3), rgba(149, 231, 184, 0.02) 72%);
+  --course-icon-border: rgba(170, 236, 198, 0.42);
+  --course-icon-shadow:
+    0 16px 28px rgba(44, 118, 77, 0.18),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(190, 241, 208, 0.74);
+}
+
+.course-card--law {
+  --course-glow: radial-gradient(circle at top left, rgba(255, 214, 145, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(255, 214, 145, 0.28), rgba(255, 214, 145, 0.02) 72%);
+  --course-icon-border: rgba(255, 224, 169, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(150, 111, 42, 0.18),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(255, 231, 186, 0.72);
+}
+
+.course-card--economics {
+  --course-glow: radial-gradient(circle at top left, rgba(180, 236, 142, 0.18), transparent 46%);
+  --course-icon-bg: radial-gradient(circle at 28% 18%, rgba(180, 236, 142, 0.28), rgba(180, 236, 142, 0.02) 72%);
+  --course-icon-border: rgba(194, 240, 163, 0.4);
+  --course-icon-shadow:
+    0 16px 28px rgba(94, 135, 48, 0.18),
+    var(--icon-shadow);
+  --course-arrow-accent: rgba(208, 244, 182, 0.72);
+}
+
 .course-card h3 {
   margin: 18px 0 10px;
   font-size: 1.7rem;
@@ -1227,6 +1325,19 @@ select {
 .detail-hero__register {
   margin-top: 28px;
   scroll-margin-top: var(--detail-topbar-offset, 180px);
+  opacity: 0;
+  transform: translateY(-10px);
+  transform-origin: top center;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.detail-hero__register[hidden] {
+  display: none !important;
+}
+
+.detail-hero__register.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .detail-hero__actions {
@@ -1301,6 +1412,431 @@ select {
 
 .modules {
   padding: 26px 26px 26px 44px;
+}
+
+.teacher-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 18px;
+  align-items: center;
+}
+
+.teacher-card h3 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+}
+
+.teacher-card__media {
+  position: relative;
+  min-height: 240px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--panel-soft);
+}
+
+.teacher-card__media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.teacher-card__media--empty {
+  background:
+    radial-gradient(circle at top, rgba(127, 244, 177, 0.16), transparent 58%),
+    linear-gradient(180deg, rgba(20, 51, 42, 0.22), rgba(11, 27, 22, 0.16));
+}
+
+.teacher-card__placeholder {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+}
+
+.teacher-card__placeholder-text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.teacher-card__upload-help {
+  color: var(--muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.teacher-card__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.teacher-card__upload {
+  border: 0;
+  cursor: pointer;
+  color: var(--text);
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.teacher-card__upload:hover {
+  transform: translateY(-2px);
+}
+
+.teacher-card__upload:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.teacher-card__upload--empty {
+  width: 88px;
+  height: 88px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.teacher-card__upload--overlay {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 46px;
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(10, 20, 18, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 24px rgba(2, 10, 8, 0.22);
+}
+
+.teacher-card__upload-plus {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.teacher-card__content {
+  display: grid;
+  gap: 16px;
+}
+
+.teacher-card__content .mini-label {
+  margin-bottom: 0;
+}
+
+.teacher-card__info {
+  display: grid;
+  gap: 8px;
+}
+
+.teacher-card__info p {
+  margin: 0;
+}
+
+.teacher-card__info-label,
+.teacher-card__certificate-label {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.teacher-card__certificate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.teacher-card__certificate-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.teacher-card__certificate-panel {
+  display: grid;
+}
+
+.teacher-card__certificate-file {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  background: var(--panel-soft);
+}
+
+.teacher-card__certificate-file--empty {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.teacher-card__certificate-file--filled {
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.teacher-card__certificate-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.teacher-card__certificate-details {
+  display: grid;
+  gap: 16px;
+  align-content: space-between;
+}
+
+.teacher-card__certificate-file-name {
+  margin: 0 !important;
+  font-size: 1rem !important;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.teacher-card__certificate-file-hint {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.teacher-card__certificate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.teacher-card__certificate-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.teacher-card__certificate-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(127, 244, 177, 0.28);
+  background: rgba(127, 244, 177, 0.08);
+}
+
+.teacher-card__certificate-link--button {
+  cursor: pointer;
+}
+
+.teacher-card__certificate-preview-trigger {
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.teacher-card__certificate-preview-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(2, 10, 8, 0.18);
+}
+
+.teacher-card__certificate-preview-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.teacher-card__certificate-preview {
+  min-height: 190px;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+    var(--detail-surface-bg);
+}
+
+.teacher-card__certificate-preview img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #fff;
+}
+
+.teacher-card__certificate-preview--pdf {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 14px;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(127, 244, 177, 0.12), transparent 42%),
+    linear-gradient(160deg, rgba(18, 41, 34, 0.96), rgba(9, 21, 18, 0.98));
+}
+
+.teacher-card__certificate-preview-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(127, 244, 177, 0.16);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.teacher-card__certificate-preview-name {
+  margin: 0;
+  max-width: 20ch;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.teacher-card__upload--certificate {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.teacher-certificate-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.teacher-certificate-modal[hidden] {
+  display: none !important;
+}
+
+.teacher-certificate-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(3, 10, 8, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.teacher-certificate-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  max-height: calc(100vh - 48px);
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background: var(--detail-surface-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 70px rgba(0, 0, 0, 0.32);
+}
+
+.teacher-certificate-modal__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.teacher-certificate-modal__header h4 {
+  margin: 6px 0 0;
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.teacher-certificate-modal__close {
+  flex-shrink: 0;
+}
+
+.teacher-certificate-modal__viewer {
+  min-height: min(72vh, 720px);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.teacher-certificate-modal__viewer img,
+.teacher-certificate-modal__viewer iframe {
+  width: 100%;
+  height: min(72vh, 720px);
+  display: block;
+  border: 0;
+}
+
+.teacher-certificate-modal__viewer img {
+  object-fit: contain;
+}
+
+.teacher-card__badge {
+  margin-top: 0 !important;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.88rem !important;
+  line-height: 1;
+}
+
+.teacher-card__badge--yes {
+  color: #0b3a2a;
+  background: rgba(127, 244, 177, 0.92);
+}
+
+.teacher-card__badge--no {
+  color: #fff5f0;
+  background: rgba(184, 70, 58, 0.88);
+}
+
+.teacher-card__badge--unknown {
+  color: var(--text);
+  background: rgba(148, 163, 184, 0.18);
 }
 
 .payment-grid {
@@ -2086,6 +2622,13 @@ select {
   display: block;
 }
 
+.success-banner__note {
+  display: block;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
 .success-banner__actions {
   margin-top: 14px;
 }
@@ -2125,6 +2668,10 @@ select {
 }
 
 body.has-payment-sheet {
+  overflow: hidden;
+}
+
+body.has-certificate-preview {
   overflow: hidden;
 }
 
@@ -2434,16 +2981,11 @@ body.has-payment-sheet {
     grid-template-columns: 1fr;
   }
 
-  .bank-contact {
-    justify-items: start;
-  }
-
-  .bank-contact__row {
-    grid-template-columns: auto 1fr;
-  }
-
-  .bank-contact__item:last-child {
-    grid-column: 2;
+  .bank-contact-dock {
+    position: static;
+    width: 100%;
+    margin: 12px 0 0;
+    transform: none;
   }
 
   .detail-sidebar {
@@ -2569,8 +3111,34 @@ body.has-payment-sheet {
   .flow-grid,
   .detail-sidebar__nav,
   .detail-hero__actions,
-  .stat-grid {
+  .stat-grid,
+  .teacher-card {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-card__media {
+    min-height: 220px;
+  }
+
+  .teacher-card__certificate-file--filled {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-certificate-modal {
+    padding: 14px;
+  }
+
+  .teacher-certificate-modal__dialog {
+    max-height: calc(100vh - 28px);
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .teacher-certificate-modal__viewer,
+  .teacher-certificate-modal__viewer img,
+  .teacher-certificate-modal__viewer iframe {
+    min-height: 58vh;
+    height: 58vh;
   }
 
   .flow-card__actions,
@@ -2700,45 +3268,38 @@ body.has-payment-sheet {
   }
 
   .bank-brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
+    width: 100%;
   }
 
   .bank-logo {
-    width: 116px;
-    height: 116px;
-    flex-basis: 116px;
+    width: 100%;
+    min-width: 0;
+    min-height: 138px;
+    padding: 0;
+    border-radius: 22px;
   }
 
-  .bank-logo__mark {
-    font-size: 2.6rem;
+  .bank-logo__phone-block {
+    right: 18px;
+    bottom: 16px;
+    gap: 6px;
   }
 
-  .bank-logo__orbit {
-    font-size: 0.65rem;
+  .bank-logo__phone-label {
+    font-size: 0.7rem;
   }
 
-  .bank-brand__eyebrow {
-    font-size: 1.8rem;
-  }
-
-  .bank-brand__text h1 {
-    font-size: 2.7rem;
+  .bank-logo__phone {
+    min-height: 38px;
+    padding: 8px 14px;
+    font-size: 0.95rem;
   }
 
   .bank-contact__row {
     grid-template-columns: 1fr;
-    gap: 12px;
-    justify-items: start;
-  }
-
-  .bank-contact__item:last-child {
-    grid-column: auto;
-  }
-
-  .bank-contact__icon {
-    display: none;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 16px;
   }
 
   .course-card {

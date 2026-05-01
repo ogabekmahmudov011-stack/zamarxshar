@@ -11,7 +11,6 @@ function renderRegisterPage(course, selectedPlan) {
         <h1 class="detail-hero__title">${U.t("detail.registerPageTitle")}</h1>
         <p class="detail-hero__lead">${U.t("detail.registerPageIntro")}</p>
         <div class="detail-hero__actions">
-          <a class="button" href="${U.buildPageHref("payment.html", course.slug, selectedPlan.id)}">${U.t("detail.openPaymentsPage")}</a>
           <a class="button-secondary" href="${U.buildPageHref("course.html", course.slug, selectedPlan.id)}">${U.t("detail.backToCoursePage")}</a>
         </div>
       </div>
@@ -107,22 +106,6 @@ function renderRegisterPage(course, selectedPlan) {
             </span>
           </label>
 
-          <section class="payment-section register-payment-section">
-            <div class="payment-section__header">
-              <span class="field-label">
-                <span class="field-label__icon" aria-hidden="true">${U.getFormIcon("payment")}</span>
-                ${U.t("detail.paymentMethod")}
-              </span>
-              <p class="payment-section__text">${U.t("detail.paymentsText")}</p>
-            </div>
-            ${U.buildPaymentMethodsMarkup("payme", "registerPaymentMethod")}
-
-            <button class="button button--with-icon button--block" type="button" data-register-payment-continue>
-              <span class="button__icon" aria-hidden="true">${U.getFormIcon("submit")}</span>
-              ${U.t("detail.startPayment")}
-            </button>
-          </section>
-
           <button class="button button--with-icon button--block" type="submit" aria-label="${U.t("detail.submitApplication")}">
             <span class="button__icon" aria-hidden="true">${U.getFormIcon("submit")}</span>
             ${U.t("detail.submitApplication")}
@@ -157,8 +140,7 @@ function renderRegisterPage(course, selectedPlan) {
         </div>
 
         <div class="summary-card__actions">
-          <a class="button-secondary" href="${U.buildPageHref("payment.html", course.slug, selectedPlan.id)}">${U.t("detail.changePlan")}</a>
-          <a class="button" href="${U.buildPageHref("payment.html", course.slug, selectedPlan.id)}">${U.t("detail.openPaymentsPage")}</a>
+          <a class="button-secondary" href="${U.buildPageHref("course.html", course.slug, selectedPlan.id)}">${U.t("detail.changePlan")}</a>
         </div>
       </aside>
     </section>
@@ -187,25 +169,8 @@ function bindApplicationForm(course, selectedPlan) {
       studyMode: U.t(`detail.studyModes.${applicationState.studyMode}`)
     });
 
-    const actions = document.createElement("div");
-    actions.className = "success-banner__actions";
-
-    const paymentLink = document.createElement("a");
-    paymentLink.className = "button-secondary";
-    paymentLink.href = U.buildPageHref("payment.html", course.slug, selectedPlan.id);
-    paymentLink.textContent = U.t("detail.goToPaymentPage");
-
-    const adminLink = document.createElement("a");
-    adminLink.className = "button";
-    adminLink.href = U.buildAdminPanelHref("applications");
-    adminLink.target = "_blank";
-    adminLink.rel = "noopener";
-    adminLink.textContent = U.t("detail.openAdminApplications");
-
-    actions.append(paymentLink, adminLink);
-
     successBanner.classList.add("is-visible");
-    successBanner.append(title, message, actions);
+    successBanner.append(title, message);
   };
 
   form.addEventListener("submit", (event) => {
@@ -242,26 +207,10 @@ function bindApplicationForm(course, selectedPlan) {
 
     U.saveApplicationSubmission(course, selectedPlan, applicationState);
     showSuccessMessage(applicationState);
-    window.open(U.buildAdminPanelHref("applications"), "_blank", "noopener");
 
     form.reset();
     phoneInput.value = U.formatPhoneNumber("", true);
     phoneInput.setCustomValidity(U.t("detail.phoneValidation"));
-  });
-}
-
-function bindRegisterPaymentContinue(course, selectedPlan) {
-  const continueButton = document.querySelector("[data-register-payment-continue]");
-
-  if (!continueButton || !selectedPlan) {
-    return;
-  }
-
-  continueButton.addEventListener("click", () => {
-    const selectedMethod =
-      document.querySelector('input[name="registerPaymentMethod"]:checked')?.value || "payme";
-
-    window.location.href = U.buildPageHref("payment.html", course.slug, selectedPlan.id, selectedMethod);
   });
 }
 
@@ -277,7 +226,6 @@ function renderPage() {
   const selectedPlan = U.getPlanById(course, selectedPlanId);
   renderRegisterPage(course, selectedPlan);
   bindApplicationForm(course, selectedPlan);
-  bindRegisterPaymentContinue(course, selectedPlan);
 }
 
 renderPage();

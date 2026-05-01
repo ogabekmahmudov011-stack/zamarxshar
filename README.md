@@ -33,3 +33,5 @@ Bu repository mening shaxsiy rejalashtirish joyim hisoblanadi.
 7. Brauzerda `http://127.0.0.1:3000` ni oching.
 
 `ADMIN_PASSWORD` to'ldirilgan bo'lsa, `index.html` ichida tizimga kirish oynasi chiqadi. To'g'ri login/parol kiritilgach sessiya cookie yaratiladi va admin panel ochiladi. `ADMIN_PHONE` ham berilgan bo'lsa, telefon raqami ham tekshiriladi.
+
+# zamarxshar
