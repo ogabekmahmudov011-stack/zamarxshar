@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "functions": {
+    "server.js": {
+      "runtime": "@vercel/node"
+    },
+    "api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/admin/session",
+      "dest": "/api/admin/session.js"
+    },
+    {
+      "src": "/api/admin/login",
+      "dest": "/api/admin/login.js"
+    },
+    {
+      "src": "/api/admin/logout",
+      "dest": "/api/admin/logout.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ]
+}

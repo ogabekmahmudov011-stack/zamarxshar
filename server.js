@@ -423,9 +423,8 @@ if (require.main === module) {
   });
 }
 
-module.exports = {
-  handleRequest,
-  handleAdminSessionStatus,
-  handleAdminLogin,
-  handleAdminLogout
-};
+module.exports = handleRequest;
+module.exports.handleRequest = handleRequest;
+module.exports.handleAdminSessionStatus = handleAdminSessionStatus;
+module.exports.handleAdminLogin = handleAdminLogin;
+module.exports.handleAdminLogout = handleAdminLogout;
