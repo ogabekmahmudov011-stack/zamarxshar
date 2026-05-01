@@ -3,3 +3,4 @@
 .vercel
 .env*.local
 node_modules
+BANK/
