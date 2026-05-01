@@ -31,7 +31,7 @@ const loadEnvFile = () => {
     }
 
     if (
-      (value.startsWith('"') && value.endsWith('"'))
+      (value.startsWith("\"") && value.endsWith("\""))
       || (value.startsWith("'") && value.endsWith("'"))
     ) {
       value = value.slice(1, -1);
@@ -51,7 +51,7 @@ const adminPhone = (process.env.ADMIN_PHONE || "").trim();
 const adminSessionCookieName = "it_center_admin_session";
 const adminSessionTtlHours = Math.max(1, Number.parseInt(process.env.ADMIN_SESSION_TTL_HOURS || "12", 10) || 12);
 const adminSessionTtlMs = adminSessionTtlHours * 60 * 60 * 1000;
-const adminSessions = new Map();
+const adminSessionSecret = (process.env.ADMIN_SESSION_SECRET || adminPassword || adminUsername || "local-admin-secret").trim();
 const maxJsonBodyBytes = 1024 * 1024;
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -109,15 +109,6 @@ const normalizePhoneNumber = (value) => {
 
 const isAdminProtectionEnabled = () => Boolean(adminPassword);
 
-const pruneExpiredAdminSessions = () => {
-  const now = Date.now();
-  for (const [token, session] of adminSessions.entries()) {
-    if (!session || session.expiresAt <= now) {
-      adminSessions.delete(token);
-    }
-  }
-};
-
 const parseCookies = (cookieHeader) => {
   const cookies = {};
   if (typeof cookieHeader !== "string" || !cookieHeader.trim()) {
@@ -161,14 +152,23 @@ const serializeCookie = (name, value, maxAgeSeconds) => {
   return parts.join("; ");
 };
 
+const encodeBase64Url = (value) => Buffer.from(String(value), "utf8").toString("base64url");
+
+const decodeBase64Url = (value) => Buffer.from(String(value), "base64url").toString("utf8");
+
+const createSessionSignature = (payload) => crypto
+  .createHmac("sha256", adminSessionSecret)
+  .update(payload)
+  .digest("base64url");
+
 const createAdminSession = (username) => {
-  pruneExpiredAdminSessions();
-  const token = crypto.randomBytes(24).toString("hex");
-  adminSessions.set(token, {
+  const payload = JSON.stringify({
     username,
     expiresAt: Date.now() + adminSessionTtlMs
   });
-  return token;
+  const encodedPayload = encodeBase64Url(payload);
+  const signature = createSessionSignature(encodedPayload);
+  return `${encodedPayload}.${signature}`;
 };
 
 const getAdminSessionFromRequest = (request) => {
@@ -180,36 +180,48 @@ const getAdminSessionFromRequest = (request) => {
     };
   }
 
-  pruneExpiredAdminSessions();
   const cookies = parseCookies(request.headers.cookie);
   const token = cookies[adminSessionCookieName];
   if (!token) {
     return null;
   }
 
-  const session = adminSessions.get(token);
-  if (!session) {
+  const [encodedPayload = "", signature = ""] = String(token).split(".");
+  if (!encodedPayload || !signature) {
     return null;
   }
 
-  if (session.expiresAt <= Date.now()) {
-    adminSessions.delete(token);
+  const expectedSignature = createSessionSignature(encodedPayload);
+  if (!timingSafeCompare(signature, expectedSignature)) {
     return null;
   }
 
-  return {
-    ...session,
-    token
-  };
+  try {
+    const session = JSON.parse(decodeBase64Url(encodedPayload));
+    if (!session?.username || !Number.isFinite(session?.expiresAt) || session.expiresAt <= Date.now()) {
+      return null;
+    }
+
+    return {
+      username: session.username,
+      expiresAt: session.expiresAt,
+      token
+    };
+  } catch {
+    return null;
+  }
 };
 
-const clearAdminSession = (token) => {
-  if (typeof token === "string" && token) {
-    adminSessions.delete(token);
-  }
+const clearAdminSession = () => {
+  return;
 };
 
 const readJsonBody = (request) => new Promise((resolve, reject) => {
+  if (request && Object.prototype.hasOwnProperty.call(request, "body") && request.body && typeof request.body === "object") {
+    resolve(request.body);
+    return;
+  }
+
   let rawBody = "";
 
   request.setEncoding("utf8");
@@ -370,7 +382,7 @@ const serveStaticFile = async (request, response, pathname) => {
   }
 };
 
-const server = http.createServer(async (request, response) => {
+const handleRequest = async (request, response) => {
   if (!request.url) {
     sendText(response, 400, "Bad request");
     return;
@@ -402,8 +414,18 @@ const server = http.createServer(async (request, response) => {
   }
 
   await serveStaticFile(request, response, pathname);
-});
+};
 
-server.listen(port, host, () => {
-  console.log(`IT CENTER server running at http://${host}:${port}`);
-});
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(port, host, () => {
+    console.log(`IT CENTER server running at http://${host}:${port}`);
+  });
+}
+
+module.exports = {
+  handleRequest,
+  handleAdminSessionStatus,
+  handleAdminLogin,
+  handleAdminLogout
+};
