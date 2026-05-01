@@ -73,6 +73,100 @@
     return digits ? Number.parseInt(digits, 10) : 0;
   }
 
+  const adminApplicationsStorageKey = "it-center-admin-applications";
+  const supportContactPhoneHref = "tel:+998908930002";
+  const supportContactPhoneDisplay = "+998 90 893 00 02";
+  const supportedAdminLanguages = ["uz", "en", "ru"];
+  const adminSubjectSlugs = [
+    "full-stack-web-development",
+    "cloud-computing",
+    "devops-platform-engineering",
+    "backend-api-engineering",
+    "mobile-app-development",
+    "ui-ux-product-design",
+    "cybersecurity",
+    "data-science-big-data",
+    "ai-engineering-machine-learning",
+    "qa-automation-testing",
+    "german-language",
+    "french-language",
+    "physical-education",
+    "fine-arts",
+    "music-culture",
+    "technology",
+    "technical-drawing",
+    "character-education",
+    "law",
+    "economics"
+  ];
+
+  function getBaseCourseBySlug(courseSlug) {
+    if (!Array.isArray(window.COURSES)) {
+      return null;
+    }
+
+    return window.COURSES.find((item) => item?.slug === courseSlug) || null;
+  }
+
+  function buildSubjectLabels(course, fallbackTitle = "") {
+    const baseCourse = getBaseCourseBySlug(course?.slug) || course || null;
+    const labels = {};
+
+    supportedAdminLanguages.forEach((language) => {
+      const localizedCourse = window.getLocalizedCourse
+        ? window.getLocalizedCourse(baseCourse || course, language)
+        : null;
+      labels[language] = String(localizedCourse?.title || fallbackTitle || course?.title || "").trim();
+    });
+
+    return labels;
+  }
+
+  function getSubjectIndexByCourseSlug(courseSlug) {
+    const normalizedCourseSlug = String(courseSlug || "").trim().toLowerCase();
+    if (!normalizedCourseSlug) {
+      return null;
+    }
+
+    const adminIndex = adminSubjectSlugs.findIndex((item) => item === normalizedCourseSlug);
+    if (adminIndex >= 0) {
+      return adminIndex;
+    }
+
+    if (!Array.isArray(window.COURSES)) {
+      return null;
+    }
+
+    const index = window.COURSES.findIndex((item) => String(item?.slug || "").trim().toLowerCase() === normalizedCourseSlug);
+    return index >= 0 ? index : null;
+  }
+
+  function readLocalAdminApplications() {
+    try {
+      const rawValue = localStorage.getItem(adminApplicationsStorageKey);
+      const parsedValue = rawValue ? JSON.parse(rawValue) : [];
+      return Array.isArray(parsedValue) ? parsedValue : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function writeLocalAdminApplications(items) {
+    localStorage.setItem(adminApplicationsStorageKey, JSON.stringify(Array.isArray(items) ? items : []));
+  }
+
+  function saveApplicationToLocalAdminStore(entry) {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
+
+    const items = readLocalAdminApplications();
+    const entryId = String(entry.id || "").trim();
+    const nextItems = items.filter((item) => String(item?.id || "").trim() !== entryId);
+    nextItems.unshift(entry);
+    writeLocalAdminApplications(nextItems);
+  }
+
   async function requestJson(url, options = {}) {
     const response = await fetch(url, options);
     const payload = await response.json().catch(() => ({}));
@@ -85,28 +179,47 @@
   }
 
   async function saveApplicationSubmission(course, selectedPlan, applicationState) {
+    const subjectLabels = buildSubjectLabels(course, applicationState?.courseTitle || course?.title || "");
+    const subjectIndex = getSubjectIndexByCourseSlug(course?.slug);
     const entry = {
+      id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       source: "bank-course",
       name: String(applicationState?.name || "").trim(),
       phone: extractPhoneDigits(applicationState?.phone || ""),
       courseTitle: String(applicationState?.courseTitle || course?.title || "").trim(),
       courseSlug: String(applicationState?.courseSlug || course?.slug || "").trim(),
+      subjectIndex,
+      subjectSlug: String(applicationState?.courseSlug || course?.slug || "").trim(),
+      subjectLabel: String(applicationState?.courseTitle || course?.title || "").trim(),
+      subjectLabels,
       planTitle: String(applicationState?.planTitle || selectedPlan?.title || "").trim(),
       studyMode: String(applicationState?.studyMode || "offline").trim(),
       studyModeLabel: String(applicationState?.studyModeLabel || "").trim(),
       startDate: String(applicationState?.startDate || "").trim(),
-      amount: parseAmount(applicationState?.amount || selectedPlan?.amount || "")
+      amount: parseAmount(applicationState?.amount || selectedPlan?.amount || ""),
+      submittedAt: new Date().toISOString(),
+      status: "new"
     };
 
-    const payload = await requestJson("/api/applications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(entry)
-    });
+    try {
+      const payload = await requestJson("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(entry)
+      });
 
-    return payload?.application || entry;
+      const savedEntry = {
+        ...entry,
+        ...(payload?.application && typeof payload.application === "object" ? payload.application : {})
+      };
+      saveApplicationToLocalAdminStore(savedEntry);
+      return savedEntry;
+    } catch (error) {
+      saveApplicationToLocalAdminStore(entry);
+      return entry;
+    }
   }
 
   async function fetchCourseTeacher(course) {
@@ -585,6 +698,8 @@
     renderEmptyState,
     replaceQueryParams,
     saveApplicationSubmission,
+    supportContactPhoneDisplay,
+    supportContactPhoneHref,
     t
   };
 })();

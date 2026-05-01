@@ -1010,23 +1010,27 @@ function bindApplicationForm(course, selectedPlan) {
 
   U.bindPhoneMask(phoneInput);
 
-  const showSuccessMessage = (applicationState) => {
+  const showSuccessMessage = () => {
     successBanner.textContent = "";
 
     const title = document.createElement("strong");
-    title.textContent = U.t("detail.registrationAccepted");
+    title.textContent = U.t("detail.applicationSubmittedTitle");
 
     const message = document.createElement("p");
-    message.textContent = U.t("detail.registrationSuccessMessage", {
-      name: applicationState.name,
-      course: applicationState.courseTitle,
-      plan: applicationState.planTitle,
-      phone: applicationState.phone,
-      studyMode: U.t(`detail.studyModes.${applicationState.studyMode}`)
-    });
+    message.textContent = U.t("detail.applicationSubmittedNote");
 
+    const actions = document.createElement("div");
+    actions.className = "success-banner__actions";
+
+    const contactLink = document.createElement("a");
+    contactLink.className = "success-banner__phone";
+    contactLink.href = U.supportContactPhoneHref;
+    contactLink.textContent = U.supportContactPhoneDisplay;
+    contactLink.setAttribute("aria-label", U.supportContactPhoneDisplay);
+
+    actions.append(contactLink);
     successBanner.classList.add("is-visible");
-    successBanner.append(title, message);
+    successBanner.append(title, message, actions);
   };
 
   form.addEventListener("submit", async (event) => {
@@ -1064,7 +1068,7 @@ function bindApplicationForm(course, selectedPlan) {
 
     try {
       await U.saveApplicationSubmission(course, selectedPlan, applicationState);
-      showSuccessMessage(applicationState);
+      showSuccessMessage();
       form.reset();
       phoneInput.value = U.formatPhoneNumber("", true);
       phoneInput.setCustomValidity(U.t("detail.phoneValidation"));

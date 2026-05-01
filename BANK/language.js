@@ -25,6 +25,22 @@ const uiTranslations = {
       sectionText:
         "O'quvchi o'rganmoqchi bo'lgan maktab fanini tanlaydi va keyingi sahifada batafsil ma'lumot, reja va to'lov variantlarini ko'radi.",
       openCourseAria: "{title} fanini ochish",
+      contact: {
+        eyebrow: "Aloqa ma'lumoti",
+        title: "Aloqa ma'lumoti",
+        description: "Aloqa ma'lumotlari va foydali havolalar shu yerda ko'rsatiladi.",
+        brandTag: "O'quv markazi",
+        brandNote: "Fan, ro'yxatdan o'tish va to'lov bo'yicha savollar uchun biz bilan bog'laning.",
+        quickLinksTitle: "Tezkor havolalar",
+        quickLinks: {
+          courses: "Fanlar katalogi",
+          telegram: "Telegram kanal",
+          call: "Qo'ng'iroq qilish"
+        },
+        directTitle: "Aloqa",
+        socialsTitle: "Ijtimoiy tarmoqlar",
+        teamTitle: "Ijtimoiy tarmoqlar"
+      },
       sectionsLabel: "Bo'limlar",
       sections: {
         courses: "Fanlar",
@@ -136,7 +152,8 @@ const uiTranslations = {
       summaryNoteText:
         "Keyinchalik shu blokka promo-kod, chegirma yoki real payment gateway javoblari ham ulanadi.",
       applicationAccepted: "Ariza qabul qilindi",
-      applicationSubmittedNote: "Sizning arizangiz yuborildi. Bir necha vaqtdan so'ng qabul qilinasiz.",
+      applicationSubmittedTitle: "Sizning so'rovingiz yuborildi",
+      applicationSubmittedNote: "Sizning arizangiz yuborildi. Qo'shimcha ma'lumot uchun quyidagi raqam bilan bog'laning.",
       registrationAccepted: "Ro'yxatdan o'tish qabul qilindi",
       paymentAccepted: "To'lov so'rovi yaratildi",
       successMessage:
@@ -183,6 +200,22 @@ const uiTranslations = {
       sectionText:
         "Ученик выбирает школьный предмет, открывает нужную карточку и переходит на страницу с подробной информацией и вариантами оплаты.",
       openCourseAria: "Открыть предмет {title}",
+      contact: {
+        eyebrow: "Контактные данные",
+        title: "Контактные данные",
+        description: "Здесь показаны контактные данные и полезные ссылки.",
+        brandTag: "Учебный центр",
+        brandNote: "Свяжитесь с нами по вопросам предметов, записи и оплаты.",
+        quickLinksTitle: "Быстрые ссылки",
+        quickLinks: {
+          courses: "Каталог предметов",
+          telegram: "Telegram-канал",
+          call: "Позвонить"
+        },
+        directTitle: "Контакты",
+        socialsTitle: "Социальные сети",
+        teamTitle: "Социальные сети"
+      },
       sectionsLabel: "Разделы",
       sections: {
         courses: "Предметы",
@@ -294,7 +327,8 @@ const uiTranslations = {
       summaryNoteText:
         "Позже сюда можно добавить промокоды, скидки и ответы от реального платежного сервиса.",
       applicationAccepted: "Заявка отправлена",
-      applicationSubmittedNote: "Ваша заявка отправлена. В течение некоторого времени она будет обработана.",
+      applicationSubmittedTitle: "Ваш запрос отправлен",
+      applicationSubmittedNote: "Ваша заявка отправлена. Для дополнительной информации свяжитесь по номеру ниже.",
       registrationAccepted: "Регистрация отправлена",
       paymentAccepted: "Платежный запрос создан",
       successMessage:
@@ -341,6 +375,22 @@ const uiTranslations = {
       sectionText:
         "Students choose the school subject they want to study, open the matching card, and continue to a page with details and payment options.",
       openCourseAria: "Open the {title} subject",
+      contact: {
+        eyebrow: "Contact information",
+        title: "Contact information",
+        description: "Contact details and useful links are shown here.",
+        brandTag: "Learning center",
+        brandNote: "Reach out to us with any questions about subjects, enrollment, or payments.",
+        quickLinksTitle: "Quick links",
+        quickLinks: {
+          courses: "Subject catalog",
+          telegram: "Telegram channel",
+          call: "Call now"
+        },
+        directTitle: "Contact",
+        socialsTitle: "Social media",
+        teamTitle: "Social media"
+      },
       sectionsLabel: "Sections",
       sections: {
         courses: "Subjects",
@@ -452,7 +502,8 @@ const uiTranslations = {
       summaryNoteText:
         "Later this section can also include promo codes, discounts, and responses from a real payment gateway.",
       applicationAccepted: "Application received",
-      applicationSubmittedNote: "Your application has been sent. It will be reviewed shortly.",
+      applicationSubmittedTitle: "Your request has been sent",
+      applicationSubmittedNote: "Your application has been sent. For more information, contact the number below.",
       registrationAccepted: "Registration received",
       paymentAccepted: "Payment request created",
       successMessage:
